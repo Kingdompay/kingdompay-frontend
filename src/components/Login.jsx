@@ -11,32 +11,79 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [focusedField, setFocusedField] = useState('');
-  const [buttonStates, setButtonStates] = useState({});
-  
+  const [validationErrors, setValidationErrors] = useState({});
+
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  // Validation functions
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePassword = (password) => {
+    return password.length >= 6;
+  };
+
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
+
+    // Clear validation errors when user starts typing
+    if (validationErrors[name]) {
+      setValidationErrors({
+        ...validationErrors,
+        [name]: '',
+      });
+    }
+  };
+
+  const validateForm = () => {
+    const errors = {};
+
+    if (!formData.email) {
+      errors.email = 'Email is required';
+    } else if (!validateEmail(formData.email)) {
+      errors.email = 'Please enter a valid email address';
+    }
+
+    if (!formData.password) {
+      errors.password = 'Password is required';
+    } else if (!validatePassword(formData.password)) {
+      errors.password = 'Password must be at least 6 characters';
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
     setLoading(true);
     setError('');
 
-    const result = await login(formData.email, formData.password);
-    
-    if (result.success) {
-      navigate('/home');
-    } else {
-      setError(result.error);
+    try {
+      const result = await login(formData.email, formData.password);
+
+      if (result.success) {
+        navigate('/home');
+      } else {
+        setError(result.error || 'Login failed. Please check your credentials.');
+      }
+    } catch (error) {
+      setError('An unexpected error occurred. Please try again.');
+    } finally {
+      setLoading(false);
     }
-    
-    setLoading(false);
   };
 
   const handleDemoLogin = async () => {
@@ -54,30 +101,27 @@ const Login = () => {
     setLoading(false);
   };
 
-  const createRippleEffect = (e) => {
+  const [ripples, setRipples] = useState([]);
+  const [buttonStates, setButtonStates] = useState({});
+
+  const createRippleEffect = (e, buttonId) => {
     const button = e.currentTarget;
-    const ripple = document.createElement('span');
     const rect = button.getBoundingClientRect();
     const size = Math.max(rect.width, rect.height);
     const x = e.clientX - rect.left - size / 2;
     const y = e.clientY - rect.top - size / 2;
-    
-    ripple.style.width = ripple.style.height = size + 'px';
-    ripple.style.left = x + 'px';
-    ripple.style.top = y + 'px';
-    ripple.style.position = 'absolute';
-    ripple.style.borderRadius = '50%';
-    ripple.style.background = 'rgba(255, 255, 255, 0.6)';
-    ripple.style.transform = 'scale(0)';
-    ripple.style.animation = 'ripple 0.6s linear';
-    ripple.style.pointerEvents = 'none';
-    
-    button.style.position = 'relative';
-    button.style.overflow = 'hidden';
-    button.appendChild(ripple);
-    
+
+    const newRipple = {
+      id: Date.now(),
+      x,
+      y,
+      size,
+    };
+
+    setRipples(prev => [...prev, newRipple]);
+
     setTimeout(() => {
-      ripple.remove();
+      setRipples(prev => prev.filter(ripple => ripple.id !== newRipple.id));
     }, 600);
   };
 
@@ -261,22 +305,37 @@ const Login = () => {
                   borderRadius: '0px',
                   color: '#151711',
                   outline: 'none',
-                  border: focusedField === 'email' ? '2px solid #6f9c16' : '2px solid transparent',
-                  backgroundColor: focusedField === 'email' ? '#ffffff' : '#f3f4f0',
+                  border: (focusedField === 'email' || validationErrors.email) ? '2px solid #6f9c16' : '2px solid transparent',
+                  backgroundColor: (focusedField === 'email' || validationErrors.email) ? '#ffffff' : '#f3f4f0',
                   height: '56px',
                   padding: '16px',
                   fontSize: '16px',
                   fontWeight: 'normal',
                   lineHeight: 'normal',
                   transition: 'all 0.3s ease',
-                  boxShadow: focusedField === 'email' ? '0 4px 12px rgba(111, 156, 22, 0.15)' : '0 2px 4px rgba(0, 0, 0, 0.05)'
+                  boxShadow: (focusedField === 'email' || validationErrors.email) ? '0 4px 12px rgba(111, 156, 22, 0.15)' : '0 2px 4px rgba(0, 0, 0, 0.05)'
                 }}
                 value={formData.email}
                 onChange={handleChange}
                 onFocus={() => setFocusedField('email')}
                 onBlur={() => setFocusedField('')}
                 required
+                aria-invalid={validationErrors.email ? 'true' : 'false'}
+                aria-describedby={validationErrors.email ? 'email-error' : undefined}
               />
+              {validationErrors.email && (
+                <span
+                  id="email-error"
+                  style={{
+                    color: '#dc2626',
+                    fontSize: '12px',
+                    marginTop: '4px',
+                    paddingLeft: '4px'
+                  }}
+                >
+                  {validationErrors.email}
+                </span>
+              )}
             </label>
           </div>
           
@@ -308,22 +367,37 @@ const Login = () => {
                   borderRadius: '0px',
                   color: '#151711',
                   outline: 'none',
-                  border: focusedField === 'password' ? '2px solid #6f9c16' : '2px solid transparent',
-                  backgroundColor: focusedField === 'password' ? '#ffffff' : '#f3f4f0',
+                  border: (focusedField === 'password' || validationErrors.password) ? '2px solid #6f9c16' : '2px solid transparent',
+                  backgroundColor: (focusedField === 'password' || validationErrors.password) ? '#ffffff' : '#f3f4f0',
                   height: '56px',
                   padding: '16px',
                   fontSize: '16px',
                   fontWeight: 'normal',
                   lineHeight: 'normal',
                   transition: 'all 0.3s ease',
-                  boxShadow: focusedField === 'password' ? '0 4px 12px rgba(111, 156, 22, 0.15)' : '0 2px 4px rgba(0, 0, 0, 0.05)'
+                  boxShadow: (focusedField === 'password' || validationErrors.password) ? '0 4px 12px rgba(111, 156, 22, 0.15)' : '0 2px 4px rgba(0, 0, 0, 0.05)'
                 }}
                 value={formData.password}
                 onChange={handleChange}
                 onFocus={() => setFocusedField('password')}
                 onBlur={() => setFocusedField('')}
                 required
+                aria-invalid={validationErrors.password ? 'true' : 'false'}
+                aria-describedby={validationErrors.password ? 'password-error' : undefined}
               />
+              {validationErrors.password && (
+                <span
+                  id="password-error"
+                  style={{
+                    color: '#dc2626',
+                    fontSize: '12px',
+                    marginTop: '4px',
+                    paddingLeft: '4px'
+                  }}
+                >
+                  {validationErrors.password}
+                </span>
+              )}
             </label>
           </div>
           
@@ -345,7 +419,7 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              onClick={createRippleEffect}
+              onClick={(e) => createRippleEffect(e, 'login')}
               style={{
                 display: 'flex',
                 minWidth: '84px',
@@ -390,6 +464,23 @@ const Login = () => {
               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {loading ? 'Logging in...' : 'Log in'}
               </span>
+              {ripples.map(ripple => (
+                <span
+                  key={ripple.id}
+                  style={{
+                    position: 'absolute',
+                    width: ripple.size,
+                    height: ripple.size,
+                    left: ripple.x,
+                    top: ripple.y,
+                    borderRadius: '50%',
+                    background: 'rgba(255, 255, 255, 0.6)',
+                    transform: 'scale(0)',
+                    animation: 'ripple 0.6s linear',
+                    pointerEvents: 'none',
+                  }}
+                />
+              ))}
             </button>
           </div>
         </form>
