@@ -4,15 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"npm run backend\" \"vite --host\"",
-    "backend": "cd backend && npm start",
-    "frontend": "vite --host",
+    "dev": "vite --host",
     "build": "vite build",
-    "preview": "vite preview",
-    "vercel-build": "npm run build"
+    "preview": "vite preview"
   },
   "devDependencies": {
-    "concurrently": "^9.2.1",
     "typescript": "~5.9.3",
     "vite": "^7.1.7"
   },

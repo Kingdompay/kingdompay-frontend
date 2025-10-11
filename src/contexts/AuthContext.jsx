@@ -7,7 +7,6 @@ const initialState = {
   user: null,
   token: localStorage.getItem('token'),
   isAuthenticated: false,
-  isGuest: false,
   loading: true,
 };
 
@@ -20,15 +19,6 @@ const authReducer = (state, action) => {
         user: action.payload.user,
         token: action.payload.token,
         isAuthenticated: true,
-        isGuest: false,
-        loading: false,
-      };
-    case 'GUEST_LOGIN':
-      return {
-        ...state,
-        user: action.payload.user,
-        isAuthenticated: true,
-        isGuest: true,
         loading: false,
       };
     case 'LOGOUT':
@@ -38,7 +28,6 @@ const authReducer = (state, action) => {
         user: null,
         token: null,
         isAuthenticated: false,
-        isGuest: false,
         loading: false,
       };
     case 'SET_LOADING':
@@ -72,35 +61,21 @@ export const AuthProvider = ({ children }) => {
   // Check if user is logged in on app start
   useEffect(() => {
     const checkAuth = async () => {
-      const token = localStorage.getItem('token');
-
-      if (token) {
+      if (state.token) {
         try {
           const response = await axios.get('/api/user/profile');
           dispatch({
             type: 'LOGIN_SUCCESS',
             payload: {
               user: response.data,
-              token: token,
+              token: state.token,
             },
           });
         } catch (error) {
           dispatch({ type: 'LOGOUT' });
         }
       } else {
-        // Auto-login as guest if no token exists
-        const guestUser = {
-          id: 'guest',
-          email: 'guest@kingdompay.com',
-          firstName: 'Guest',
-          lastName: 'User',
-          balance: 0,
-          savingsBalance: 0,
-        };
-        dispatch({
-          type: 'GUEST_LOGIN',
-          payload: { user: guestUser },
-        });
+        dispatch({ type: 'SET_LOADING', payload: false });
       }
     };
 

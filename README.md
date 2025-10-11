@@ -67,27 +67,30 @@ A modern, responsive digital wallet application built with React and Express.js,
    npm install
    ```
 
-3. **Start both servers (single command)**
+3. **Start the backend server**
    ```bash
+   cd backend
+   npm install
+   node server.js
+   ```
+
+4. **Start the frontend development server**
+   ```bash
+   cd ..
    npm run dev
    ```
 
-4. **Access the application**
-   - Frontend: http://localhost:5174 (or next available port)
+5. **Access the application**
+   - Frontend: http://localhost:5173
    - Backend API: http://localhost:5000
 
-### No Login Required!
-- Simply click **"Continue as Guest"** on the login page
-- Or use **"Demo Login"** for full features: demo@kingdompay.com / password123
-
-### Alternative Commands
-- **Frontend only**: `npm run frontend`
-- **Backend only**: `npm run backend`
-- **Production build**: `npm run build`
+### Demo Login
+- **Email**: demo@kingdompay.com
+- **Password**: password123
 
 ## 🎯 Usage
 
-1. **Get Started**: Click "Continue as Guest" or use demo login: demo@kingdompay.com / password123
+1. **Login**: Use demo credentials or social login options  demo@kingdompay.com / password123
 2. **Dashboard**: View balance, perform quick actions (Add, Send, Swap, More)
 3. **Transactions**: Browse recent transaction history
 4. **Savings**: Set and track savings goals
@@ -99,17 +102,13 @@ A modern, responsive digital wallet application built with React and Express.js,
 ### Authentication
 - `POST /api/auth/register` - User registration
 - `POST /api/auth/login` - User login
-- `POST /api/seed` - Seed demo data (development only)
+- `POST /api/seed` - Seed demo data
 
-### Protected Routes (require authentication)
-- `GET /api/user/profile` - Get user profile
-- `PUT /api/user/profile` - Update user profile
+### User Data
+- `GET /api/user` - Get user profile
 - `GET /api/transactions` - Get transaction history
-- `POST /api/transactions` - Create new transaction
 - `GET /api/savings/goals` - Get savings goals
-- `POST /api/savings/goals` - Create savings goal
 - `GET /api/community/groups` - Get community groups
-- `POST /api/community/groups` - Create community group
 
 ## 🎨 Customization
 
@@ -147,29 +146,11 @@ Custom keyframe animations are defined in each component:
 
 ## 🚀 Deployment
 
-### Vercel (Recommended)
-This project is configured for seamless deployment on Vercel with both frontend and backend:
-
-1. **Connect to Vercel**
-   ```bash
-   vercel --prod
-   ```
-
-2. **Automatic Deployment**
-   - Vercel will detect the `vercel.json` configuration
-   - Both frontend and backend will be deployed automatically
-   - API routes will be available at the same domain
-
-3. **Environment Variables** (if needed)
-   - Set `NODE_ENV=production` in Vercel dashboard
-
-### Manual Deployment
-
-#### Frontend (Vercel/Netlify)
+### Frontend (Vercel/Netlify)
 1. Build the project: `npm run build`
 2. Deploy the `dist` folder to your hosting platform
 
-#### Backend (Railway/Heroku)
+### Backend (Railway/Heroku)
 1. Set environment variables for production
 2. Deploy the backend folder to your platform
 3. Update frontend API URLs for production

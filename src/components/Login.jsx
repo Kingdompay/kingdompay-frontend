@@ -4,11 +4,87 @@ import { useAuth } from '../contexts/AuthContext';
 import BottomNav from './BottomNav';
 
 const Login = () => {
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [focusedField, setFocusedField] = useState('');
+  const [validationErrors, setValidationErrors] = useState({});
 
   const { login } = useAuth();
   const navigate = useNavigate();
+
+  // Validation functions
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePassword = (password) => {
+    return password.length >= 6;
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+
+    // Clear validation errors when user starts typing
+    if (validationErrors[name]) {
+      setValidationErrors({
+        ...validationErrors,
+        [name]: '',
+      });
+    }
+  };
+
+  const validateForm = () => {
+    const errors = {};
+
+    if (!formData.email) {
+      errors.email = 'Email is required';
+    } else if (!validateEmail(formData.email)) {
+      errors.email = 'Please enter a valid email address';
+    }
+
+    if (!formData.password) {
+      errors.password = 'Password is required';
+    } else if (!validatePassword(formData.password)) {
+      errors.password = 'Password must be at least 6 characters';
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const result = await login(formData.email, formData.password);
+
+      if (result.success) {
+        navigate('/home');
+      } else {
+        setError(result.error || 'Login failed. Please check your credentials.');
+      }
+    } catch (error) {
+      setError('An unexpected error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleDemoLogin = async () => {
     setLoading(true);
@@ -182,62 +258,233 @@ const Login = () => {
           paddingBottom: '8px',
           paddingTop: '20px',
           margin: 0
-        }}>Welcome to KingdomPay</h3>
-
-        <p style={{
-          color: '#7b8764',
-          fontSize: '16px',
-          fontWeight: 'normal',
-          lineHeight: '1.5',
-          padding: '0 16px',
-          textAlign: 'center',
-          margin: '8px 0 24px 0'
-        }}>Access your digital wallet instantly</p>
+        }}>Welcome back</h3>
         
-        {/* Guest Access Button */}
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '0 16px 12px 16px' }}>
-          <button
-            onClick={() => navigate('/home')}
-            style={{
+        {/* Error Message */}
+        {error && (
+          <div style={{
+            margin: '0 16px',
+            marginTop: '16px',
+            padding: '12px',
+            backgroundColor: '#fef2f2',
+            border: '1px solid #fecaca',
+            color: '#dc2626',
+            borderRadius: '12px'
+          }}>
+            {error}
+          </div>
+        )}
+        
+        {/* Form */}
+        <form onSubmit={handleSubmit}>
+          <div style={{
+            display: 'flex',
+            maxWidth: '480px',
+            flexWrap: 'wrap',
+            alignItems: 'flex-end',
+            gap: '16px',
+            padding: '0 16px 12px 16px'
+          }}>
+            <label style={{
               display: 'flex',
-              minWidth: '84px',
-              maxWidth: '480px',
-              cursor: 'pointer',
-              alignItems: 'center',
-              justifyContent: 'center',
-              overflow: 'hidden',
-              borderRadius: '0px',
-              height: '48px',
-              paddingLeft: '20px',
-              paddingRight: '20px',
-              backgroundColor: '#6f9c16',
-              color: 'white',
-              fontSize: '16px',
-              fontWeight: 'bold',
-              lineHeight: 'normal',
-              letterSpacing: '0.015em',
-              width: '100%',
-              border: 'none',
-              boxShadow: '0 4px 12px rgba(111, 156, 22, 0.3)',
-              transition: 'all 0.3s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.backgroundColor = '#5a7a12';
-              e.target.style.transform = 'scale(1.02)';
-              e.target.style.boxShadow = '0 6px 16px rgba(111, 156, 22, 0.4)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.backgroundColor = '#6f9c16';
-              e.target.style.transform = 'scale(1)';
-              e.target.style.boxShadow = '0 4px 12px rgba(111, 156, 22, 0.3)';
-            }}
-          >
-            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              Continue as Guest
-            </span>
-          </button>
-        </div>
-
+              flexDirection: 'column',
+              minWidth: '160px',
+              flex: 1
+            }}>
+              <input
+                type="email"
+                name="email"
+                placeholder="Email or phone number"
+                style={{
+                  display: 'flex',
+                  width: '100%',
+                  minWidth: 0,
+                  flex: 1,
+                  resize: 'none',
+                  overflow: 'hidden',
+                  borderRadius: '0px',
+                  color: '#151711',
+                  outline: 'none',
+                  border: (focusedField === 'email' || validationErrors.email) ? '2px solid #6f9c16' : '2px solid transparent',
+                  backgroundColor: (focusedField === 'email' || validationErrors.email) ? '#ffffff' : '#f3f4f0',
+                  height: '56px',
+                  padding: '16px',
+                  fontSize: '16px',
+                  fontWeight: 'normal',
+                  lineHeight: 'normal',
+                  transition: 'all 0.3s ease',
+                  boxShadow: (focusedField === 'email' || validationErrors.email) ? '0 4px 12px rgba(111, 156, 22, 0.15)' : '0 2px 4px rgba(0, 0, 0, 0.05)'
+                }}
+                value={formData.email}
+                onChange={handleChange}
+                onFocus={() => setFocusedField('email')}
+                onBlur={() => setFocusedField('')}
+                required
+                aria-invalid={validationErrors.email ? 'true' : 'false'}
+                aria-describedby={validationErrors.email ? 'email-error' : undefined}
+              />
+              {validationErrors.email && (
+                <span
+                  id="email-error"
+                  style={{
+                    color: '#dc2626',
+                    fontSize: '12px',
+                    marginTop: '4px',
+                    paddingLeft: '4px'
+                  }}
+                >
+                  {validationErrors.email}
+                </span>
+              )}
+            </label>
+          </div>
+          
+          <div style={{
+            display: 'flex',
+            maxWidth: '480px',
+            flexWrap: 'wrap',
+            alignItems: 'flex-end',
+            gap: '16px',
+            padding: '0 16px 12px 16px'
+          }}>
+            <label style={{
+              display: 'flex',
+              flexDirection: 'column',
+              minWidth: '160px',
+              flex: 1
+            }}>
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                style={{
+                  display: 'flex',
+                  width: '100%',
+                  minWidth: 0,
+                  flex: 1,
+                  resize: 'none',
+                  overflow: 'hidden',
+                  borderRadius: '0px',
+                  color: '#151711',
+                  outline: 'none',
+                  border: (focusedField === 'password' || validationErrors.password) ? '2px solid #6f9c16' : '2px solid transparent',
+                  backgroundColor: (focusedField === 'password' || validationErrors.password) ? '#ffffff' : '#f3f4f0',
+                  height: '56px',
+                  padding: '16px',
+                  fontSize: '16px',
+                  fontWeight: 'normal',
+                  lineHeight: 'normal',
+                  transition: 'all 0.3s ease',
+                  boxShadow: (focusedField === 'password' || validationErrors.password) ? '0 4px 12px rgba(111, 156, 22, 0.15)' : '0 2px 4px rgba(0, 0, 0, 0.05)'
+                }}
+                value={formData.password}
+                onChange={handleChange}
+                onFocus={() => setFocusedField('password')}
+                onBlur={() => setFocusedField('')}
+                required
+                aria-invalid={validationErrors.password ? 'true' : 'false'}
+                aria-describedby={validationErrors.password ? 'password-error' : undefined}
+              />
+              {validationErrors.password && (
+                <span
+                  id="password-error"
+                  style={{
+                    color: '#dc2626',
+                    fontSize: '12px',
+                    marginTop: '4px',
+                    paddingLeft: '4px'
+                  }}
+                >
+                  {validationErrors.password}
+                </span>
+              )}
+            </label>
+          </div>
+          
+          <p style={{
+            color: '#7b8764',
+            fontSize: '14px',
+            fontWeight: 'normal',
+            lineHeight: 'normal',
+            paddingBottom: '12px',
+            paddingTop: '4px',
+            paddingLeft: '16px',
+            paddingRight: '16px',
+            textDecoration: 'underline',
+            cursor: 'pointer',
+            margin: 0
+          }}>Forgot password?</p>
+          
+          <div style={{ display: 'flex', padding: '0 16px 12px 16px' }}>
+            <button
+              type="submit"
+              disabled={loading}
+              onClick={(e) => createRippleEffect(e, 'login')}
+              style={{
+                display: 'flex',
+                minWidth: '84px',
+                maxWidth: '480px',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'hidden',
+                borderRadius: '0px',
+                height: '48px',
+                paddingLeft: '20px',
+                paddingRight: '20px',
+                flex: 1,
+                backgroundColor: loading ? '#9ca3af' : '#6f9c16',
+                color: 'white',
+                fontSize: '16px',
+                fontWeight: 'bold',
+                lineHeight: 'normal',
+                letterSpacing: '0.015em',
+                transition: 'all 0.3s ease',
+                border: 'none',
+                opacity: loading ? 0.7 : 1,
+                transform: buttonStates.login ? 'scale(0.95)' : 'scale(1)',
+                boxShadow: '0 4px 12px rgba(111, 156, 22, 0.3)',
+                position: 'relative'
+              }}
+              onMouseEnter={(e) => {
+                if (!loading) {
+                  e.target.style.backgroundColor = '#5a7a12';
+                  e.target.style.transform = 'scale(1.02)';
+                  e.target.style.boxShadow = '0 6px 16px rgba(111, 156, 22, 0.4)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!loading) {
+                  e.target.style.backgroundColor = '#6f9c16';
+                  e.target.style.transform = 'scale(1)';
+                  e.target.style.boxShadow = '0 4px 12px rgba(111, 156, 22, 0.3)';
+                }
+              }}
+            >
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {loading ? 'Logging in...' : 'Log in'}
+              </span>
+              {ripples.map(ripple => (
+                <span
+                  key={ripple.id}
+                  style={{
+                    position: 'absolute',
+                    width: ripple.size,
+                    height: ripple.size,
+                    left: ripple.x,
+                    top: ripple.y,
+                    borderRadius: '50%',
+                    background: 'rgba(255, 255, 255, 0.6)',
+                    transform: 'scale(0)',
+                    animation: 'ripple 0.6s linear',
+                    pointerEvents: 'none',
+                  }}
+                />
+              ))}
+            </button>
+          </div>
+        </form>
+        
         {/* Social Login Buttons */}
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <div style={{
