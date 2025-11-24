@@ -14,9 +14,40 @@ const mockUser = {
 };
 
 export const AuthProvider = ({ children }) => {
-  const [user] = useState(mockUser);
-  const [isAuthenticated] = useState(true);
-  const [loading] = useState(false);
+  const [state, dispatch] = useReducer(authReducer, initialState);
+
+  // Set up axios defaults
+  useEffect(() => {
+    if (state.token) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${state.token}`;
+    } else {
+      delete axios.defaults.headers.common['Authorization'];
+    }
+  }, [state.token]);
+
+  // Check if user is logged in on app start
+  useEffect(() => {
+    const checkAuth = async () => {
+      if (state.token) {
+        try {
+          const response = await axios.get('/api/user/profile');
+          dispatch({
+            type: 'LOGIN_SUCCESS',
+            payload: {
+              user: response.data,
+              token: state.token,
+            },
+          });
+        } catch (error) {
+          dispatch({ type: 'LOGOUT' });
+        }
+      } else {
+        dispatch({ type: 'SET_LOADING', payload: false });
+      }
+    };
+
+    checkAuth();
+  }, []);
 
   const login = async () => {
     // Always succeed
