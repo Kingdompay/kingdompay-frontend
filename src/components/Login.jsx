@@ -340,6 +340,7 @@ const Login = () => {
                 {loading ? 'Logging in...' : 'Log in'}
               </span>
             </button>
+          </div>
         </form>
 
         {/* Social Login & Demo */}
@@ -391,14 +392,12 @@ const Login = () => {
           </div>
         </div>
 
+        {/* Bottom Navigation (Mobile Only) */}
+        <div className="md:hidden">
+          <BottomNav />
+        </div>
       </div>
     </div>
-
-      {/* Bottom Navigation (Mobile Only) */ }
-  <div className="md:hidden">
-    <BottomNav />
-  </div>
-    </div >
   );
 };
 

@@ -152,6 +152,55 @@ app.post('/api/savings/goals', authenticateToken, async (req, res) => {
   }
 });
 
+app.post('/api/savings/goals/:id/contribute', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { amount } = req.body;
+    const contribution = parseFloat(amount);
+
+    if (!contribution || contribution <= 0) return res.status(400).json({ message: 'Invalid amount' });
+
+    const goal = savingsGoals.find(g => g.id === id && g.userId === req.user.userId);
+    if (!goal) return res.status(404).json({ message: 'Goal not found' });
+
+    const userIdx = users.findIndex(u => u.id === req.user.userId);
+    if (userIdx === -1) return res.status(404).json({ message: 'User not found' });
+
+    if (users[userIdx].balance < contribution) return res.status(400).json({ message: 'Insufficient balance' });
+
+    // Deduct from wallet
+    users[userIdx].balance -= contribution;
+
+    // Add to goal
+    goal.currentAmount += contribution;
+
+    // Add to total savings balance
+    users[userIdx].savingsBalance += contribution;
+
+    // Record transaction
+    const transaction = {
+      id: generateId(),
+      userId: req.user.userId,
+      type: 'debit',
+      amount: contribution,
+      description: `Transfer to ${goal.name}`,
+      category: 'Savings',
+      merchant: 'KingdomPay Savings',
+      date: new Date()
+    };
+    transactions.push(transaction);
+
+    res.json({
+      message: 'Contribution successful',
+      goal,
+      newWalletBalance: users[userIdx].balance,
+      newSavingsBalance: users[userIdx].savingsBalance
+    });
+  } catch (e) {
+    res.status(500).json({ message: 'Server error', error: e.message });
+  }
+});
+
 // ---------- Community routes ----------
 app.get('/api/community/groups', authenticateToken, async (req, res) => {
   try {

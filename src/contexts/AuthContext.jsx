@@ -1,16 +1,61 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import axios from 'axios';
 
 const AuthContext = createContext();
 
-// Mock user data - always authenticated
-const mockUser = {
-  id: 'demo-user-id',
-  firstName: 'John',
-  lastName: 'Doe',
-  email: 'demo@kingdompay.com',
-  phone: '+1 234 567 890',
-  balance: 1234.56,
-  savingsBalance: 16000.00,
+const initialState = {
+  user: null,
+  token: localStorage.getItem('token'),
+  isAuthenticated: false,
+  loading: true,
+  error: null,
+};
+
+const authReducer = (state, action) => {
+  switch (action.type) {
+    case 'LOGIN_START':
+    case 'REGISTER_START':
+      return {
+        ...state,
+        loading: true,
+        error: null,
+      };
+    case 'LOGIN_SUCCESS':
+    case 'REGISTER_SUCCESS':
+      localStorage.setItem('token', action.payload.token);
+      return {
+        ...state,
+        user: action.payload.user,
+        token: action.payload.token,
+        isAuthenticated: true,
+        loading: false,
+        error: null,
+      };
+    case 'LOGIN_FAILURE':
+    case 'REGISTER_FAILURE':
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+    case 'LOGOUT':
+      localStorage.removeItem('token');
+      return {
+        ...state,
+        user: null,
+        token: null,
+        isAuthenticated: false,
+        loading: false,
+        error: null,
+      };
+    case 'SET_LOADING':
+      return {
+        ...state,
+        loading: action.payload,
+      };
+    default:
+      return state;
+  }
 };
 
 export const AuthProvider = ({ children }) => {
@@ -30,7 +75,9 @@ export const AuthProvider = ({ children }) => {
     const checkAuth = async () => {
       if (state.token) {
         try {
-          const response = await axios.get('/api/user/profile');
+          // Assuming you have an endpoint to get the current user profile
+          // If not, you might need to adjust this or rely on the token being present
+          const response = await axios.get('http://localhost:5000/api/user/profile');
           dispatch({
             type: 'LOGIN_SUCCESS',
             payload: {
@@ -39,6 +86,7 @@ export const AuthProvider = ({ children }) => {
             },
           });
         } catch (error) {
+          console.error("Auth check failed:", error);
           dispatch({ type: 'LOGOUT' });
         }
       } else {
@@ -49,30 +97,43 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
 
-  const login = async () => {
-    // Always succeed
-    return { success: true };
+  const login = async (email, password) => {
+    dispatch({ type: 'LOGIN_START' });
+    try {
+      const response = await axios.post('http://localhost:5000/api/auth/login', { email, password });
+      dispatch({ type: 'LOGIN_SUCCESS', payload: response.data });
+      return { success: true };
+    } catch (error) {
+      const message = error.response?.data?.message || 'Login failed';
+      dispatch({ type: 'LOGIN_FAILURE', payload: message });
+      return { success: false, error: message };
+    }
   };
 
-  const register = async () => {
-    // Always succeed
-    return { success: true };
+  const register = async (userData) => {
+    dispatch({ type: 'REGISTER_START' });
+    try {
+      const response = await axios.post('http://localhost:5000/api/auth/register', userData);
+      dispatch({ type: 'REGISTER_SUCCESS', payload: response.data });
+      return { success: true };
+    } catch (error) {
+      const message = error.response?.data?.message || 'Registration failed';
+      dispatch({ type: 'REGISTER_FAILURE', payload: message });
+      return { success: false, error: message };
+    }
   };
 
   const logout = () => {
-    // No-op for demo
+    dispatch({ type: 'LOGOUT' });
   };
 
-  const updateUser = () => {
-    // No-op for demo
+  const updateUser = (userData) => {
+    // Implement if needed, for now just updating local state if we had a way to do partial updates
+    // or re-fetch profile
   };
 
   const value = {
-    user,
-    token: 'demo-token',
-    isAuthenticated,
-    loading,
-    error: null,
+    ...state,
     login,
     register,
     logout,

@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import BottomNav from './BottomNav';
 
 const CreateGoal = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     targetAmount: '',
@@ -38,10 +41,36 @@ const CreateGoal = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Creating savings goal:', formData);
-    navigate('/savings');
+    setLoading(true);
+    setError('');
+
+    try {
+      const numericAmount = parseFloat(formData.targetAmount.replace(/[^0-9.]/g, ''));
+      if (!numericAmount || numericAmount <= 0) {
+        setError('Please enter a valid target amount');
+        setLoading(false);
+        return;
+      }
+
+      const selectedCategory = categories.find(c => c.id === formData.category);
+
+      await axios.post('/api/savings/goals', {
+        name: formData.name,
+        targetAmount: numericAmount,
+        icon: selectedCategory ? selectedCategory.icon : 'savings',
+        // We could send other fields if backend supported them, but currently it only takes name, targetAmount, icon
+        // We can extend backend later if needed. For now this matches the server.js implementation.
+      });
+
+      navigate('/savings');
+    } catch (err) {
+      console.error('Error creating goal:', err);
+      setError(err.response?.data?.message || 'Failed to create goal. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const formatAmount = (value) => {
@@ -113,10 +142,24 @@ const CreateGoal = () => {
           overflowY: 'auto',
           paddingBottom: '100px'
         }}>
-          
+
+          {error && (
+            <div style={{
+              backgroundColor: '#fee2e2',
+              border: '1px solid #fecaca',
+              color: '#dc2626',
+              padding: '12px',
+              borderRadius: '8px',
+              marginBottom: '16px',
+              fontSize: '14px'
+            }}>
+              {error}
+            </div>
+          )}
+
           <form onSubmit={handleSubmit}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-              
+
               {/* Goal Name */}
               <div>
                 <label style={{
@@ -134,6 +177,7 @@ const CreateGoal = () => {
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="e.g., Emergency Fund, Vacation Savings"
+                  required
                   style={{
                     width: '100%',
                     padding: '12px 16px',
@@ -169,6 +213,7 @@ const CreateGoal = () => {
                     setFormData({ ...formData, targetAmount: formatted });
                   }}
                   placeholder="$0.00"
+                  required
                   style={{
                     width: '100%',
                     padding: '12px 16px',
@@ -251,9 +296,9 @@ const CreateGoal = () => {
                         justifyContent: 'center',
                         margin: '0 auto 8px auto'
                       }}>
-                        <span className="material-symbols-outlined" style={{ 
-                          color: category.color, 
-                          fontSize: '20px' 
+                        <span className="material-symbols-outlined" style={{
+                          color: category.color,
+                          fontSize: '20px'
                         }}>
                           {category.icon}
                         </span>
@@ -330,22 +375,23 @@ const CreateGoal = () => {
               {/* Submit Button */}
               <button
                 type="submit"
+                disabled={loading}
                 style={{
                   width: '100%',
-                  backgroundColor: '#6f9c16',
+                  backgroundColor: loading ? '#9ca3af' : '#6f9c16',
                   color: 'white',
                   border: 'none',
                   borderRadius: '12px',
                   padding: '16px',
                   fontSize: '16px',
                   fontWeight: '600',
-                  cursor: 'pointer',
+                  cursor: loading ? 'not-allowed' : 'pointer',
                   transition: 'background-color 0.3s ease'
                 }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#5a7a12'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = '#6f9c16'}
+                onMouseEnter={(e) => !loading && (e.target.style.backgroundColor = '#5a7a12')}
+                onMouseLeave={(e) => !loading && (e.target.style.backgroundColor = '#6f9c16')}
               >
-                Create Goal
+                {loading ? 'Creating Goal...' : 'Create Goal'}
               </button>
             </div>
           </form>

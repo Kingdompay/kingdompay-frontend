@@ -1,8 +1,68 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import BottomNav from './BottomNav';
 
 const Savings = () => {
+  const [savingsBalance, setSavingsBalance] = useState(0);
+  const [goals, setGoals] = useState([]);
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Contribution state
+  const [showContributeModal, setShowContributeModal] = useState(false);
+  const [selectedGoal, setSelectedGoal] = useState(null);
+  const [contributionAmount, setContributionAmount] = useState('');
+  const [contributing, setContributing] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [profileRes, goalsRes, transactionsRes] = await Promise.all([
+          axios.get('/api/user/profile'),
+          axios.get('/api/savings/goals'),
+          axios.get('/api/transactions')
+        ]);
+
+        setSavingsBalance(profileRes.data.savingsBalance || 0);
+        setGoals(goalsRes.data);
+        setTransactions(transactionsRes.data.slice(0, 5)); // Show last 5 transactions
+      } catch (error) {
+        console.error('Error fetching savings data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleContribute = async () => {
+    if (!selectedGoal || !contributionAmount || parseFloat(contributionAmount) <= 0) return;
+    setContributing(true);
+    setError('');
+    setSuccess('');
+    try {
+      const res = await axios.post(`/api/savings/goals/${selectedGoal.id}/contribute`, { amount: contributionAmount });
+      // Update local state
+      setGoals(goals.map(g => g.id === selectedGoal.id ? { ...g, currentAmount: g.currentAmount + parseFloat(contributionAmount) } : g));
+      setSavingsBalance(res.data.newSavingsBalance);
+      setSuccess('Contribution successful!');
+      setTimeout(() => {
+        setShowContributeModal(false);
+        setSelectedGoal(null);
+        setContributionAmount('');
+        setSuccess('');
+      }, 1500);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Contribution failed');
+    } finally {
+      setContributing(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#F7F7F7] font-sans flex justify-center">
       <style>
@@ -34,9 +94,9 @@ const Savings = () => {
                 <span className="material-symbols-outlined text-2xl">arrow_back_ios</span>
               </Link>
               <h1 className="text-xl font-bold text-[#1A3F22] m-0">Savings</h1>
-              <div className="w-10 h-10 bg-[#E9F0E1] rounded-full flex items-center justify-center cursor-pointer hover:bg-[#dce8d0] transition-colors">
+              <Link to="/create-goal" className="w-10 h-10 bg-[#E9F0E1] rounded-full flex items-center justify-center cursor-pointer hover:bg-[#dce8d0] transition-colors no-underline">
                 <span className="material-symbols-outlined text-[#1A3F22] text-xl">add</span>
-              </div>
+              </Link>
             </div>
           </header>
 
@@ -44,7 +104,9 @@ const Savings = () => {
           <div className="p-4">
             <div className="bg-gradient-to-br from-[#1A3F22] to-[#58761B] rounded-2xl p-6 text-white shadow-lg text-center">
               <p className="text-sm opacity-80 mb-1 m-0">Total Savings</p>
-              <h2 className="text-3xl font-bold mb-4 m-0">$12,450.00</h2>
+              <h2 className="text-3xl font-bold mb-4 m-0">
+                {loading ? '...' : `$${savingsBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+              </h2>
               <div className="flex justify-center gap-4 text-xs">
                 <div className="bg-white/10 px-3 py-1 rounded-full">
                   <span className="block font-bold">+12%</span>
@@ -85,68 +147,106 @@ const Savings = () => {
                 <button className="text-[#58761B] text-sm font-medium bg-transparent border-none cursor-pointer hover:underline">See All</button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Goal Card 1 */}
-                <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
-                      <span className="material-symbols-outlined">directions_car</span>
-                    </div>
-                    <span className="bg-blue-50 text-blue-600 text-xs font-bold px-2 py-1 rounded">75%</span>
-                  </div>
-                  <h4 className="font-bold text-[#1A3F22] mb-1 m-0">New Car</h4>
-                  <p className="text-xs text-gray-500 mb-3 m-0">Target: $20,000</p>
-                  <div className="w-full bg-gray-100 rounded-full h-2 mb-2">
-                    <div className="bg-blue-500 h-2 rounded-full" style={{ width: '75%' }}></div>
-                  </div>
-                  <p className="text-xs text-[#1A3F22] font-medium text-right m-0">$15,000 saved</p>
+              {loading ? (
+                <p className="text-center text-gray-500">Loading goals...</p>
+              ) : goals.length === 0 ? (
+                <div className="text-center p-8 bg-white rounded-xl border border-gray-100">
+                  <p className="text-gray-500 mb-4">No savings goals yet.</p>
+                  <Link to="/create-goal" className="bg-[#1A3F22] text-white px-6 py-2 rounded-full text-sm font-medium no-underline inline-block">Create Goal</Link>
                 </div>
-
-                {/* Goal Card 2 */}
-                <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center text-orange-600">
-                      <span className="material-symbols-outlined">flight_takeoff</span>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {goals.map((goal) => (
+                    <div key={goal.id} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
+                          <span className="material-symbols-outlined">{goal.icon || 'savings'}</span>
+                        </div>
+                        <span className="bg-blue-50 text-blue-600 text-xs font-bold px-2 py-1 rounded">
+                          {Math.round((goal.currentAmount / goal.targetAmount) * 100)}%
+                        </span>
+                      </div>
+                      <h4 className="font-bold text-[#1A3F22] mb-1 m-0">{goal.name}</h4>
+                      <p className="text-xs text-gray-500 mb-3 m-0">Target: ${goal.targetAmount.toLocaleString()}</p>
+                      <div className="w-full bg-gray-100 rounded-full h-2 mb-2">
+                        <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${Math.min((goal.currentAmount / goal.targetAmount) * 100, 100)}%` }}></div>
+                      </div>
+                      <p className="text-xs text-[#1A3F22] font-medium text-right m-0 mb-2">${goal.currentAmount.toLocaleString()} saved</p>
+                      <button
+                        onClick={() => { setSelectedGoal(goal); setShowContributeModal(true); }}
+                        className="w-full bg-[#E9F0E1] text-[#1A3F22] py-2 rounded-lg text-sm font-medium hover:bg-[#dce8d0] transition-colors border-none cursor-pointer"
+                      >
+                        Add Money
+                      </button>
                     </div>
-                    <span className="bg-orange-50 text-orange-600 text-xs font-bold px-2 py-1 rounded">30%</span>
-                  </div>
-                  <h4 className="font-bold text-[#1A3F22] mb-1 m-0">Europe Trip</h4>
-                  <p className="text-xs text-gray-500 mb-3 m-0">Target: $5,000</p>
-                  <div className="w-full bg-gray-100 rounded-full h-2 mb-2">
-                    <div className="bg-orange-500 h-2 rounded-full" style={{ width: '30%' }}></div>
-                  </div>
-                  <p className="text-xs text-[#1A3F22] font-medium text-right m-0">$1,500 saved</p>
+                  ))}
                 </div>
-              </div>
+              )}
             </section>
 
             {/* Recent Activity */}
             <section>
               <h3 className="font-bold text-[#1A3F22] text-lg mb-4 m-0">Recent Activity</h3>
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                {[
-                  { title: 'Auto-save Deposit', date: 'Today', amount: '+$50.00', icon: 'savings' },
-                  { title: 'Round-up from Starbucks', date: 'Yesterday', amount: '+$0.75', icon: 'monetization_on' },
-                  { title: 'Goal Reached Bonus', date: 'Oct 24', amount: '+$10.00', icon: 'emoji_events' },
-                ].map((item, i) => (
-                  <div key={i} className="p-4 flex items-center justify-between border-b border-gray-50 last:border-none hover:bg-gray-50 transition-colors">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-[#E9F0E1] rounded-full flex items-center justify-center text-[#1A3F22]">
-                        <span className="material-symbols-outlined text-xl">{item.icon}</span>
+                {loading ? (
+                  <p className="p-4 text-center text-gray-500">Loading activity...</p>
+                ) : transactions.length === 0 ? (
+                  <p className="p-4 text-center text-gray-500">No recent activity</p>
+                ) : (
+                  transactions.map((item) => (
+                    <div key={item.id} className="p-4 flex items-center justify-between border-b border-gray-50 last:border-none hover:bg-gray-50 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-[#E9F0E1] rounded-full flex items-center justify-center text-[#1A3F22]">
+                          <span className="material-symbols-outlined text-xl">
+                            {item.type === 'credit' ? 'arrow_downward' : 'arrow_upward'}
+                          </span>
+                        </div>
+                        <div>
+                          <p className="font-medium text-[#1A3F22] text-sm m-0">{item.description}</p>
+                          <p className="text-xs text-gray-500 m-0">{new Date(item.date).toLocaleDateString()}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium text-[#1A3F22] text-sm m-0">{item.title}</p>
-                        <p className="text-xs text-gray-500 m-0">{item.date}</p>
-                      </div>
+                      <span className={`font-bold text-sm ${item.type === 'credit' ? 'text-green-600' : 'text-red-600'}`}>
+                        {item.type === 'credit' ? '+' : '-'}${item.amount.toFixed(2)}
+                      </span>
                     </div>
-                    <span className="font-bold text-[#1A3F22] text-sm">{item.amount}</span>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </section>
           </div>
         </main>
       </div>
+
+      {/* Contribution Modal */}
+      {showContributeModal && selectedGoal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-[#1A3F22] m-0">Add to {selectedGoal.name}</h2>
+              <button onClick={() => { setShowContributeModal(false); setSelectedGoal(null); setContributionAmount(''); setError(''); setSuccess(''); }} className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer">
+                <span className="material-symbols-outlined text-2xl">close</span>
+              </button>
+            </div>
+            {success && (<div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4">{success}</div>)}
+            {error && (<div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">{error}</div>)}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Amount</label>
+              <input type="number" value={contributionAmount} onChange={(e) => setContributionAmount(e.target.value)} placeholder="Enter amount" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A3F22] focus:border-transparent" disabled={contributing} />
+            </div>
+            <div className="bg-gray-50 p-4 rounded-lg mb-4">
+              <div className="flex justify-between text-sm mb-2"><span className="text-gray-600">Current Saved:</span><span className="font-medium text-gray-900">${selectedGoal.currentAmount.toLocaleString()}</span></div>
+              <div className="flex justify-between text-sm mb-2"><span className="text-gray-600">Target:</span><span className="font-medium text-gray-900">${selectedGoal.targetAmount.toLocaleString()}</span></div>
+              {contributionAmount && parseFloat(contributionAmount) > 0 && (
+                <div className="flex justify-between text-sm pt-2 border-t border-gray-200"><span className="text-gray-600">New Total:</span><span className="font-bold text-[#1A3F22]">${(selectedGoal.currentAmount + parseFloat(contributionAmount)).toLocaleString()}</span></div>
+              )}
+            </div>
+            <button onClick={handleContribute} disabled={contributing || !contributionAmount || parseFloat(contributionAmount) <= 0} className="w-full bg-[#1A3F22] text-white px-6 py-3 rounded-full font-medium border-none cursor-pointer hover:bg-[#14301a] transition-colors shadow-md disabled:bg-gray-300 disabled:cursor-not-allowed">
+              {contributing ? 'Processing...' : 'Add Money'}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Bottom Navigation (Mobile Only) */}
       <div className="md:hidden">
