@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import BottomNav from './BottomNav';
+import { useAuth } from '../contexts/AuthContext';
+import { useDarkMode } from '../contexts/DarkModeContext';
 
 const SendMoney = () => {
   const navigate = useNavigate();
-  console.log('SendMoney component loaded!');
+  const { user } = useAuth();
+  const { isDarkMode } = useDarkMode();
   const [formData, setFormData] = useState({
     recipient: '',
     amount: '',
@@ -12,24 +16,30 @@ const SendMoney = () => {
     paymentMethod: 'wallet'
   });
   const [step, setStep] = useState(1); // 1: Recipient, 2: Amount, 3: Review
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const recentContacts = [
     {
       id: 1,
       name: 'Sarah Johnson',
       phone: '+1 (555) 123-4567',
+      email: 'sarah@example.com',
       avatar: 'SJ'
     },
     {
       id: 2,
       name: 'Mike Chen',
       phone: '+1 (555) 987-6543',
+      email: 'mike@example.com',
       avatar: 'MC'
     },
     {
       id: 3,
       name: 'Emily Davis',
       phone: '+1 (555) 456-7890',
+      email: 'emily@example.com',
       avatar: 'ED'
     }
   ];
@@ -41,9 +51,42 @@ const SendMoney = () => {
     });
   };
 
-  const handleSend = () => {
-    console.log('Money sent:', formData);
-    navigate('/home');
+  const handleSend = async () => {
+    setError('');
+    setSuccess('');
+
+    const numericAmount = parseFloat(formData.amount.replace(/[^0-9.]/g, ''));
+
+    if (!numericAmount || numericAmount <= 0) {
+      setError('Please enter a valid amount');
+      return;
+    }
+
+    if (!formData.recipient) {
+      setError('Please enter recipient email or phone');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await axios.post('/api/transactions/send-money', {
+        recipientEmail: formData.recipient,
+        amount: numericAmount,
+        note: formData.message || 'Money transfer'
+      });
+
+      setSuccess(`Successfully sent ${formatAmount(numericAmount.toString())}!`);
+
+      // Redirect to home after 2 seconds
+      setTimeout(() => {
+        navigate('/home');
+      }, 2000);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to send money. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const formatAmount = (value) => {
@@ -55,217 +98,167 @@ const SendMoney = () => {
     });
   };
 
-  return (
-    <div style={{ color: '#1A3F22' }}>
-      <div style={{
-        maxWidth: '384px',
-        margin: '0 auto',
-        backgroundColor: 'white',
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
-        {/* Header */}
-        <header style={{
-          backgroundColor: 'white',
-          position: 'sticky',
-          top: 0,
-          zIndex: 100,
-          padding: '16px 24px',
-          borderBottom: '1px solid #e5e7eb',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}>
-          <button
-            onClick={() => navigate('/home')}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              backgroundColor: '#f3f4f6'
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ color: '#1A3F22', fontSize: '20px' }}>
-              arrow_back
-            </span>
-          </button>
-          <h1 style={{
-            fontSize: '18px',
-            fontWeight: 'bold',
-            color: '#1A3F22',
-            margin: 0
-          }}>
-            Send Money
-          </h1>
-          <div style={{ width: '40px' }}></div>
-        </header>
+  const SidebarItem = ({ icon, label, active, onClick, path }) => (
+    <div
+      onClick={() => {
+        if (onClick) onClick();
+        if (path) navigate(path);
+      }}
+      className={`flex items-center space-x-3 p-3 rounded-xl cursor-pointer transition-all duration-200 ${active
+        ? 'bg-primary-50 text-primary-700'
+        : isDarkMode
+          ? 'text-gray-300 hover:bg-gray-800'
+          : 'text-gray-600 hover:bg-gray-50'
+        }`}
+    >
+      <span className="material-symbols-outlined">{icon}</span>
+      <span className="font-medium">{label}</span>
+    </div>
+  );
 
-        {/* Progress Steps */}
-        <div style={{
-          padding: '16px 24px',
-          borderBottom: '1px solid #e5e7eb',
-          backgroundColor: '#f9fafb'
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            {[1, 2, 3].map((stepNumber) => (
-              <div key={stepNumber} style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
-                <div style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '50%',
-                  backgroundColor: step >= stepNumber ? '#6f9c16' : '#e5e7eb',
-                  color: step >= stepNumber ? 'white' : '#9ca3af',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '14px',
-                  fontWeight: 'bold'
-                }}>
-                  {stepNumber}
-                </div>
-                {stepNumber < 3 && (
-                  <div style={{
-                    flex: 1,
-                    height: '2px',
-                    backgroundColor: step > stepNumber ? '#6f9c16' : '#e5e7eb',
-                    margin: '0 8px'
-                  }}></div>
-                )}
-              </div>
-            ))}
+  return (
+    <div className={`flex h-screen ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
+      {/* Desktop Sidebar */}
+      <aside className={`hidden md:flex flex-col w-64 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-r`}>
+        <div className="p-6">
+          <div className="flex items-center space-x-3 mb-8">
+            <div className="w-10 h-10 bg-primary-600 rounded-xl flex items-center justify-center">
+              <span className="material-symbols-outlined text-white text-xl">account_balance_wallet</span>
+            </div>
+            <h1 className="text-xl font-bold text-primary-600">KingdomPay</h1>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px' }}>
-            <span style={{ fontSize: '12px', color: step >= 1 ? '#6f9c16' : '#9ca3af' }}>Recipient</span>
-            <span style={{ fontSize: '12px', color: step >= 2 ? '#6f9c16' : '#9ca3af' }}>Amount</span>
-            <span style={{ fontSize: '12px', color: step >= 3 ? '#6f9c16' : '#9ca3af' }}>Review</span>
-          </div>
+
+          <nav className="space-y-2">
+            <SidebarItem icon="dashboard" label="Home" path="/home" />
+            <SidebarItem icon="send" label="Send Money" active={true} path="/send-money" />
+            <SidebarItem icon="request_quote" label="Request Money" path="/request-money" />
+            <SidebarItem icon="account_balance" label="Savings" path="/savings" />
+            <SidebarItem icon="receipt_long" label="Activity" path="/activity" />
+            <SidebarItem icon="person" label="Profile" path="/profile" />
+          </nav>
         </div>
 
-        {/* Main Content */}
-        <main style={{
-          flex: 1,
-          padding: '24px',
-          overflowY: 'auto',
-          paddingBottom: '100px'
-        }}>
-          
-          {/* Step 1: Recipient */}
-          {step === 1 && (
+        <div className={`mt-auto p-6 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold">
+              {user?.name?.[0] || 'U'}
+            </div>
             <div>
-              <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: '0 0 16px 0' }}>
-                Who do you want to send money to?
-              </h2>
-              
-              {/* Search Input */}
-              <div style={{ marginBottom: '24px' }}>
-                <input
-                  type="text"
-                  name="recipient"
-                  value={formData.recipient}
-                  onChange={handleChange}
-                  placeholder="Enter phone number, email, or name"
-                  style={{
-                    width: '100%',
-                    padding: '12px 16px',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '12px',
-                    fontSize: '16px',
-                    backgroundColor: '#f9fafb',
-                    outline: 'none',
-                    transition: 'border-color 0.3s ease'
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = '#6f9c16'}
-                  onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
-                />
-              </div>
+              <p className="font-medium">{user?.name || 'User'}</p>
+              <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{user?.email || 'user@example.com'}</p>
+            </div>
+          </div>
+        </div>
+      </aside>
 
-              {/* Recent Contacts */}
-              <div>
-                <h3 style={{ fontSize: '14px', fontWeight: '600', color: '#1A3F22', margin: '0 0 12px 0' }}>
-                  Recent Contacts
-                </h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  {recentContacts.map((contact) => (
-                    <div
-                      key={contact.id}
-                      onClick={() => {
-                        setFormData({ ...formData, recipient: contact.name });
-                        setStep(2);
-                      }}
-                      style={{
-                        backgroundColor: 'white',
-                        border: '1px solid #e5e7eb',
-                        borderRadius: '12px',
-                        padding: '16px',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.target.style.transform = 'translateY(-2px)';
-                        e.target.style.boxShadow = '0 8px 25px -5px rgba(0, 0, 0, 0.1)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.target.style.transform = 'translateY(0)';
-                        e.target.style.boxShadow = 'none';
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <div style={{
-                          width: '40px',
-                          height: '40px',
-                          borderRadius: '50%',
-                          backgroundColor: '#6f9c16',
-                          color: 'white',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: '14px',
-                          fontWeight: 'bold',
-                          marginRight: '12px'
-                        }}>
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col overflow-hidden">
+        {/* Header */}
+        <header className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-b p-4 flex items-center justify-between sticky top-0 z-10`}>
+          <div className="flex items-center">
+            <button
+              onClick={() => navigate('/home')}
+              className={`md:hidden mr-4 p-2 rounded-full ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+            >
+              <span className="material-symbols-outlined">arrow_back</span>
+            </button>
+            <h1 className="text-lg font-bold">Send Money</h1>
+          </div>
+          <div className="w-10 md:w-0"></div>
+        </header>
+
+        {/* Content Scroll Area */}
+        <div className="flex-1 overflow-y-auto p-4 md:p-8">
+          <div className="max-w-2xl mx-auto">
+
+            {/* Progress Steps */}
+            <div className={`mb-8 p-4 rounded-2xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
+              <div className="flex justify-between items-center">
+                {[1, 2, 3].map((stepNumber) => (
+                  <div key={stepNumber} className="flex items-center flex-1 last:flex-none">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors duration-300 ${step >= stepNumber
+                      ? 'bg-primary-600 text-white'
+                      : isDarkMode ? 'bg-gray-700 text-gray-400' : 'bg-gray-200 text-gray-400'
+                      }`}>
+                      {stepNumber}
+                    </div>
+                    {stepNumber < 3 && (
+                      <div className={`flex-1 h-0.5 mx-2 ${step > stepNumber
+                        ? 'bg-primary-600'
+                        : isDarkMode ? 'bg-gray-700' : 'bg-gray-200'
+                        }`}></div>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <div className="flex justify-between mt-2 text-xs font-medium">
+                <span className={step >= 1 ? 'text-primary-600' : 'text-gray-400'}>Recipient</span>
+                <span className={`text-center ${step >= 2 ? 'text-primary-600' : 'text-gray-400'}`}>Amount</span>
+                <span className={`text-right ${step >= 3 ? 'text-primary-600' : 'text-gray-400'}`}>Review</span>
+              </div>
+            </div>
+
+            {/* Step 1: Recipient */}
+            {step === 1 && (
+              <div className="space-y-6">
+                <h2 className="text-xl font-semibold">Who do you want to send money to?</h2>
+
+                {/* Search Input */}
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 transform -translate-y-1/2 material-symbols-outlined text-gray-400">search</span>
+                  <input
+                    type="text"
+                    name="recipient"
+                    value={formData.recipient}
+                    onChange={handleChange}
+                    placeholder="Enter phone number, email, or name"
+                    className={`w-full pl-12 pr-4 py-3 rounded-xl border-2 outline-none transition-colors ${isDarkMode
+                      ? 'bg-gray-800 border-gray-700 focus:border-primary-500 text-white'
+                      : 'bg-gray-50 border-gray-200 focus:border-primary-500 text-gray-900'
+                      }`}
+                  />
+                </div>
+
+                {/* Recent Contacts */}
+                <div>
+                  <h3 className="text-sm font-semibold mb-3 text-gray-500">Recent Contacts</h3>
+                  <div className="space-y-3">
+                    {recentContacts.map((contact) => (
+                      <div
+                        key={contact.id}
+                        onClick={() => {
+                          setFormData({ ...formData, recipient: contact.name });
+                          setStep(2);
+                        }}
+                        className={`flex items-center p-4 rounded-xl border cursor-pointer transition-all hover:shadow-md ${isDarkMode
+                          ? 'bg-gray-800 border-gray-700 hover:border-primary-500'
+                          : 'bg-white border-gray-200 hover:border-primary-500'
+                          }`}
+                      >
+                        <div className="w-10 h-10 rounded-full bg-primary-600 text-white flex items-center justify-center font-bold mr-3">
                           {contact.avatar}
                         </div>
                         <div>
-                          <h4 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: 0 }}>
-                            {contact.name}
-                          </h4>
-                          <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
-                            {contact.phone}
-                          </p>
+                          <h4 className="font-semibold">{contact.name}</h4>
+                          <p className="text-sm text-gray-500">{contact.phone}</p>
                         </div>
+                        <span className="material-symbols-outlined ml-auto text-gray-400">chevron_right</span>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Step 2: Amount */}
-          {step === 2 && (
-            <div>
-              <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: '0 0 16px 0' }}>
-                How much do you want to send?
-              </h2>
-              
-              {/* Amount Input */}
-              <div style={{ marginBottom: '24px' }}>
-                <div style={{
-                  backgroundColor: '#f9fafb',
-                  borderRadius: '16px',
-                  padding: '24px',
-                  textAlign: 'center',
-                  border: '2px solid #e5e7eb'
-                }}>
-                  <p style={{ fontSize: '14px', color: '#6b7280', margin: '0 0 8px 0' }}>Amount</p>
+            {/* Step 2: Amount */}
+            {step === 2 && (
+              <div className="space-y-6">
+                <h2 className="text-xl font-semibold">How much do you want to send?</h2>
+
+                {/* Amount Input */}
+                <div className={`p-6 rounded-2xl text-center border-2 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'
+                  }`}>
+                  <p className="text-sm text-gray-500 mb-2">Amount</p>
                   <input
                     type="text"
                     name="amount"
@@ -275,181 +268,108 @@ const SendMoney = () => {
                       setFormData({ ...formData, amount: formatted });
                     }}
                     placeholder="$0.00"
-                    style={{
-                      fontSize: '32px',
-                      fontWeight: 'bold',
-                      color: '#1A3F22',
-                      border: 'none',
-                      backgroundColor: 'transparent',
-                      textAlign: 'center',
-                      outline: 'none',
-                      width: '100%'
-                    }}
+                    className={`text-4xl font-bold text-center bg-transparent border-none outline-none w-full ${isDarkMode ? 'text-white' : 'text-gray-900'
+                      }`}
+                  />
+                </div>
+
+                {/* Quick Amount Buttons */}
+                <div>
+                  <h3 className="text-sm font-semibold mb-3 text-gray-500">Quick Amounts</h3>
+                  <div className="grid grid-cols-3 gap-3">
+                    {[10, 25, 50, 100, 200, 500].map((amount) => (
+                      <button
+                        key={amount}
+                        onClick={() => setFormData({ ...formData, amount: `$${amount}.00` })}
+                        className={`p-4 rounded-xl border font-semibold transition-all ${isDarkMode
+                          ? 'bg-gray-800 border-gray-700 hover:bg-primary-600 hover:border-primary-600 text-white'
+                          : 'bg-white border-gray-200 hover:bg-primary-600 hover:border-primary-600 hover:text-white text-gray-900'
+                          }`}
+                      >
+                        ${amount}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Message */}
+                <div>
+                  <label className="block text-sm font-medium mb-2">Message (Optional)</label>
+                  <textarea
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    placeholder="Add a note..."
+                    rows={3}
+                    className={`w-full p-3 rounded-xl border-2 outline-none transition-colors resize-none ${isDarkMode
+                      ? 'bg-gray-800 border-gray-700 focus:border-primary-500 text-white'
+                      : 'bg-gray-50 border-gray-200 focus:border-primary-500 text-gray-900'
+                      }`}
                   />
                 </div>
               </div>
+            )}
 
-              {/* Quick Amount Buttons */}
-              <div style={{ marginBottom: '24px' }}>
-                <h3 style={{ fontSize: '14px', fontWeight: '600', color: '#1A3F22', margin: '0 0 12px 0' }}>
-                  Quick Amounts
-                </h3>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
-                  {[10, 25, 50, 100, 200, 500].map((amount) => (
-                    <button
-                      key={amount}
-                      onClick={() => setFormData({ ...formData, amount: `$${amount}.00` })}
-                      style={{
-                        backgroundColor: 'white',
-                        border: '1px solid #e5e7eb',
-                        borderRadius: '12px',
-                        padding: '16px',
-                        fontSize: '16px',
-                        fontWeight: '600',
-                        color: '#1A3F22',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.target.style.backgroundColor = '#6f9c16';
-                        e.target.style.color = 'white';
-                        e.target.style.borderColor = '#6f9c16';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.target.style.backgroundColor = 'white';
-                        e.target.style.color = '#1A3F22';
-                        e.target.style.borderColor = '#e5e7eb';
-                      }}
-                    >
-                      ${amount}
-                    </button>
-                  ))}
-                </div>
-              </div>
+            {/* Step 3: Review */}
+            {step === 3 && (
+              <div className="space-y-6">
+                <h2 className="text-xl font-semibold">Review your payment</h2>
 
-              {/* Message */}
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  color: '#1A3F22',
-                  marginBottom: '8px'
-                }}>
-                  Message (Optional)
-                </label>
-                <textarea
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  placeholder="Add a note..."
-                  rows={3}
-                  style={{
-                    width: '100%',
-                    padding: '12px 16px',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '12px',
-                    fontSize: '16px',
-                    backgroundColor: '#f9fafb',
-                    outline: 'none',
-                    resize: 'none',
-                    transition: 'border-color 0.3s ease'
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = '#6f9c16'}
-                  onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Step 3: Review */}
-          {step === 3 && (
-            <div>
-              <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: '0 0 16px 0' }}>
-                Review your payment
-              </h2>
-              
-              <div style={{
-                backgroundColor: '#f9fafb',
-                borderRadius: '16px',
-                padding: '20px',
-                border: '1px solid #e5e7eb',
-                marginBottom: '24px'
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                  <span style={{ fontSize: '14px', color: '#6b7280' }}>To</span>
-                  <span style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22' }}>{formData.recipient}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                  <span style={{ fontSize: '14px', color: '#6b7280' }}>Amount</span>
-                  <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#6f9c16' }}>{formData.amount}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                  <span style={{ fontSize: '14px', color: '#6b7280' }}>Fee</span>
-                  <span style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22' }}>Free</span>
-                </div>
-                {formData.message && (
-                  <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: '16px' }}>
-                    <span style={{ fontSize: '14px', color: '#6b7280' }}>Message</span>
-                    <p style={{ fontSize: '14px', color: '#1A3F22', margin: '4px 0 0 0' }}>{formData.message}</p>
+                <div className={`p-6 rounded-2xl border ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'
+                  }`}>
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="text-gray-500">To</span>
+                    <span className="font-semibold">{formData.recipient}</span>
                   </div>
-                )}
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="text-gray-500">Amount</span>
+                    <span className="text-2xl font-bold text-primary-600">{formData.amount}</span>
+                  </div>
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="text-gray-500">Fee</span>
+                    <span className="font-semibold text-green-600">Free</span>
+                  </div>
+                  {formData.message && (
+                    <div className={`pt-4 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                      <span className="text-gray-500 text-sm">Message</span>
+                      <p className="mt-1">{formData.message}</p>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
-        </main>
+            )}
 
-        {/* Footer Actions */}
-        <div style={{
-          padding: '16px 24px',
-          borderTop: '1px solid #e5e7eb',
-          backgroundColor: 'white'
-        }}>
-          {step < 3 ? (
-            <button
-              onClick={() => setStep(step + 1)}
-              disabled={!formData.recipient || (step === 2 && !formData.amount)}
-              style={{
-                width: '100%',
-                backgroundColor: (!formData.recipient || (step === 2 && !formData.amount)) ? '#d1d5db' : '#6f9c16',
-                color: 'white',
-                border: 'none',
-                borderRadius: '12px',
-                padding: '16px',
-                fontSize: '16px',
-                fontWeight: '600',
-                cursor: (!formData.recipient || (step === 2 && !formData.amount)) ? 'not-allowed' : 'pointer',
-                transition: 'background-color 0.3s ease'
-              }}
-            >
-              Continue
-            </button>
-          ) : (
-            <button
-              onClick={handleSend}
-              style={{
-                width: '100%',
-                backgroundColor: '#6f9c16',
-                color: 'white',
-                border: 'none',
-                borderRadius: '12px',
-                padding: '16px',
-                fontSize: '16px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                transition: 'background-color 0.3s ease'
-              }}
-              onMouseEnter={(e) => e.target.style.backgroundColor = '#5a7a12'}
-              onMouseLeave={(e) => e.target.style.backgroundColor = '#6f9c16'}
-            >
-              Send Money
-            </button>
-          )}
+            {/* Action Buttons */}
+            <div className="mt-8">
+              {step < 3 ? (
+                <button
+                  onClick={() => setStep(step + 1)}
+                  disabled={!formData.recipient || (step === 2 && !formData.amount)}
+                  className={`w-full py-4 rounded-xl font-bold text-white transition-colors ${(!formData.recipient || (step === 2 && !formData.amount))
+                    ? 'bg-gray-300 cursor-not-allowed'
+                    : 'bg-primary-600 hover:bg-primary-700 shadow-lg shadow-primary-600/30'
+                    }`}
+                >
+                  Continue
+                </button>
+              ) : (
+                <button
+                  onClick={handleSend}
+                  className="w-full py-4 rounded-xl font-bold text-white bg-primary-600 hover:bg-primary-700 shadow-lg shadow-primary-600/30 transition-colors"
+                >
+                  Send Money
+                </button>
+              )}
+            </div>
+
+          </div>
         </div>
 
-        {/* Bottom Navigation */}
-        <BottomNav />
-      </div>
+        {/* Bottom Navigation (Mobile Only) */}
+        <div className="md:hidden">
+          <BottomNav />
+        </div>
+      </main>
     </div>
   );
 };

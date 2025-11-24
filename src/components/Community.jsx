@@ -1,296 +1,234 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import BottomNav from './BottomNav';
 
 const Community = () => {
-  const { user } = useAuth();
-  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('feed');
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [hoveredCard, setHoveredCard] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
+  // Contribution modal state
+  const [showContributeModal, setShowContributeModal] = useState(false);
+  const [selectedGroup, setSelectedGroup] = useState(null);
+  const [contributionAmount, setContributionAmount] = useState('');
+  const [contributing, setContributing] = useState(false);
+
+  // Fetch groups (used on mount and after contributions)
+  const fetchGroups = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get('/api/community/groups');
+      setGroups(response.data);
+    } catch (err) {
+      console.error('Error fetching groups:', err);
+      setError('Failed to load groups');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Initial load
   useEffect(() => {
-    const fetchGroups = async () => {
-      try {
-        const response = await axios.get('/api/community/groups');
-        setGroups(response.data);
-      } catch (error) {
-        console.error('Error fetching community groups:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchGroups();
   }, []);
 
-  const getGroupIcon = (type) => {
-    const iconMap = {
-      church: 'church',
-      family: 'cottage',
-      sacco: 'work',
-    };
-    
-    return iconMap[type] || 'groups';
+  // Open contribution modal
+  const openContributeModal = (group) => {
+    setSelectedGroup(group);
+    setShowContributeModal(true);
+    setError('');
+    setSuccess('');
+    setContributionAmount('');
   };
 
-  const getGroupGradient = (type) => {
-    const gradientMap = {
-      church: 'linear-gradient(135deg, #1A3F22, #58761B)',
-      family: 'linear-gradient(135deg, #58761B, #D99201)',
-      sacco: 'linear-gradient(135deg, #D99201, #905A01)',
-    };
-    
-    return gradientMap[type] || 'linear-gradient(135deg, #1A3F22, #58761B)';
+  // Handle contribution
+  const handleContribute = async () => {
+    if (!contributionAmount || parseFloat(contributionAmount) <= 0) {
+      setError('Please enter a valid amount');
+      return;
+    }
+    setContributing(true);
+    setError('');
+    try {
+      const response = await axios.post(`/api/community/groups/${selectedGroup.id}/contribute`, {
+        amount: parseFloat(contributionAmount)
+      });
+      setSuccess(`Successfully contributed $${contributionAmount} to ${selectedGroup.name}!`);
+      // Refresh groups to get updated balances
+      await fetchGroups();
+      // Update selectedGroup balance for modal display
+      setSelectedGroup(prev => ({
+        ...prev,
+        balance: response.data.groupBalance
+      }));
+      // Close modal after short delay
+      setTimeout(() => {
+        setShowContributeModal(false);
+        setSelectedGroup(null);
+        setContributionAmount('');
+        setSuccess('');
+      }, 2000);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to contribute. Please try again.');
+    } finally {
+      setContributing(false);
+    }
+  };
+
+  const getGroupIcon = (type) => {
+    switch (type) {
+      case 'church': return 'church';
+      case 'family': return 'family_restroom';
+      case 'sacco': return 'account_balance';
+      default: return 'groups';
+    }
+  };
+
+  const getGroupColor = (type) => {
+    switch (type) {
+      case 'church': return 'bg-purple-100 text-purple-600';
+      case 'family': return 'bg-green-100 text-green-600';
+      case 'sacco': return 'bg-blue-100 text-blue-600';
+      default: return 'bg-gray-100 text-gray-600';
+    }
   };
 
   return (
-    <div style={{ backgroundColor: '#1A3F22' }}>
-      <div style={{
-        maxWidth: '384px',
-        margin: '0 auto',
-        backgroundColor: '#F7F7F7',
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
-        {/* Fixed Header */}
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          maxWidth: '384px',
-          margin: '0 auto',
-          zIndex: 10
-        }}>
-          <div style={{
-            background: 'rgba(26, 63, 34, 0.7)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            padding: '48px 24px 20px 24px',
-            borderBottom: '1px solid rgba(217, 146, 1, 0.2)'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Link to="/home" style={{ color: '#D99201', opacity: 0.8, transition: 'opacity 0.3s', textDecoration: 'none' }}>
-                <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>arrow_back_ios_new</span>
+    <div className="min-h-screen bg-[#F7F7F7] font-sans flex justify-center">
+      <style>{`\n        @keyframes fadeInUp {\n          from { opacity: 0; transform: translateY(30px); }\n          to { opacity: 1; transform: translateY(0); }\n        }\n        .animate-fade-in-up { animation: fadeInUp 0.6s ease-out forwards; }\n      `}</style>
+
+      <div className="w-full max-w-md md:max-w-6xl bg-white md:my-8 md:rounded-3xl md:shadow-2xl min-h-screen md:min-h-[800px] flex flex-col md:flex-row overflow-hidden relative">
+        {/* Sidebar / Mobile Header */}
+        <div className="md:w-1/3 lg:w-1/4 bg-white md:border-r md:border-gray-100 flex flex-col">
+          <header className="sticky top-0 z-10 p-4 bg-white md:bg-transparent">
+            <div className="flex justify-between items-center">
+              <Link to="/home" className="text-[#1A3F22] opacity-80 hover:opacity-100 transition-opacity no-underline">
+                <span className="material-symbols-outlined text-2xl">arrow_back_ios</span>
               </Link>
-              <h1 style={{
-                fontSize: '20px',
-                fontWeight: 'bold',
-                color: 'white',
-                textAlign: 'center',
-                margin: 0
-              }}>Community Wallets</h1>
-              <button 
-                onClick={() => navigate('/create-group')}
-                style={{ color: '#D99201', opacity: 0.8, transition: 'opacity 0.3s', background: 'none', border: 'none', cursor: 'pointer' }}
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>add</span>
+              <h1 className="text-xl font-bold text-[#1A3F22] m-0">Community</h1>
+              <div className="w-10 h-10 bg-[#E9F0E1] rounded-full flex items-center justify-center cursor-pointer hover:bg-[#dce8d0] transition-colors">
+                <span className="material-symbols-outlined text-[#1A3F22] text-xl">search</span>
+              </div>
+            </div>
+          </header>
+
+          <div className="p-4">
+            <div className="flex md:flex-col bg-gray-100 p-1 rounded-xl">
+              {['feed', 'groups', 'events'].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all duration-300 capitalize border-none cursor-pointer ${activeTab === tab ? 'bg-white text-[#1A3F22] shadow-sm' : 'text-gray-500 hover:text-[#1A3F22]'}`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="hidden md:block p-4 mt-auto">
+            <nav className="space-y-2">
+              <Link to="/home" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">home</span> Home
+              </Link>
+              <Link to="/profile" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">person</span> Profile
+              </Link>
+            </nav>
+          </div>
+        </div>
+
+        {/* Main Content Area */}
+        <main className="flex-grow p-4 pb-28 md:pb-8 overflow-y-auto bg-gray-50 md:bg-white">
+          {/* Feed */}
+          {activeTab === 'feed' && (
+            <div className="space-y-6 max-w-2xl mx-auto animate-fade-in-up">
+              <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                <p className="text-gray-500 text-center">Community feed coming soon...</p>
+              </div>
+            </div>
+          )}
+
+          {/* Groups */}
+          {activeTab === 'groups' && (
+            <div className="space-y-4 max-w-2xl mx-auto animate-fade-in-up">
+              {loading ? (
+                <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 text-center"><p className="text-gray-500">Loading groups...</p></div>
+              ) : error && groups.length === 0 ? (
+                <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 text-center"><p className="text-red-500">{error}</p></div>
+              ) : groups.length === 0 ? (
+                <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 text-center"><p className="text-gray-500">No groups found</p></div>
+              ) : (
+                groups.map((group) => (
+                  <div key={group.id} className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+                    <div className="flex items-start gap-4">
+                      <div className={`w-14 h-14 rounded-xl flex items-center justify-center ${getGroupColor(group.type)}`}>
+                        <span className="material-symbols-outlined text-2xl">{getGroupIcon(group.type)}</span>
+                      </div>
+                      <div className="flex-grow">
+                        <div className="flex items-start justify-between mb-2">
+                          <div>
+                            <h3 className="font-bold text-[#1A3F22] text-lg m-0">{group.name}</h3>
+                            <p className="text-xs text-gray-500 m-0 capitalize">{group.type} • {group.members?.length || 0} members</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-xs text-gray-500 m-0">Balance</p>
+                            <p className="text-xl font-bold text-[#1A3F22] m-0">${group.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                          </div>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-3">{group.description}</p>
+                        <button onClick={() => openContributeModal(group)} className="bg-[#1A3F22] text-white px-6 py-2 rounded-full text-sm font-medium border-none cursor-pointer hover:bg-[#14301a] transition-colors shadow-sm">Contribute</button>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+
+          {/* Events */}
+          {activeTab === 'events' && (
+            <div className="space-y-4 max-w-2xl mx-auto animate-fade-in-up">
+              <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100"><p className="text-gray-500 text-center">Events coming soon...</p></div>
+            </div>
+          )}
+        </main>
+      </div>
+
+      {/* Contribution Modal */}
+      {showContributeModal && selectedGroup && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-[#1A3F22] m-0">Contribute to {selectedGroup.name}</h2>
+              <button onClick={() => { setShowContributeModal(false); setSelectedGroup(null); setContributionAmount(''); setError(''); setSuccess(''); }} className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer">
+                <span className="material-symbols-outlined text-2xl">close</span>
               </button>
             </div>
-          </div>
-        </div>
-        
-        {/* Main Content */}
-        <div style={{
-          flexGrow: 1,
-          paddingTop: '128px',
-          overflowY: 'auto'
-        }}>
-          <div style={{ padding: '0 24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            {loading ? (
-              <div style={{ textAlign: 'center', padding: '32px' }}>
-                <div style={{
-                  animation: 'spin 1s linear infinite',
-                  borderRadius: '12px',
-                  height: '32px',
-                  width: '32px',
-                  borderBottom: '2px solid #D99201',
-                  margin: '0 auto'
-                }}></div>
-                <p style={{ color: 'white', marginTop: '8px', margin: '8px 0 0 0' }}>Loading groups...</p>
-              </div>
-            ) : groups.length > 0 ? (
-              groups.map((group, index) => (
-                <div 
-                  key={index} 
-                  style={{
-                    background: getGroupGradient(group.type),
-                    padding: '20px',
-                    borderRadius: '16px',
-                    boxShadow: hoveredCard === `group-${index}` ? '0 20px 40px -8px rgba(0, 0, 0, 0.3)' : '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-                    color: 'white',
-                    transform: hoveredCard === `group-${index}` ? 'translateY(-4px) scale(1.02)' : 'translateY(0) scale(1)',
-                    transition: 'all 0.3s ease',
-                    cursor: 'pointer'
-                  }}
-                  onMouseEnter={() => setHoveredCard(`group-${index}`)}
-                  onMouseLeave={() => setHoveredCard('')}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <div>
-                      <h2 style={{ fontSize: '20px', fontWeight: 'bold', margin: 0 }}>{group.name}</h2>
-                      <p style={{ fontSize: '14px', opacity: 0.8, margin: '4px 0 0 0' }}>{group.description}</p>
-                    </div>
-                    <span className="material-symbols-outlined" style={{ fontSize: '24px', opacity: 0.9 }}>
-                      {getGroupIcon(group.type)}
-                    </span>
-                  </div>
-                  
-                  <div style={{ marginTop: '16px' }}>
-                    <p style={{ fontSize: '14px', opacity: 0.8, margin: 0 }}>Group Balance</p>
-                    <p style={{ fontSize: '24px', fontWeight: 'bold', marginTop: '4px', margin: '4px 0 0 0' }}>
-                      ${group.balance?.toFixed(2) || '0.00'}
-                    </p>
-                  </div>
-                  
-                  <div style={{ display: 'flex', alignItems: 'center', marginTop: '16px', fontSize: '14px', opacity: 0.8 }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: '16px', marginRight: '4px' }}>groups</span>
-                    <span>{group.members?.length || 0} Members</span>
-                  </div>
-                  
-                  <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'space-between', gap: '8px' }}>
-                    <button 
-                      onClick={() => navigate('/quick-save')}
-                      style={{
-                        flex: 1,
-                        backgroundColor: '#D99201',
-                        color: '#1A3F22',
-                        fontWeight: 'bold',
-                        padding: '8px 12px',
-                        borderRadius: '12px',
-                        fontSize: '14px',
-                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                        border: 'none',
-                        cursor: 'pointer',
-                        transition: 'opacity 0.2s'
-                      }}
-                    >Contribute</button>
-                    
-                    <button 
-                      onClick={() => navigate('/send-money')}
-                      style={{
-                        flex: 1,
-                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                        color: 'white',
-                        fontWeight: 'bold',
-                        padding: '8px 12px',
-                        borderRadius: '12px',
-                        fontSize: '14px',
-                        border: 'none',
-                        cursor: 'pointer',
-                        transition: 'background-color 0.2s'
-                      }}
-                    >Withdraw</button>
-                    
-                    {(group.type === 'church' || group.type === 'sacco') && (
-                      <button 
-                        onClick={() => navigate('/request-money')}
-                        style={{
-                          flex: 1,
-                          backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                          color: 'white',
-                          fontWeight: 'bold',
-                          padding: '8px 12px',
-                          borderRadius: '12px',
-                          fontSize: '14px',
-                          border: 'none',
-                          cursor: 'pointer',
-                          transition: 'background-color 0.2s'
-                        }}
-                      >Fundraise</button>
-                    )}
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div style={{ textAlign: 'center', padding: '32px' }}>
-                <p style={{ color: 'white', margin: 0 }}>No community groups yet</p>
-              </div>
-            )}
-          </div>
-          
-          {/* Announcements Section */}
-          <div style={{ padding: '0 24px', marginTop: '32px' }}>
-            <h2 style={{
-              fontSize: '20px',
-              fontWeight: 'bold',
-              color: '#1f2937',
-              marginBottom: '16px',
-              margin: '0 0 16px 0'
-            }}>Announcements & Updates</h2>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{
-                backgroundColor: 'white',
-                padding: '16px',
-                borderRadius: '16px',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                border: '1px solid #f3f4f6'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start' }}>
-                  <div style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '12px',
-                    backgroundColor: '#dcfce7',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginRight: '16px'
-                  }}>
-                    <span className="material-symbols-outlined" style={{ color: '#1A3F22', fontSize: '20px' }}>campaign</span>
-                  </div>
-                  <div>
-                    <p style={{ fontWeight: '500', color: '#1A3F22', margin: 0 }}>Church Fundraiser Update</p>
-                    <p style={{ fontSize: '14px', color: '#6b7280', marginTop: '4px', margin: '4px 0 0 0' }}>
-                      We've reached 75% of our goal for the new community hall! Thank you for your generous contributions.
-                    </p>
-                    <p style={{ fontSize: '12px', color: '#9ca3af', marginTop: '8px', margin: '8px 0 0 0' }}>2 hours ago</p>
-                  </div>
-                </div>
-              </div>
-              
-              <div style={{
-                backgroundColor: 'white',
-                padding: '16px',
-                borderRadius: '16px',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                border: '1px solid #f3f4f6'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start' }}>
-                  <div style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '12px',
-                    backgroundColor: '#fef3c7',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginRight: '16px'
-                  }}>
-                    <span className="material-symbols-outlined" style={{ color: '#905A01', fontSize: '20px' }}>event</span>
-                  </div>
-                  <div>
-                    <p style={{ fontWeight: '500', color: '#1A3F22', margin: 0 }}>Family Vacation Plan</p>
-                    <p style={{ fontSize: '14px', color: '#6b7280', marginTop: '4px', margin: '4px 0 0 0' }}>
-                      Reminder: Please vote on the destination for our family trip by this Friday. Check the group chat for the poll.
-                    </p>
-                    <p style={{ fontSize: '12px', color: '#9ca3af', marginTop: '8px', margin: '8px 0 0 0' }}>Yesterday</p>
-                  </div>
-                </div>
-              </div>
+            {success && (<div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4">{success}</div>)}
+            {error && (<div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">{error}</div>)}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Amount</label>
+              <input type="number" value={contributionAmount} onChange={(e) => setContributionAmount(e.target.value)} placeholder="Enter amount" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A3F22] focus:border-transparent" disabled={contributing} />
             </div>
+            <div className="bg-gray-50 p-4 rounded-lg mb-4">
+              <div className="flex justify-between text-sm mb-2"><span className="text-gray-600">Current Balance:</span><span className="font-medium text-gray-900">${selectedGroup.balance.toFixed(2)}</span></div>
+              {contributionAmount && parseFloat(contributionAmount) > 0 && (
+                <div className="flex justify-between text-sm"><span className="text-gray-600">New Balance:</span><span className="font-bold text-[#1A3F22]">${(selectedGroup.balance + parseFloat(contributionAmount)).toFixed(2)}</span></div>
+              )}
+            </div>
+            <button onClick={handleContribute} disabled={contributing || !contributionAmount || parseFloat(contributionAmount) <= 0} className="w-full bg-[#1A3F22] text-white px-6 py-3 rounded-full font-medium border-none cursor-pointer hover:bg-[#14301a] transition-colors shadow-md disabled:bg-gray-300 disabled:cursor-not-allowed">
+              {contributing ? 'Contributing...' : 'Contribute'}
+            </button>
           </div>
         </div>
-        
-        {/* Bottom Navigation */}
-        <BottomNav />
-      </div>
+      )}
+
+      {/* Bottom Nav for mobile */}
+      <div className="md:hidden"><BottomNav /></div>
     </div>
   );
 };

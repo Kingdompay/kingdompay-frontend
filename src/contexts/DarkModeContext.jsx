@@ -12,15 +12,14 @@ export const useDarkMode = () => {
 
 export const DarkModeProvider = ({ children }) => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
-    // Check localStorage first, then default to false
-    const saved = localStorage.getItem('kingdompay-dark-mode');
-    return saved ? JSON.parse(saved) : false;
+    // Always use light mode for now
+    return false;
   });
 
   useEffect(() => {
     // Save to localStorage whenever dark mode changes
     localStorage.setItem('kingdompay-dark-mode', JSON.stringify(isDarkMode));
-    
+
     // Apply dark mode class to document
     if (isDarkMode) {
       document.documentElement.classList.add('dark-mode');

@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BottomNav from './BottomNav';
+import { useAuth } from '../contexts/AuthContext';
+import { useDarkMode } from '../contexts/DarkModeContext';
 
 const Cards = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { isDarkMode } = useDarkMode();
   const [cards] = useState([
     {
       id: 1,
@@ -25,351 +29,203 @@ const Cards = () => {
     }
   ]);
 
+  const SidebarItem = ({ icon, label, active, onClick, path }) => (
+    <div
+      onClick={() => {
+        if (onClick) onClick();
+        if (path) navigate(path);
+      }}
+      className={`flex items-center space-x-3 p-3 rounded-xl cursor-pointer transition-all duration-200 ${active
+        ? 'bg-primary-50 text-primary-700'
+        : isDarkMode
+          ? 'text-gray-300 hover:bg-gray-800'
+          : 'text-gray-600 hover:bg-gray-50'
+        }`}
+    >
+      <span className="material-symbols-outlined">{icon}</span>
+      <span className="font-medium">{label}</span>
+    </div>
+  );
+
   return (
-    <div style={{ color: '#1A3F22' }}>
-      <div style={{
-        maxWidth: '384px',
-        margin: '0 auto',
-        backgroundColor: 'white',
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
+    <div className={`flex h-screen ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
+      {/* Desktop Sidebar */}
+      <aside className={`hidden md:flex flex-col w-64 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-r`}>
+        <div className="p-6">
+          <div className="flex items-center space-x-3 mb-8">
+            <div className="w-10 h-10 bg-primary-600 rounded-xl flex items-center justify-center">
+              <span className="material-symbols-outlined text-white text-xl">account_balance_wallet</span>
+            </div>
+            <h1 className="text-xl font-bold text-primary-600">KingdomPay</h1>
+          </div>
+
+          <nav className="space-y-2">
+            <SidebarItem icon="dashboard" label="Home" path="/home" />
+            <SidebarItem icon="send" label="Send Money" path="/send-money" />
+            <SidebarItem icon="request_quote" label="Request Money" path="/request-money" />
+            <SidebarItem icon="account_balance" label="Savings" path="/savings" />
+            <SidebarItem icon="receipt_long" label="Activity" path="/activity" />
+            <SidebarItem icon="credit_card" label="Cards" active={true} path="/cards" />
+            <SidebarItem icon="person" label="Profile" path="/profile" />
+          </nav>
+        </div>
+
+        <div className={`mt-auto p-6 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold">
+              {user?.name?.[0] || 'U'}
+            </div>
+            <div>
+              <p className="font-medium">{user?.name || 'User'}</p>
+              <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{user?.email || 'user@example.com'}</p>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header style={{
-          backgroundColor: 'white',
-          position: 'sticky',
-          top: 0,
-          zIndex: 100,
-          padding: '16px 24px',
-          borderBottom: '1px solid #e5e7eb',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}>
-          <button
-            onClick={() => navigate('/profile')}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              backgroundColor: '#f3f4f6'
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ color: '#1A3F22', fontSize: '20px' }}>
-              arrow_back
-            </span>
-          </button>
-          <h1 style={{
-            fontSize: '18px',
-            fontWeight: 'bold',
-            color: '#1A3F22',
-            margin: 0
-          }}>
-            Cards
-          </h1>
+        <header className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-b p-4 flex items-center justify-between sticky top-0 z-10`}>
+          <div className="flex items-center">
+            <button
+              onClick={() => navigate('/profile')}
+              className={`md:hidden mr-4 p-2 rounded-full ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+            >
+              <span className="material-symbols-outlined">arrow_back</span>
+            </button>
+            <h1 className="text-lg font-bold">Cards</h1>
+          </div>
           <button
             onClick={() => console.log('Add new card')}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              backgroundColor: '#f3f4f6'
-            }}
+            className={`p-2 rounded-full ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
           >
-            <span className="material-symbols-outlined" style={{ color: '#1A3F22', fontSize: '20px' }}>
-              add
-            </span>
+            <span className="material-symbols-outlined">add</span>
           </button>
         </header>
 
-        {/* Main Content */}
-        <main style={{
-          flex: 1,
-          padding: '24px',
-          overflowY: 'auto',
-          paddingBottom: '100px'
-        }}>
-          
-          {/* Add New Card Button */}
-          <div style={{ marginBottom: '24px' }}>
-            <button
-              onClick={() => console.log('Add new card')}
-              style={{
-                width: '100%',
-                backgroundColor: '#6f9c16',
-                color: 'white',
-                border: 'none',
-                borderRadius: '16px',
-                padding: '16px',
-                fontSize: '16px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                transition: 'background-color 0.3s ease'
-              }}
-              onMouseEnter={(e) => e.target.style.backgroundColor = '#5a7a12'}
-              onMouseLeave={(e) => e.target.style.backgroundColor = '#6f9c16'}
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
-                add
-              </span>
-              Add New Card
-            </button>
-          </div>
+        {/* Content Scroll Area */}
+        <div className="flex-1 overflow-y-auto p-4 md:p-8">
+          <div className="max-w-4xl mx-auto">
 
-          {/* Cards List */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {cards.map((card) => (
-              <div
-                key={card.id}
-                style={{
-                  background: card.gradient,
-                  borderRadius: '16px',
-                  padding: '20px',
-                  color: 'white',
-                  position: 'relative',
-                  overflow: 'hidden',
-                  cursor: 'pointer',
-                  transition: 'transform 0.3s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.transform = 'translateY(-4px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.transform = 'translateY(0)';
-                }}
+            {/* Add New Card Button (Desktop/Prominent) */}
+            <div className="mb-8">
+              <button
+                onClick={() => console.log('Add new card')}
+                className="w-full md:w-auto px-6 py-3 bg-primary-600 text-white rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-primary-700 transition-colors shadow-lg shadow-primary-600/20"
               >
-                {/* Card Type */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                  <span style={{ fontSize: '18px', fontWeight: 'bold' }}>{card.type}</span>
-                  <div style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '50%',
-                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
-                      credit_card
-                    </span>
+                <span className="material-symbols-outlined">add</span>
+                Add New Card
+              </button>
+            </div>
+
+            {/* Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              {cards.map((card) => (
+                <div
+                  key={card.id}
+                  style={{ background: card.gradient }}
+                  className="rounded-2xl p-6 text-white relative overflow-hidden cursor-pointer transform transition-transform hover:-translate-y-1 shadow-xl"
+                >
+                  {/* Card Type */}
+                  <div className="flex justify-between items-center mb-6">
+                    <span className="text-lg font-bold">{card.type}</span>
+                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                      <span className="material-symbols-outlined">credit_card</span>
+                    </div>
                   </div>
-                </div>
 
-                {/* Card Number */}
-                <div style={{ marginBottom: '16px' }}>
-                  <span style={{ fontSize: '20px', fontWeight: '500', letterSpacing: '2px' }}>
-                    {card.number}
-                  </span>
-                </div>
+                  {/* Card Number */}
+                  <div className="mb-6">
+                    <span className="text-xl font-medium tracking-widest">{card.number}</span>
+                  </div>
 
-                {/* Card Details */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                  {/* Card Details */}
+                  <div className="flex justify-between items-end relative z-10">
+                    <div>
+                      <p className="text-xs opacity-80 mb-1">CARDHOLDER</p>
+                      <p className="font-medium">{card.name}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs opacity-80 mb-1">EXPIRES</p>
+                      <p className="font-medium">{card.expiry}</p>
+                    </div>
+                  </div>
+
+                  {/* Decorative Elements */}
+                  <div className="absolute -top-5 -right-5 w-20 h-20 rounded-full bg-white/10"></div>
+                  <div className="absolute -bottom-8 -left-8 w-24 h-24 rounded-full bg-white/5"></div>
+                </div>
+              ))}
+            </div>
+
+            {/* Card Management Options */}
+            <div className="space-y-4">
+              <h2 className="text-lg font-semibold mb-4">Card Settings</h2>
+
+              {/* Freeze Card */}
+              <div className={`p-4 rounded-2xl border flex items-center justify-between ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+                }`}>
+                <div className="flex items-center gap-4">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isDarkMode ? 'bg-gray-700' : 'bg-primary-50'
+                    }`}>
+                    <span className="material-symbols-outlined text-primary-600">pause</span>
+                  </div>
                   <div>
-                    <p style={{ fontSize: '12px', margin: '0 0 4px 0', opacity: 0.8 }}>CARDHOLDER</p>
-                    <p style={{ fontSize: '14px', fontWeight: '500', margin: 0 }}>{card.name}</p>
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <p style={{ fontSize: '12px', margin: '0 0 4px 0', opacity: 0.8 }}>EXPIRES</p>
-                    <p style={{ fontSize: '14px', fontWeight: '500', margin: 0 }}>{card.expiry}</p>
+                    <h3 className="font-semibold">Freeze Card</h3>
+                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Temporarily disable your card</p>
                   </div>
                 </div>
-
-                {/* Decorative Elements */}
-                <div style={{
-                  position: 'absolute',
-                  top: '-20px',
-                  right: '-20px',
-                  width: '80px',
-                  height: '80px',
-                  borderRadius: '50%',
-                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                  opacity: 0.5
-                }}></div>
-                <div style={{
-                  position: 'absolute',
-                  bottom: '-30px',
-                  left: '-30px',
-                  width: '100px',
-                  height: '100px',
-                  borderRadius: '50%',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  opacity: 0.7
-                }}></div>
+                <button className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors">
+                  Freeze
+                </button>
               </div>
-            ))}
+
+              {/* Card Limits */}
+              <div className={`p-4 rounded-2xl border flex items-center justify-between ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+                }`}>
+                <div className="flex items-center gap-4">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isDarkMode ? 'bg-gray-700' : 'bg-primary-50'
+                    }`}>
+                    <span className="material-symbols-outlined text-primary-600">account_balance</span>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">Set Limits</h3>
+                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Manage spending limits</p>
+                  </div>
+                </div>
+                <button className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors">
+                  Manage
+                </button>
+              </div>
+
+              {/* Card History */}
+              <div className={`p-4 rounded-2xl border flex items-center justify-between ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+                }`}>
+                <div className="flex items-center gap-4">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isDarkMode ? 'bg-gray-700' : 'bg-primary-50'
+                    }`}>
+                    <span className="material-symbols-outlined text-primary-600">history</span>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">Transaction History</h3>
+                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>View card transactions</p>
+                  </div>
+                </div>
+                <button className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors">
+                  View
+                </button>
+              </div>
+            </div>
+
           </div>
+        </div>
 
-          {/* Card Management Options */}
-          <div style={{ marginTop: '32px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            
-            {/* Freeze Card */}
-            <div style={{
-              backgroundColor: '#f9fafb',
-              borderRadius: '16px',
-              padding: '20px',
-              border: '1px solid #e5e7eb',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <div style={{
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: '50%',
-                  backgroundColor: '#E9F0E1',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginRight: '12px'
-                }}>
-                  <span className="material-symbols-outlined" style={{ color: '#58761B', fontSize: '20px' }}>
-                    pause
-                  </span>
-                </div>
-                <div>
-                  <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: 0 }}>
-                    Freeze Card
-                  </h3>
-                  <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
-                    Temporarily disable your card
-                  </p>
-                </div>
-              </div>
-              <button style={{
-                backgroundColor: '#6f9c16',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                padding: '8px 16px',
-                fontSize: '14px',
-                fontWeight: '500',
-                cursor: 'pointer'
-              }}>
-                Freeze
-              </button>
-            </div>
-
-            {/* Card Limits */}
-            <div style={{
-              backgroundColor: '#f9fafb',
-              borderRadius: '16px',
-              padding: '20px',
-              border: '1px solid #e5e7eb',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <div style={{
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: '50%',
-                  backgroundColor: '#E9F0E1',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginRight: '12px'
-                }}>
-                  <span className="material-symbols-outlined" style={{ color: '#58761B', fontSize: '20px' }}>
-                    account_balance
-                  </span>
-                </div>
-                <div>
-                  <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: 0 }}>
-                    Set Limits
-                  </h3>
-                  <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
-                    Manage spending limits
-                  </p>
-                </div>
-              </div>
-              <button style={{
-                backgroundColor: '#6f9c16',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                padding: '8px 16px',
-                fontSize: '14px',
-                fontWeight: '500',
-                cursor: 'pointer'
-              }}>
-                Manage
-              </button>
-            </div>
-
-            {/* Card History */}
-            <div style={{
-              backgroundColor: '#f9fafb',
-              borderRadius: '16px',
-              padding: '20px',
-              border: '1px solid #e5e7eb',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <div style={{
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: '50%',
-                  backgroundColor: '#E9F0E1',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginRight: '12px'
-                }}>
-                  <span className="material-symbols-outlined" style={{ color: '#58761B', fontSize: '20px' }}>
-                    history
-                  </span>
-                </div>
-                <div>
-                  <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: 0 }}>
-                    Transaction History
-                  </h3>
-                  <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
-                    View card transactions
-                  </p>
-                </div>
-              </div>
-              <button style={{
-                backgroundColor: '#6f9c16',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                padding: '8px 16px',
-                fontSize: '14px',
-                fontWeight: '500',
-                cursor: 'pointer'
-              }}>
-                View
-              </button>
-            </div>
-          </div>
-        </main>
-
-        {/* Bottom Navigation */}
-        <BottomNav />
-      </div>
+        {/* Bottom Navigation (Mobile Only) */}
+        <div className="md:hidden">
+          <BottomNav />
+        </div>
+      </main>
     </div>
   );
 };

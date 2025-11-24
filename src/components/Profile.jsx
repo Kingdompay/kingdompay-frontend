@@ -16,7 +16,7 @@ const Profile = () => {
   };
 
   return (
-    <div style={{ color: '#1A3F22' }}>
+    <div className="min-h-screen bg-[#F7F7F7] font-sans flex justify-center">
       <style>
         {`
           @keyframes fadeInUp {
@@ -67,713 +67,318 @@ const Profile = () => {
           }
         `}
       </style>
-      
-      <div style={{
-        maxWidth: '384px',
-        margin: '0 auto',
-        backgroundColor: 'white',
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
-        {/* Header */}
-        <header style={{
-          backgroundColor: 'white',
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
-          padding: '16px'
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Link to="/home" style={{ color: '#1A3F22', opacity: 0.8, transition: 'opacity 0.3s', textDecoration: 'none' }}>
-              <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>arrow_back_ios</span>
-            </Link>
-            <h1 style={{
-              fontSize: '20px',
-              fontWeight: 'bold',
-              color: '#1A3F22',
-              margin: 0
-            }}>Profile</h1>
-            <div style={{
-              width: '40px',
-              height: '40px',
-              backgroundColor: '#E9F0E1',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              transition: 'background-color 0.3s'
-            }}>
-              <span className="material-symbols-outlined" style={{ color: '#1A3F22', fontSize: '20px' }}>settings</span>
+
+      <div className="w-full max-w-md md:max-w-6xl bg-white md:my-8 md:rounded-3xl md:shadow-2xl min-h-screen md:min-h-[800px] flex flex-col md:flex-row overflow-hidden relative">
+
+        {/* Sidebar / Mobile Header */}
+        <div className="md:w-1/3 lg:w-1/4 bg-white md:border-r md:border-gray-100 flex flex-col">
+          {/* Header */}
+          <header className="sticky top-0 z-10 p-4 bg-white md:bg-transparent">
+            <div className="flex justify-between items-center">
+              <Link to="/home" className="text-[#1A3F22] opacity-80 hover:opacity-100 transition-opacity no-underline">
+                <span className="material-symbols-outlined text-2xl">arrow_back_ios</span>
+              </Link>
+              <h1 className="text-xl font-bold text-[#1A3F22] m-0">Profile</h1>
+              <div className="w-10 h-10 bg-[#E9F0E1] rounded-full flex items-center justify-center cursor-pointer hover:bg-[#dce8d0] transition-colors">
+                <span className="material-symbols-outlined text-[#1A3F22] text-xl">settings</span>
+              </div>
             </div>
-          </div>
-        </header>
-        
-        <main style={{ padding: '0 16px', paddingBottom: '7rem' }}>
-          {/* Profile Section */}
-          <section style={{ textAlign: 'center', paddingTop: '32px' }}>
-            <div style={{ position: 'relative', display: 'inline-block' }}>
-              <img 
-                alt="User profile picture" 
-                style={{
-                  width: '96px',
-                  height: '96px',
-                  borderRadius: '50%',
-                  border: '4px solid #58761B',
-                  objectFit: 'cover',
-                  transition: 'box-shadow 0.3s ease-in-out'
-                }}
+          </header>
+
+          {/* Profile Info - Sidebar on Desktop */}
+          <div className="p-4 text-center md:text-left md:flex md:flex-col md:items-center md:justify-center md:flex-grow">
+            <div className="relative inline-block">
+              <img
+                alt="User profile picture"
+                className="w-24 h-24 rounded-full border-4 border-[#58761B] object-cover shadow-lg"
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTUDwO_1yM452W0B6j691kPeEKdplxoY0YQKiIJQ70sBWUiQhS2Cb9vM7Uuyo2E4KQ-CyRyzW2V3qPqHs1Cu0S-zlxtywlUNIZAtXKHRR4zKCajsvOyC9Yo6hIeW0yDbn0N5xbqRe1tADPI5Qrk8IhtiCSFcpoo8T1iT0oQyGu70uKd7VNydVjQRNDdCFsjtbph_DPIP9__u7J7sJAGLCNNoiXmhJrWNTxdkRksSwNwlzwldTKfBrBDIumjXhXN2eBhdzaTLdKWo3R"
               />
             </div>
-            <h2 style={{
-              marginTop: '16px',
-              fontSize: '24px',
-              fontWeight: 'bold',
-              color: '#1A3F22',
-              margin: '16px 0 0 0'
-            }}>
+            <h2 className="mt-4 text-2xl font-bold text-[#1A3F22] m-0">
               {user?.firstName} {user?.lastName}
             </h2>
-            <p style={{
-              color: '#58761B',
-              fontSize: '14px',
-              margin: '4px 0 0 0'
-            }}>
+            <p className="text-[#58761B] text-sm mt-1 m-0">
               @{user?.email?.split('@')[0]} / {user?.phone || '+1 234 567 890'}
             </p>
-          </section>
-          
-          {/* Wallet Balance */}
-          <section style={{ marginTop: '24px' }}>
-            <div style={{
-              background: 'linear-gradient(to right, #1A3F22, #58761B)',
-              borderRadius: '12px',
-              padding: '16px',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              color: 'white',
-              transition: 'all 0.3s ease'
-            }}>
-              <div>
-                <p style={{ fontWeight: '600', margin: 0 }}>
-                  Personal Wallet: ${user?.balance?.toFixed(2) || '0.00'}
-                </p>
+
+            {/* Wallet Balance in Sidebar */}
+            <div className="mt-6 w-full md:max-w-xs">
+              <div className="bg-gradient-to-r from-[#1A3F22] to-[#58761B] rounded-xl p-4 flex justify-between items-center text-white shadow-md">
+                <div>
+                  <p className="font-semibold m-0">
+                    Personal Wallet: ${user?.balance?.toFixed(2) || '0.00'}
+                  </p>
+                </div>
+                <span className="material-symbols-outlined text-[#D99201] text-2xl">
+                  toll
+                </span>
               </div>
-              <span className="material-symbols-outlined" style={{ color: '#D99201', fontSize: '24px' }}>
-                toll
-              </span>
             </div>
-          </section>
-          
-          {/* Action Buttons */}
-          <section style={{ marginTop: '32px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
-              <div style={{ textAlign: 'center' }}>
-                <button 
+          </div>
+
+          {/* Desktop Nav Links */}
+          <div className="hidden md:block p-4">
+            <nav className="space-y-2">
+              <Link to="/home" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">home</span> Home
+              </Link>
+              <Link to="/community" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">groups</span> Community
+              </Link>
+              <Link to="/payments" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">qr_code_scanner</span> Payments
+              </Link>
+              <Link to="/savings" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">savings</span> Savings
+              </Link>
+            </nav>
+          </div>
+        </div>
+
+        {/* Main Content Area */}
+        <main className="flex-grow p-4 pb-28 md:pb-8 overflow-y-auto bg-gray-50 md:bg-white">
+
+          {/* Action Buttons Grid */}
+          <section className="mt-4 md:mt-0">
+            <div className="grid grid-cols-4 gap-4 md:gap-8 max-w-2xl mx-auto">
+              <div className="text-center flex flex-col items-center">
+                <button
                   onClick={() => navigate('/edit-profile')}
-                  style={{
-                    width: '64px',
-                    height: '64px',
-                    borderRadius: '12px',
-                    border: '2px solid #905A01',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    boxShadow: hoveredButton === 'edit' ? '0 8px 16px -4px rgba(144, 90, 1, 0.3)' : '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                    backgroundColor: 'white',
-                    cursor: 'pointer',
-                    transform: hoveredButton === 'edit' ? 'scale(1.05) translateY(-2px)' : 'scale(1)',
-                    transition: 'all 0.3s ease'
-                  }}
+                  className={`w-16 h-16 rounded-2xl border-2 border-[#905A01] flex items-center justify-center bg-white cursor-pointer transition-all duration-300 ${hoveredButton === 'edit' ? 'shadow-lg scale-105 -translate-y-1' : 'shadow-sm'}`}
                   onMouseEnter={() => setHoveredButton('edit')}
                   onMouseLeave={() => setHoveredButton('')}
                 >
-                  <span className="material-symbols-outlined" style={{ color: '#905A01', fontSize: '20px' }}>edit</span>
+                  <span className="material-symbols-outlined text-[#905A01] text-xl">edit</span>
                 </button>
-                <p style={{ fontSize: '12px', marginTop: '8px', color: '#1A3F22', fontWeight: '500', margin: '8px 0 0 0' }}>
+                <p className="text-xs mt-2 text-[#1A3F22] font-medium m-0">
                   Edit Profile
                 </p>
               </div>
-              
-              <div style={{ textAlign: 'center' }}>
-                <button 
+
+              <div className="text-center flex flex-col items-center">
+                <button
                   onClick={() => navigate('/security')}
-                  style={{
-                    width: '64px',
-                    height: '64px',
-                    borderRadius: '12px',
-                    backgroundColor: hoveredButton === 'security' ? '#2d4a33' : '#1A3F22',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    boxShadow: hoveredButton === 'security' ? '0 8px 16px -4px rgba(26, 63, 34, 0.4)' : '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                    border: 'none',
-                    cursor: 'pointer',
-                    transform: hoveredButton === 'security' ? 'scale(1.05) translateY(-2px)' : 'scale(1)',
-                    transition: 'all 0.3s ease'
-                  }}
+                  className={`w-16 h-16 rounded-2xl flex items-center justify-center border-none cursor-pointer transition-all duration-300 ${hoveredButton === 'security' ? 'bg-[#2d4a33] shadow-lg scale-105 -translate-y-1' : 'bg-[#1A3F22] shadow-sm'}`}
                   onMouseEnter={() => setHoveredButton('security')}
                   onMouseLeave={() => setHoveredButton('')}
                 >
-                  <span className="material-symbols-outlined" style={{ color: 'white', fontSize: '20px' }}>shield</span>
+                  <span className="material-symbols-outlined text-white text-xl">shield</span>
                 </button>
-                <p style={{ fontSize: '12px', marginTop: '8px', color: '#1A3F22', fontWeight: '500', margin: '8px 0 0 0' }}>
+                <p className="text-xs mt-2 text-[#1A3F22] font-medium m-0">
                   Security
                 </p>
               </div>
-              
-              <div style={{ textAlign: 'center' }}>
-                <button 
+
+              <div className="text-center flex flex-col items-center">
+                <button
                   onClick={() => navigate('/cards')}
-                  style={{
-                    width: '64px',
-                    height: '64px',
-                    borderRadius: '16px',
-                    backgroundColor: '#E9F0E1',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                    border: 'none',
-                    cursor: 'pointer'
-                  }}
+                  className="w-16 h-16 rounded-2xl bg-[#E9F0E1] flex items-center justify-center shadow-sm border-none cursor-pointer hover:bg-[#dce8d0] transition-colors"
                 >
-                  <span className="material-symbols-outlined" style={{ color: '#58761B', fontSize: '20px' }}>credit_card</span>
+                  <span className="material-symbols-outlined text-[#58761B] text-xl">credit_card</span>
                 </button>
-                <p style={{ fontSize: '12px', marginTop: '8px', color: '#1A3F22', fontWeight: '500', margin: '8px 0 0 0' }}>
+                <p className="text-xs mt-2 text-[#1A3F22] font-medium m-0">
                   Cards
                 </p>
               </div>
-              
-              <div style={{ textAlign: 'center' }}>
-                <button 
+
+              <div className="text-center flex flex-col items-center">
+                <button
                   onClick={() => navigate('/referrals')}
-                  style={{
-                    width: '64px',
-                    height: '64px',
-                    borderRadius: '16px',
-                    backgroundColor: '#D99201',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                    border: 'none',
-                    cursor: 'pointer'
-                  }}
+                  className="w-16 h-16 rounded-2xl bg-[#D99201] flex items-center justify-center shadow-sm border-none cursor-pointer hover:bg-[#b37801] transition-colors"
                 >
-                  <span className="material-symbols-outlined" style={{ color: 'white', fontSize: '20px' }}>card_giftcard</span>
+                  <span className="material-symbols-outlined text-white text-xl">card_giftcard</span>
                 </button>
-                <p style={{ fontSize: '12px', marginTop: '8px', color: '#1A3F22', fontWeight: '500', margin: '8px 0 0 0' }}>
+                <p className="text-xs mt-2 text-[#1A3F22] font-medium m-0">
                   Referrals
                 </p>
               </div>
             </div>
           </section>
-          
-          {/* Menu Sections */}
-          <section style={{ marginTop: '32px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+
+          {/* Menu Sections Grid */}
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+
             {/* Account Section */}
-            <div style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)', padding: '8px' }}>
-              <h3 style={{ fontWeight: 'bold', fontSize: '18px', marginBottom: '8px', padding: '0 12px', paddingTop: '8px', margin: '0 0 8px 0' }}>Account</h3>
-              <div style={{ borderTop: '1px solid #f3f4f6' }}>
-                <button 
-                  onClick={() => navigate('/personal-details')}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '12px',
-                    textDecoration: 'none',
-                    color: 'inherit',
-                    borderRadius: '8px',
-                    transition: 'background-color 0.2s',
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    width: '100%',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <div style={{
-                      width: '32px',
-                      height: '32px',
-                      borderRadius: '50%',
-                      backgroundColor: '#E9F0E1',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                      <span className="material-symbols-outlined" style={{ color: '#58761B', fontSize: '16px' }}>person</span>
+            <section className="bg-white rounded-xl shadow-sm p-2 border border-gray-100">
+              <h3 className="font-bold text-lg mb-2 px-3 pt-2 text-[#1A3F22] m-0">Account</h3>
+              <div className="border-t border-gray-100">
+                <button onClick={() => navigate('/personal-details')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 rounded-lg transition-colors">
+                  <div className="flex items-center gap-4">
+                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] flex items-center justify-center">
+                      <span className="material-symbols-outlined text-[#58761B] text-base">person</span>
                     </div>
-                    <span style={{ color: '#1A3F22', fontWeight: '500' }}>Personal Details</span>
+                    <span className="text-[#1A3F22] font-medium">Personal Details</span>
                   </div>
-                  <span className="material-symbols-outlined" style={{ color: '#9ca3af', fontSize: '16px' }}>chevron_right</span>
+                  <span className="material-symbols-outlined text-gray-400 text-base">chevron_right</span>
                 </button>
-                
-                <button 
-                  onClick={() => navigate('/linked-accounts')}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '12px',
-                    textDecoration: 'none',
-                    color: 'inherit',
-                    borderRadius: '8px',
-                    transition: 'background-color 0.2s',
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    width: '100%',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <div style={{
-                      width: '32px',
-                      height: '32px',
-                      borderRadius: '50%',
-                      backgroundColor: '#E9F0E1',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                      <span className="material-symbols-outlined" style={{ color: '#58761B', fontSize: '16px' }}>account_balance</span>
+
+                <button onClick={() => navigate('/linked-accounts')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 rounded-lg transition-colors">
+                  <div className="flex items-center gap-4">
+                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] flex items-center justify-center">
+                      <span className="material-symbols-outlined text-[#58761B] text-base">account_balance</span>
                     </div>
-                    <span style={{ color: '#1A3F22', fontWeight: '500' }}>Linked Bank Accounts & Cards</span>
+                    <span className="text-[#1A3F22] font-medium">Linked Bank Accounts & Cards</span>
                   </div>
-                  <span className="material-symbols-outlined" style={{ color: '#9ca3af', fontSize: '16px' }}>chevron_right</span>
+                  <span className="material-symbols-outlined text-gray-400 text-base">chevron_right</span>
                 </button>
-                
-                <button 
-                  onClick={() => navigate('/limits-plans')}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '12px',
-                    textDecoration: 'none',
-                    color: 'inherit',
-                    borderRadius: '8px',
-                    transition: 'background-color 0.2s',
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    width: '100%',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <div style={{
-                      width: '32px',
-                      height: '32px',
-                      borderRadius: '50%',
-                      backgroundColor: '#E9F0E1',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                      <span className="material-symbols-outlined" style={{ color: '#58761B', fontSize: '16px' }}>speed</span>
+
+                <button onClick={() => navigate('/limits-plans')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 rounded-lg transition-colors">
+                  <div className="flex items-center gap-4">
+                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] flex items-center justify-center">
+                      <span className="material-symbols-outlined text-[#58761B] text-base">speed</span>
                     </div>
-                    <span style={{ color: '#1A3F22', fontWeight: '500' }}>Limits & Plans</span>
+                    <span className="text-[#1A3F22] font-medium">Limits & Plans</span>
                   </div>
-                  <span className="material-symbols-outlined" style={{ color: '#9ca3af', fontSize: '16px' }}>chevron_right</span>
+                  <span className="material-symbols-outlined text-gray-400 text-base">chevron_right</span>
                 </button>
               </div>
-            </div>
-            
+            </section>
+
             {/* Preferences Section */}
-            <div style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)', padding: '8px' }}>
-              <h3 style={{ fontWeight: 'bold', fontSize: '18px', marginBottom: '8px', padding: '0 12px', paddingTop: '8px', margin: '0 0 8px 0' }}>Preferences</h3>
-              <div style={{ borderTop: '1px solid #f3f4f6' }}>
-                <button 
-                  onClick={() => navigate('/notifications')}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '12px',
-                    textDecoration: 'none',
-                    color: 'inherit',
-                    borderRadius: '8px',
-                    transition: 'background-color 0.2s',
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    width: '100%',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <div style={{
-                      width: '32px',
-                      height: '32px',
-                      borderRadius: '50%',
-                      backgroundColor: '#E9F0E1',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                      <span className="material-symbols-outlined" style={{ color: '#58761B', fontSize: '16px' }}>notifications</span>
+            <section className="bg-white rounded-xl shadow-sm p-2 border border-gray-100">
+              <h3 className="font-bold text-lg mb-2 px-3 pt-2 text-[#1A3F22] m-0">Preferences</h3>
+              <div className="border-t border-gray-100">
+                <button onClick={() => navigate('/notifications')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 rounded-lg transition-colors">
+                  <div className="flex items-center gap-4">
+                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] flex items-center justify-center">
+                      <span className="material-symbols-outlined text-[#58761B] text-base">notifications</span>
                     </div>
-                    <span style={{ color: '#1A3F22', fontWeight: '500' }}>Notifications & Alerts</span>
+                    <span className="text-[#1A3F22] font-medium">Notifications & Alerts</span>
                   </div>
-                  <span className="material-symbols-outlined" style={{ color: '#9ca3af', fontSize: '16px' }}>chevron_right</span>
+                  <span className="material-symbols-outlined text-gray-400 text-base">chevron_right</span>
                 </button>
-                
-                <button 
-                  onClick={() => navigate('/settings')}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '12px',
-                    textDecoration: 'none',
-                    color: 'inherit',
-                    borderRadius: '8px',
-                    transition: 'background-color 0.2s',
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    width: '100%',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <div style={{
-                      width: '32px',
-                      height: '32px',
-                      borderRadius: '50%',
-                      backgroundColor: '#E9F0E1',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                      <span className="material-symbols-outlined" style={{ color: '#58761B', fontSize: '16px' }}>settings</span>
+
+                <button onClick={() => navigate('/settings')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 rounded-lg transition-colors">
+                  <div className="flex items-center gap-4">
+                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] flex items-center justify-center">
+                      <span className="material-symbols-outlined text-[#58761B] text-base">settings</span>
                     </div>
-                    <span style={{ color: '#1A3F22', fontWeight: '500' }}>Settings</span>
+                    <span className="text-[#1A3F22] font-medium">Settings</span>
                   </div>
-                  <span className="material-symbols-outlined" style={{ color: '#9ca3af', fontSize: '16px' }}>chevron_right</span>
+                  <span className="material-symbols-outlined text-gray-400 text-base">chevron_right</span>
                 </button>
               </div>
-            </div>
-            
+            </section>
+
             {/* Security Section */}
-            <div style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)', padding: '8px' }}>
-              <h3 style={{ fontWeight: 'bold', fontSize: '18px', marginBottom: '8px', padding: '0 12px', paddingTop: '8px', margin: '0 0 8px 0' }}>Security</h3>
-              <div style={{ borderTop: '1px solid #f3f4f6' }}>
-                <button 
-                  onClick={() => navigate('/change-pin')}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '12px',
-                    textDecoration: 'none',
-                    color: 'inherit',
-                    borderRadius: '8px',
-                    transition: 'background-color 0.2s',
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    width: '100%',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <div style={{
-                      width: '32px',
-                      height: '32px',
-                      borderRadius: '50%',
-                      backgroundColor: '#E9F0E1',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                      <span className="material-symbols-outlined" style={{ color: '#58761B', fontSize: '16px' }}>pin</span>
+            <section className="bg-white rounded-xl shadow-sm p-2 border border-gray-100">
+              <h3 className="font-bold text-lg mb-2 px-3 pt-2 text-[#1A3F22] m-0">Security</h3>
+              <div className="border-t border-gray-100">
+                <button onClick={() => navigate('/change-pin')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 rounded-lg transition-colors">
+                  <div className="flex items-center gap-4">
+                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] flex items-center justify-center">
+                      <span className="material-symbols-outlined text-[#58761B] text-base">pin</span>
                     </div>
-                    <span style={{ color: '#1A3F22', fontWeight: '500' }}>Change PIN / Password</span>
+                    <span className="text-[#1A3F22] font-medium">Change PIN / Password</span>
                   </div>
-                  <span className="material-symbols-outlined" style={{ color: '#9ca3af', fontSize: '16px' }}>chevron_right</span>
+                  <span className="material-symbols-outlined text-gray-400 text-base">chevron_right</span>
                 </button>
-                
-                <button 
-                  onClick={() => navigate('/2fa')}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '12px',
-                    textDecoration: 'none',
-                    color: 'inherit',
-                    borderRadius: '8px',
-                    transition: 'background-color 0.2s',
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    width: '100%',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <div style={{
-                      width: '32px',
-                      height: '32px',
-                      borderRadius: '50%',
-                      backgroundColor: '#E9F0E1',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                      <span className="material-symbols-outlined" style={{ color: '#58761B', fontSize: '16px' }}>password</span>
+
+                <button onClick={() => navigate('/2fa')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 rounded-lg transition-colors">
+                  <div className="flex items-center gap-4">
+                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] flex items-center justify-center">
+                      <span className="material-symbols-outlined text-[#58761B] text-base">password</span>
                     </div>
-                    <span style={{ color: '#1A3F22', fontWeight: '500' }}>2FA</span>
+                    <span className="text-[#1A3F22] font-medium">2FA</span>
                   </div>
-                  <span className="material-symbols-outlined" style={{ color: '#9ca3af', fontSize: '16px' }}>chevron_right</span>
+                  <span className="material-symbols-outlined text-gray-400 text-base">chevron_right</span>
                 </button>
-                
-                <button 
-                  onClick={() => navigate('/biometric')}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '12px',
-                    textDecoration: 'none',
-                    color: 'inherit',
-                    borderRadius: '8px',
-                    transition: 'background-color 0.2s',
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    width: '100%',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <div style={{
-                      width: '32px',
-                      height: '32px',
-                      borderRadius: '50%',
-                      backgroundColor: '#E9F0E1',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                      <span className="material-symbols-outlined" style={{ color: '#58761B', fontSize: '16px' }}>fingerprint</span>
+
+                <button onClick={() => navigate('/biometric')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 rounded-lg transition-colors">
+                  <div className="flex items-center gap-4">
+                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] flex items-center justify-center">
+                      <span className="material-symbols-outlined text-[#58761B] text-base">fingerprint</span>
                     </div>
-                    <span style={{ color: '#1A3F22', fontWeight: '500' }}>Biometric Login</span>
+                    <span className="text-[#1A3F22] font-medium">Biometric Login</span>
                   </div>
-                  <span className="material-symbols-outlined" style={{ color: '#9ca3af', fontSize: '16px' }}>chevron_right</span>
+                  <span className="material-symbols-outlined text-gray-400 text-base">chevron_right</span>
                 </button>
               </div>
-            </div>
-            
+            </section>
+
             {/* Support Section */}
-            <div style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)', padding: '8px' }}>
-              <h3 style={{ fontWeight: 'bold', fontSize: '18px', marginBottom: '8px', padding: '0 12px', paddingTop: '8px', margin: '0 0 8px 0' }}>Support</h3>
-              <div style={{ borderTop: '1px solid #f3f4f6' }}>
-                <button 
-                  onClick={() => navigate('/help-support')}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '12px',
-                    textDecoration: 'none',
-                    color: 'inherit',
-                    borderRadius: '8px',
-                    transition: 'background-color 0.2s',
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    width: '100%',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <div style={{
-                      width: '32px',
-                      height: '32px',
-                      borderRadius: '50%',
-                      backgroundColor: '#E9F0E1',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                      <span className="material-symbols-outlined" style={{ color: '#58761B', fontSize: '16px' }}>help</span>
+            <section className="bg-white rounded-xl shadow-sm p-2 border border-gray-100">
+              <h3 className="font-bold text-lg mb-2 px-3 pt-2 text-[#1A3F22] m-0">Support</h3>
+              <div className="border-t border-gray-100">
+                <button onClick={() => navigate('/help-support')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 rounded-lg transition-colors">
+                  <div className="flex items-center gap-4">
+                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] flex items-center justify-center">
+                      <span className="material-symbols-outlined text-[#58761B] text-base">help</span>
                     </div>
-                    <span style={{ color: '#1A3F22', fontWeight: '500' }}>Help Center</span>
+                    <span className="text-[#1A3F22] font-medium">Help Center</span>
                   </div>
-                  <span className="material-symbols-outlined" style={{ color: '#9ca3af', fontSize: '16px' }}>chevron_right</span>
+                  <span className="material-symbols-outlined text-gray-400 text-base">chevron_right</span>
                 </button>
-                
-                <button 
-                  onClick={() => navigate('/chat-support')}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '12px',
-                    textDecoration: 'none',
-                    color: 'inherit',
-                    borderRadius: '8px',
-                    transition: 'background-color 0.2s',
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    width: '100%',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <div style={{
-                      width: '32px',
-                      height: '32px',
-                      borderRadius: '50%',
-                      backgroundColor: '#E9F0E1',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                      <span className="material-symbols-outlined" style={{ color: '#58761B', fontSize: '16px' }}>chat</span>
+
+                <button onClick={() => navigate('/chat-support')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 rounded-lg transition-colors">
+                  <div className="flex items-center gap-4">
+                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] flex items-center justify-center">
+                      <span className="material-symbols-outlined text-[#58761B] text-base">chat</span>
                     </div>
-                    <span style={{ color: '#1A3F22', fontWeight: '500' }}>Chat with Support</span>
+                    <span className="text-[#1A3F22] font-medium">Chat with Support</span>
                   </div>
-                  <span className="material-symbols-outlined" style={{ color: '#9ca3af', fontSize: '16px' }}>chevron_right</span>
+                  <span className="material-symbols-outlined text-gray-400 text-base">chevron_right</span>
                 </button>
-                
-                <button 
-                  onClick={() => navigate('/faqs')}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '12px',
-                    textDecoration: 'none',
-                    color: 'inherit',
-                    borderRadius: '8px',
-                    transition: 'background-color 0.2s',
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    width: '100%',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <div style={{
-                      width: '32px',
-                      height: '32px',
-                      borderRadius: '50%',
-                      backgroundColor: '#E9F0E1',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                      <span className="material-symbols-outlined" style={{ color: '#58761B', fontSize: '16px' }}>quiz</span>
+
+                <button onClick={() => navigate('/faqs')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 rounded-lg transition-colors">
+                  <div className="flex items-center gap-4">
+                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] flex items-center justify-center">
+                      <span className="material-symbols-outlined text-[#58761B] text-base">quiz</span>
                     </div>
-                    <span style={{ color: '#1A3F22', fontWeight: '500' }}>FAQs</span>
+                    <span className="text-[#1A3F22] font-medium">FAQs</span>
                   </div>
-                  <span className="material-symbols-outlined" style={{ color: '#9ca3af', fontSize: '16px' }}>chevron_right</span>
+                  <span className="material-symbols-outlined text-gray-400 text-base">chevron_right</span>
                 </button>
               </div>
-            </div>
-          </section>
-          
-          {/* Privacy Section */}
-          <section style={{ marginTop: '24px' }}>
-            <div style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)', padding: '8px' }}>
-              <h3 style={{ fontWeight: 'bold', fontSize: '18px', marginBottom: '8px', padding: '0 12px', paddingTop: '8px', margin: '0 0 8px 0' }}>Privacy</h3>
-              <div style={{ borderTop: '1px solid #f3f4f6' }}>
-                <button 
-                  onClick={() => navigate('/privacy')}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '12px',
-                    textDecoration: 'none',
-                    color: 'inherit',
-                    borderRadius: '8px',
-                    transition: 'background-color 0.2s',
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    width: '100%',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <div style={{
-                      width: '32px',
-                      height: '32px',
-                      borderRadius: '50%',
-                      backgroundColor: '#E9F0E1',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                      <span className="material-symbols-outlined" style={{ color: '#58761B', fontSize: '16px' }}>shield</span>
+            </section>
+
+            {/* Privacy Section */}
+            <section className="bg-white rounded-xl shadow-sm p-2 border border-gray-100">
+              <h3 className="font-bold text-lg mb-2 px-3 pt-2 text-[#1A3F22] m-0">Privacy</h3>
+              <div className="border-t border-gray-100">
+                <button onClick={() => navigate('/privacy')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 rounded-lg transition-colors">
+                  <div className="flex items-center gap-4">
+                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] flex items-center justify-center">
+                      <span className="material-symbols-outlined text-[#58761B] text-base">shield</span>
                     </div>
-                    <span style={{ color: '#1A3F22', fontWeight: '500' }}>Privacy & Data</span>
+                    <span className="text-[#1A3F22] font-medium">Privacy & Data</span>
                   </div>
-                  <span className="material-symbols-outlined" style={{ color: '#9ca3af', fontSize: '16px' }}>chevron_right</span>
+                  <span className="material-symbols-outlined text-gray-400 text-base">chevron_right</span>
                 </button>
               </div>
-            </div>
-          </section>
-          
+            </section>
+          </div>
+
           {/* Premium Upgrade */}
-          <section style={{ marginTop: '32px' }}>
-            <div style={{
-              background: 'linear-gradient(to right, #905A01, #D99201)',
-              borderRadius: '12px',
-              padding: '24px',
-              textAlign: 'center',
-              color: 'white'
-            }}>
-              <h3 style={{ fontSize: '18px', fontWeight: '600', margin: 0 }}>Upgrade to KingdomPay Premium</h3>
-              <p style={{ fontSize: '14px', marginTop: '4px', opacity: 0.9, margin: '4px 0 0 0' }}>Unlock exclusive features and benefits.</p>
-              <button style={{
-                marginTop: '16px',
-                backgroundColor: 'transparent',
-                border: '2px solid white',
-                borderRadius: '50%',
-                paddingLeft: '24px',
-                paddingRight: '24px',
-                paddingTop: '8px',
-                paddingBottom: '8px',
-                fontSize: '14px',
-                fontWeight: '600',
-                color: 'white',
-                cursor: 'pointer',
-                transition: 'all 0.3s'
-              }}>Explore</button>
+          <section className="mt-8 max-w-4xl mx-auto">
+            <div className="bg-gradient-to-r from-[#905A01] to-[#D99201] rounded-xl p-6 text-center text-white shadow-md">
+              <h3 className="text-lg font-semibold m-0">Upgrade to KingdomPay Premium</h3>
+              <p className="text-sm mt-1 opacity-90 m-0">Unlock exclusive features and benefits.</p>
+              <button className="mt-4 bg-transparent border-2 border-white rounded-full px-6 py-2 text-sm font-semibold text-white cursor-pointer hover:bg-white/10 transition-colors">
+                Explore
+              </button>
             </div>
           </section>
-          
+
           {/* Logout */}
-          <section style={{ marginTop: '32px', textAlign: 'center' }}>
-            <div style={{ backgroundColor: '#f3f4f6', borderRadius: '12px' }}>
-              <button 
-                style={{
-                  display: 'block',
-                  width: '100%',
-                  paddingTop: '12px',
-                  paddingBottom: '12px',
-                  color: '#dc2626',
-                  fontWeight: '600',
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s'
-                }}
+          <section className="mt-8 text-center max-w-xs mx-auto">
+            <div className="bg-gray-100 rounded-xl overflow-hidden">
+              <button
+                className="block w-full py-3 text-red-600 font-semibold bg-transparent border-none cursor-pointer hover:bg-gray-200 transition-colors"
                 onClick={handleLogout}
               >
                 Log Out
               </button>
             </div>
-            <p style={{ marginTop: '16px', color: '#A0A89B', fontSize: '12px', margin: '16px 0 0 0' }}>Version 1.0.0</p>
+            <p className="mt-4 text-[#A0A89B] text-xs m-0">Version 1.0.0</p>
           </section>
         </main>
       </div>
 
-      {/* Bottom Navigation */}
-      <BottomNav />
+      {/* Bottom Navigation (Mobile Only) */}
+      <div className="md:hidden">
+        <BottomNav />
+      </div>
     </div>
   );
 };

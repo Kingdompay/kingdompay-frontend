@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import BottomNav from './BottomNav';
 
 const Payments = () => {
@@ -60,111 +60,71 @@ const Payments = () => {
   ];
 
   return (
-    <div style={{ color: '#1A3F22' }}>
-      <div style={{
-        maxWidth: '384px',
-        margin: '0 auto',
-        backgroundColor: 'white',
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
-        {/* Header */}
-        <header style={{
-          backgroundColor: 'white',
-          position: 'sticky',
-          top: 0,
-          zIndex: 100,
-          padding: '16px 24px',
-          borderBottom: '1px solid #e5e7eb',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}>
-          <button
-            onClick={() => navigate('/home')}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              backgroundColor: '#f3f4f6'
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ color: '#1A3F22', fontSize: '20px' }}>
-              arrow_back
-            </span>
-          </button>
-          <h1 style={{
-            fontSize: '18px',
-            fontWeight: 'bold',
-            color: '#1A3F22',
-            margin: 0
-          }}>
-            Payments
-          </h1>
-          <div style={{ width: '40px' }}></div>
-        </header>
+    <div className="min-h-screen bg-[#F7F7F7] font-sans flex justify-center">
+      <style>
+        {`
+          @keyframes scan {
+            0% { transform: translateY(-100px); }
+            100% { transform: translateY(100px); }
+          }
+          @keyframes fadeInUp {
+            from {
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+          }
+          .animate-scan {
+             animation: scan 2s linear infinite;
+          }
+        `}
+      </style>
 
-        {/* Main Content */}
-        <main style={{
-          flex: 1,
-          padding: '24px',
-          overflowY: 'auto',
-          paddingBottom: '100px'
-        }}>
-          
-          {/* Quick Actions */}
-          <div style={{ marginBottom: '32px' }}>
-            <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: '0 0 16px 0' }}>
-              Quick Actions
-            </h2>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+      <div className="w-full max-w-md md:max-w-6xl bg-white md:my-8 md:rounded-3xl md:shadow-2xl min-h-screen md:min-h-[800px] flex flex-col md:flex-row overflow-hidden relative">
+
+        {/* Sidebar / Mobile Header */}
+        <div className="md:w-1/3 lg:w-1/4 bg-white md:border-r md:border-gray-100 flex flex-col">
+          {/* Header */}
+          <header className="sticky top-0 z-10 p-4 bg-white md:bg-transparent">
+            <div className="flex justify-between items-center">
+              <button
+                onClick={() => navigate('/home')}
+                className="bg-gray-100 border-none cursor-pointer flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-200 transition-colors"
+              >
+                <span className="material-symbols-outlined text-[#1A3F22] text-xl">arrow_back</span>
+              </button>
+              <h1 className="text-lg font-bold text-[#1A3F22] m-0">Payments</h1>
+              <div className="w-10"></div>
+            </div>
+          </header>
+
+          {/* Quick Actions - Sidebar on Desktop */}
+          <div className="p-4">
+            <h2 className="text-base font-semibold text-[#1A3F22] mb-4 m-0 md:hidden">Quick Actions</h2>
+            <div className="grid grid-cols-2 gap-4">
               {quickActions.map((action, index) => (
                 <div
                   key={index}
-                  style={{
-                    backgroundColor: '#f9fafb',
-                    borderRadius: '16px',
-                    padding: '20px',
-                    border: '1px solid #e5e7eb',
-                    textAlign: 'center',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.target.style.transform = 'translateY(-4px)';
-                    e.target.style.boxShadow = '0 8px 25px -5px rgba(0, 0, 0, 0.15)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.transform = 'translateY(0)';
-                    e.target.style.boxShadow = 'none';
-                  }}
+                  className="bg-gray-50 rounded-2xl p-5 border border-gray-200 text-center cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
                 >
-                  <div style={{
-                    width: '48px',
-                    height: '48px',
-                    borderRadius: '50%',
-                    backgroundColor: action.color,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    margin: '0 auto 12px auto'
-                  }}>
-                    <span className="material-symbols-outlined" style={{ color: 'white', fontSize: '24px' }}>
+                  <div
+                    className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3"
+                    style={{ backgroundColor: action.color }}
+                  >
+                    <span className="material-symbols-outlined text-white text-2xl">
                       {action.icon}
                     </span>
                   </div>
-                  <h3 style={{ fontSize: '14px', fontWeight: '600', color: '#1A3F22', margin: '0 0 4px 0' }}>
+                  <h3 className="text-sm font-bold text-[#1A3F22] mb-1 m-0">
                     {action.title}
                   </h3>
-                  <p style={{ fontSize: '12px', color: '#6b7280', margin: 0 }}>
+                  <p className="text-xs text-gray-500 m-0">
                     {action.description}
                   </p>
                 </div>
@@ -172,292 +132,141 @@ const Payments = () => {
             </div>
           </div>
 
-          {/* QR Scanner Section */}
-          <div style={{ marginBottom: '32px' }}>
-            <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: '0 0 16px 0' }}>
-              Scan to Pay
-            </h2>
-            <div style={{
-              backgroundColor: '#000',
-              borderRadius: '16px',
-              padding: '40px',
-              textAlign: 'center',
-              position: 'relative',
-              overflow: 'hidden'
-            }}>
-              {/* QR Scanner Frame */}
-              <div style={{
-                width: '200px',
-                height: '200px',
-                border: '2px solid #fff',
-                borderRadius: '12px',
-                margin: '0 auto 20px auto',
-                position: 'relative',
-                backgroundColor: 'rgba(255, 255, 255, 0.1)'
-              }}>
-                {/* Corner indicators */}
-                <div style={{
-                  position: 'absolute',
-                  top: '-2px',
-                  left: '-2px',
-                  width: '20px',
-                  height: '20px',
-                  borderTop: '4px solid #6f9c16',
-                  borderLeft: '4px solid #6f9c16'
-                }}></div>
-                <div style={{
-                  position: 'absolute',
-                  top: '-2px',
-                  right: '-2px',
-                  width: '20px',
-                  height: '20px',
-                  borderTop: '4px solid #6f9c16',
-                  borderRight: '4px solid #6f9c16'
-                }}></div>
-                <div style={{
-                  position: 'absolute',
-                  bottom: '-2px',
-                  left: '-2px',
-                  width: '20px',
-                  height: '20px',
-                  borderBottom: '4px solid #6f9c16',
-                  borderLeft: '4px solid #6f9c16'
-                }}></div>
-                <div style={{
-                  position: 'absolute',
-                  bottom: '-2px',
-                  right: '-2px',
-                  width: '20px',
-                  height: '20px',
-                  borderBottom: '4px solid #6f9c16',
-                  borderRight: '4px solid #6f9c16'
-                }}></div>
-                
-                {/* Scanning line animation */}
-                <div style={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '0',
-                  right: '0',
-                  height: '2px',
-                  backgroundColor: '#6f9c16',
-                  transform: 'translateY(-50%)',
-                  animation: 'scan 2s linear infinite'
-                }}></div>
-              </div>
-              
-              <p style={{ color: '#fff', fontSize: '14px', margin: '0 0 16px 0' }}>
-                Position QR code within the frame
-              </p>
-              
-              <button 
-                onClick={() => navigate('/scan-qr')}
-                style={{
-                  backgroundColor: '#6f9c16',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  padding: '12px 24px',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  cursor: 'pointer'
-                }}
-              >
-                Enable Camera
-              </button>
-            </div>
+          {/* Desktop Nav Links */}
+          <div className="hidden md:block p-4 mt-auto">
+            <nav className="space-y-2">
+              <Link to="/home" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">home</span> Home
+              </Link>
+              <Link to="/community" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">groups</span> Community
+              </Link>
+              <Link to="/profile" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">person</span> Profile
+              </Link>
+            </nav>
           </div>
+        </div>
 
-          {/* Payment Methods */}
-          <div style={{ marginBottom: '32px' }}>
-            <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: '0 0 16px 0' }}>
-              Payment Methods
-            </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              
-              {/* Wallet */}
-              <div style={{
-                backgroundColor: '#f9fafb',
-                borderRadius: '16px',
-                padding: '16px',
-                border: '1px solid #e5e7eb',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                cursor: 'pointer'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <div style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '50%',
-                    backgroundColor: '#E9F0E1',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginRight: '12px'
-                  }}>
-                    <span className="material-symbols-outlined" style={{ color: '#58761B', fontSize: '20px' }}>
-                      account_balance_wallet
-                    </span>
-                  </div>
-                  <div>
-                    <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: 0 }}>
-                      KingdomPay Wallet
-                    </h3>
-                    <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
-                      Balance: $1,234.56
-                    </p>
-                  </div>
-                </div>
-                <div style={{
-                  width: '20px',
-                  height: '20px',
-                  borderRadius: '50%',
-                  border: '2px solid #6f9c16',
-                  backgroundColor: paymentMethod === 'wallet' ? '#6f9c16' : 'transparent',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
-                  {paymentMethod === 'wallet' && (
-                    <div style={{
-                      width: '8px',
-                      height: '8px',
-                      borderRadius: '50%',
-                      backgroundColor: 'white'
-                    }}></div>
-                  )}
-                </div>
-              </div>
+        {/* Main Content Area */}
+        <main className="flex-grow p-4 pb-28 md:pb-8 overflow-y-auto bg-gray-50 md:bg-white">
 
-              {/* Credit Card */}
-              <div style={{
-                backgroundColor: '#f9fafb',
-                borderRadius: '16px',
-                padding: '16px',
-                border: '1px solid #e5e7eb',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                cursor: 'pointer'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <div style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '50%',
-                    backgroundColor: '#E9F0E1',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginRight: '12px'
-                  }}>
-                    <span className="material-symbols-outlined" style={{ color: '#58761B', fontSize: '20px' }}>
-                      credit_card
-                    </span>
-                  </div>
-                  <div>
-                    <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: 0 }}>
-                      Visa •••• 1234
-                    </h3>
-                    <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
-                      Expires 12/25
-                    </p>
-                  </div>
-                </div>
-                <div style={{
-                  width: '20px',
-                  height: '20px',
-                  borderRadius: '50%',
-                  border: '2px solid #6f9c16',
-                  backgroundColor: paymentMethod === 'card' ? '#6f9c16' : 'transparent',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
-                  {paymentMethod === 'card' && (
-                    <div style={{
-                      width: '8px',
-                      height: '8px',
-                      borderRadius: '50%',
-                      backgroundColor: 'white'
-                    }}></div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
+          <div className="max-w-2xl mx-auto animate-fade-in-up space-y-8">
 
-          {/* Recent Payments */}
-          <div>
-            <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: '0 0 16px 0' }}>
-              Recent Payments
-            </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {recentPayments.map((payment) => (
-                <div
-                  key={payment.id}
-                  style={{
-                    backgroundColor: 'white',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '12px',
-                    padding: '16px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between'
-                  }}
+            {/* QR Scanner Section */}
+            <section>
+              <h2 className="text-base font-semibold text-[#1A3F22] mb-4 m-0">Scan to Pay</h2>
+              <div className="bg-black rounded-2xl p-10 text-center relative overflow-hidden">
+                {/* QR Scanner Frame */}
+                <div className="w-52 h-52 border-2 border-white rounded-xl mx-auto mb-5 relative bg-white/10">
+                  {/* Corner indicators */}
+                  <div className="absolute -top-0.5 -left-0.5 w-5 h-5 border-t-4 border-l-4 border-[#6f9c16]"></div>
+                  <div className="absolute -top-0.5 -right-0.5 w-5 h-5 border-t-4 border-r-4 border-[#6f9c16]"></div>
+                  <div className="absolute -bottom-0.5 -left-0.5 w-5 h-5 border-b-4 border-l-4 border-[#6f9c16]"></div>
+                  <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 border-b-4 border-r-4 border-[#6f9c16]"></div>
+
+                  {/* Scanning line animation */}
+                  <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-[#6f9c16] -translate-y-1/2 animate-scan"></div>
+                </div>
+
+                <p className="text-white text-sm mb-4 m-0">
+                  Position QR code within the frame
+                </p>
+
+                <button
+                  onClick={() => navigate('/scan-qr')}
+                  className="bg-[#6f9c16] text-white border-none rounded-lg px-6 py-3 text-sm font-semibold cursor-pointer hover:bg-[#5a8012] transition-colors"
                 >
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <div style={{
-                      width: '40px',
-                      height: '40px',
-                      borderRadius: '50%',
-                      backgroundColor: '#f3f4f6',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginRight: '12px'
-                    }}>
-                      <span className="material-symbols-outlined" style={{ color: '#6b7280', fontSize: '20px' }}>
-                        store
+                  Enable Camera
+                </button>
+              </div>
+            </section>
+
+            {/* Payment Methods */}
+            <section>
+              <h2 className="text-base font-semibold text-[#1A3F22] mb-4 m-0">Payment Methods</h2>
+              <div className="space-y-3">
+                {/* Wallet */}
+                <div
+                  className="bg-gray-50 rounded-2xl p-4 border border-gray-200 flex items-center justify-between cursor-pointer hover:bg-gray-100 transition-colors"
+                  onClick={() => setPaymentMethod('wallet')}
+                >
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 rounded-full bg-[#E9F0E1] flex items-center justify-center mr-3">
+                      <span className="material-symbols-outlined text-[#58761B] text-xl">
+                        account_balance_wallet
                       </span>
                     </div>
                     <div>
-                      <h3 style={{ fontSize: '14px', fontWeight: '600', color: '#1A3F22', margin: 0 }}>
-                        {payment.name}
-                      </h3>
-                      <p style={{ fontSize: '12px', color: '#6b7280', margin: 0 }}>
-                        {payment.time}
-                      </p>
+                      <h3 className="text-base font-semibold text-[#1A3F22] m-0">KingdomPay Wallet</h3>
+                      <p className="text-sm text-gray-500 m-0">Balance: $1,234.56</p>
                     </div>
                   </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <p style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: 0 }}>
-                      -${payment.amount.toFixed(2)}
-                    </p>
-                    <p style={{ fontSize: '12px', color: '#059669', margin: 0, textTransform: 'capitalize' }}>
-                      {payment.status}
-                    </p>
+                  <div className={`w-5 h-5 rounded-full border-2 border-[#6f9c16] flex items-center justify-center ${paymentMethod === 'wallet' ? 'bg-[#6f9c16]' : 'bg-transparent'}`}>
+                    {paymentMethod === 'wallet' && (
+                      <div className="w-2 h-2 rounded-full bg-white"></div>
+                    )}
                   </div>
                 </div>
-              ))}
-            </div>
+
+                {/* Credit Card */}
+                <div
+                  className="bg-gray-50 rounded-2xl p-4 border border-gray-200 flex items-center justify-between cursor-pointer hover:bg-gray-100 transition-colors"
+                  onClick={() => setPaymentMethod('card')}
+                >
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 rounded-full bg-[#E9F0E1] flex items-center justify-center mr-3">
+                      <span className="material-symbols-outlined text-[#58761B] text-xl">
+                        credit_card
+                      </span>
+                    </div>
+                    <div>
+                      <h3 className="text-base font-semibold text-[#1A3F22] m-0">Visa •••• 1234</h3>
+                      <p className="text-sm text-gray-500 m-0">Expires 12/25</p>
+                    </div>
+                  </div>
+                  <div className={`w-5 h-5 rounded-full border-2 border-[#6f9c16] flex items-center justify-center ${paymentMethod === 'card' ? 'bg-[#6f9c16]' : 'bg-transparent'}`}>
+                    {paymentMethod === 'card' && (
+                      <div className="w-2 h-2 rounded-full bg-white"></div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Recent Payments */}
+            <section>
+              <h2 className="text-base font-semibold text-[#1A3F22] mb-4 m-0">Recent Payments</h2>
+              <div className="space-y-3">
+                {recentPayments.map((payment) => (
+                  <div
+                    key={payment.id}
+                    className="bg-white border border-gray-200 rounded-xl p-4 flex items-center justify-between hover:shadow-sm transition-shadow"
+                  >
+                    <div className="flex items-center">
+                      <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
+                        <span className="material-symbols-outlined text-gray-500 text-xl">store</span>
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-semibold text-[#1A3F22] m-0">{payment.name}</h3>
+                        <p className="text-xs text-gray-500 m-0">{payment.time}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-base font-semibold text-[#1A3F22] m-0">-${payment.amount.toFixed(2)}</p>
+                      <p className="text-xs text-green-600 m-0 capitalize">{payment.status}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
           </div>
         </main>
+      </div>
 
-        {/* Bottom Navigation */}
+      {/* Bottom Navigation (Mobile Only) */}
+      <div className="md:hidden">
         <BottomNav />
-        
-        {/* Scanning Animation */}
-        <style>
-          {`
-            @keyframes scan {
-              0% { transform: translateY(-100px); }
-              100% { transform: translateY(100px); }
-            }
-          `}
-        </style>
       </div>
     </div>
   );
