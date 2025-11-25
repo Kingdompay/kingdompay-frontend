@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useCurrency } from '../contexts/CurrencyContext';
 import { useDarkMode } from '../contexts/DarkModeContext';
 import BottomNav from './BottomNav';
 
 const Home = () => {
   const { user } = useAuth();
+  const { formatCurrency } = useCurrency();
   const { theme } = useDarkMode();
   const navigate = useNavigate();
 
@@ -146,9 +148,9 @@ const Home = () => {
                 <p className="text-sm font-light text-white/80 m-0">
                   Total Balance
                 </p>
-                <p className="text-5xl font-bold text-white mt-1 m-0 tracking-tight">
+                <p className="text-3xl md:text-4xl font-bold text-white mt-1 m-0 tracking-tight break-words">
                   {showBalance
-                    ? `$${userBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                    ? formatCurrency(userBalance)
                     : '••••••••'
                   }
                 </p>
@@ -263,7 +265,7 @@ const Home = () => {
                       </div>
                     </div>
                     <p className={`font-bold m-0 ${tx.type === 'credit' ? 'text-green-600' : 'text-red-600'}`}>
-                      {tx.type === 'credit' ? '+' : '-'}${tx.amount.toFixed(2)}
+                      {tx.type === 'credit' ? '+' : '-'}{formatCurrency(tx.amount)}
                     </p>
                   </div>
                 ))

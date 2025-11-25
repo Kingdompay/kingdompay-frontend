@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { DarkModeProvider, useDarkMode } from './contexts/DarkModeContext';
+import { CurrencyProvider } from './contexts/CurrencyContext';
 import ProtectedRoute from './components/ProtectedRoute';
 
 // Auth Components
@@ -140,9 +141,11 @@ function App() {
   return (
     <AuthProvider>
       <DarkModeProvider>
-        <Router>
-          <AppContent />
-        </Router>
+        <CurrencyProvider>
+          <Router>
+            <AppContent />
+          </Router>
+        </CurrencyProvider>
       </DarkModeProvider>
     </AuthProvider>
   );

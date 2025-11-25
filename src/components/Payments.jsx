@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import BottomNav from './BottomNav';
 import { useAuth } from '../contexts/AuthContext';
+import { useCurrency } from '../contexts/CurrencyContext';
 
 const Payments = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { formatCurrency } = useCurrency();
   const [paymentMethod, setPaymentMethod] = useState('wallet');
 
   // Use transactions from context
@@ -191,7 +193,7 @@ const Payments = () => {
                     </div>
                     <div>
                       <h3 className="text-base font-semibold text-[#1A3F22] m-0">KingdomPay Wallet</h3>
-                      <p className="text-sm text-gray-500 m-0">Balance: ${(user?.balance || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                      <p className="text-sm text-gray-500 m-0">Balance: {formatCurrency(user?.balance || 0)}</p>
                     </div>
                   </div>
                   <div className={`w-5 h-5 rounded-full border-2 border-[#6f9c16] flex items-center justify-center ${paymentMethod === 'wallet' ? 'bg-[#6f9c16]' : 'bg-transparent'}`}>
@@ -246,7 +248,7 @@ const Payments = () => {
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="text-base font-semibold text-[#1A3F22] m-0">-${payment.amount.toFixed(2)}</p>
+                        <p className="text-base font-semibold text-[#1A3F22] m-0">-{formatCurrency(payment.amount)}</p>
                         <p className="text-xs text-green-600 m-0 capitalize">{payment.status}</p>
                       </div>
                     </div>

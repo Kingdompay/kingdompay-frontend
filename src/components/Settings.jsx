@@ -1,22 +1,30 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import BottomNav from './BottomNav';
+import { useCurrency } from '../contexts/CurrencyContext';
 
 const Settings = () => {
   const navigate = useNavigate();
+  const { currency, setCurrency, exchangeRate } = useCurrency();
   const [settings, setSettings] = useState({
     notifications: true,
     biometric: true,
     autoLock: true,
-    language: 'English',
-    currency: 'USD'
+    language: 'English'
   });
+
+  const [showCurrencyModal, setShowCurrencyModal] = useState(false);
 
   const toggleSetting = (setting) => {
     setSettings(prev => ({
       ...prev,
       [setting]: !prev[setting]
     }));
+  };
+
+  const handleCurrencySelect = (newCurrency) => {
+    setCurrency(newCurrency);
+    setShowCurrencyModal(false);
   };
 
   return (
@@ -168,7 +176,10 @@ const Settings = () => {
                 </div>
 
                 {/* Currency */}
-                <div className="p-4 rounded-2xl border bg-white border-gray-200 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors">
+                <div
+                  onClick={() => setShowCurrencyModal(true)}
+                  className="p-4 rounded-2xl border bg-white border-gray-200 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors"
+                >
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[#E9F0E1]">
                       <span className="material-symbols-outlined text-[#58761B]">attach_money</span>
@@ -179,7 +190,7 @@ const Settings = () => {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-700">{settings.currency}</span>
+                    <span className="text-sm font-medium text-gray-700">{currency}</span>
                     <span className="material-symbols-outlined text-gray-400">chevron_right</span>
                   </div>
                 </div>
@@ -223,6 +234,48 @@ const Settings = () => {
           </div>
         </main>
       </div>
+
+      {/* Currency Modal */}
+      {showCurrencyModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl animate-fade-in-up">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-[#1A3F22] m-0">Select Currency</h2>
+              <button onClick={() => setShowCurrencyModal(false)} className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer">
+                <span className="material-symbols-outlined text-2xl">close</span>
+              </button>
+            </div>
+
+            <div className="space-y-2">
+              <button
+                onClick={() => handleCurrencySelect('USD')}
+                className={`w-full p-4 rounded-xl flex items-center justify-between border transition-all ${currency === 'USD' ? 'bg-[#E9F0E1] border-[#58761B]' : 'bg-white border-gray-200 hover:bg-gray-50'}`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-xs">USD</div>
+                  <span className="font-medium text-[#1A3F22]">US Dollar</span>
+                </div>
+                {currency === 'USD' && <span className="material-symbols-outlined text-[#58761B]">check_circle</span>}
+              </button>
+
+              <button
+                onClick={() => handleCurrencySelect('KES')}
+                className={`w-full p-4 rounded-xl flex items-center justify-between border transition-all ${currency === 'KES' ? 'bg-[#E9F0E1] border-[#58761B]' : 'bg-white border-gray-200 hover:bg-gray-50'}`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold text-xs">KES</div>
+                  <span className="font-medium text-[#1A3F22]">Kenyan Shilling</span>
+                </div>
+                {currency === 'KES' && <span className="material-symbols-outlined text-[#58761B]">check_circle</span>}
+              </button>
+            </div>
+
+            <div className="mt-6 p-3 bg-gray-50 rounded-lg text-center">
+              <p className="text-xs text-gray-500 m-0">Current Rate: 1 USD ≈ {exchangeRate.toFixed(2)} KES</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Bottom Navigation (Mobile Only) */}
       <div className="md:hidden">

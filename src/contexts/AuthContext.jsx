@@ -62,6 +62,18 @@ const authReducer = (state, action) => {
       return { ...state, user: updatedUser };
     }
 
+    case 'UPDATE_SAVINGS_BALANCE': {
+      if (!state.user) return state;
+      const newBalance = action.payload;
+      const updatedUser = { ...state.user, savingsBalance: newBalance };
+
+      // Persist
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      localStorage.setItem(`mock_savings_balance_${state.user.email}`, newBalance.toString());
+
+      return { ...state, user: updatedUser };
+    }
+
     case 'ADD_TRANSACTION': {
       if (!state.user) return state;
       const transaction = action.payload;
@@ -231,6 +243,7 @@ export const AuthProvider = ({ children }) => {
       const transactions = JSON.parse(localStorage.getItem(`mock_transactions_${userEmail}`)) || [];
       const notifications = JSON.parse(localStorage.getItem(`mock_notifications_${userEmail}`)) || [];
       const savingsGoals = JSON.parse(localStorage.getItem(`mock_savings_${userEmail}`)) || [];
+      const savingsBalance = parseFloat(localStorage.getItem(`mock_savings_balance_${userEmail}`)) || 0.00;
 
       // Inject role, verification status, and persisted data into user object
       const userWithRole = {
@@ -241,7 +254,10 @@ export const AuthProvider = ({ children }) => {
         balance,
         transactions,
         notifications,
-        savingsGoals
+        transactions,
+        notifications,
+        savingsGoals,
+        savingsBalance
       };
 
       dispatch({
@@ -271,6 +287,7 @@ export const AuthProvider = ({ children }) => {
         const transactions = JSON.parse(localStorage.getItem(`mock_transactions_${email}`)) || [];
         const notifications = JSON.parse(localStorage.getItem(`mock_notifications_${email}`)) || [];
         const savingsGoals = JSON.parse(localStorage.getItem(`mock_savings_${email}`)) || [];
+        const savingsBalance = parseFloat(localStorage.getItem(`mock_savings_balance_${email}`)) || 0.00;
 
         const mockUser = {
           id: '1',
@@ -280,7 +297,10 @@ export const AuthProvider = ({ children }) => {
           balance,
           transactions,
           notifications,
+          transactions,
+          notifications,
           savingsGoals,
+          savingsBalance,
           verificationStatus: status,
           limits: status === 'verified' ? { daily: 5000, monthly: 25000 } : { daily: 500, monthly: 2000 }
         };
@@ -314,7 +334,9 @@ export const AuthProvider = ({ children }) => {
         name: userData.name,
         email: userData.email,
         role: 'user',
+        role: 'user',
         balance: 0.00,
+        savingsBalance: 0.00,
         verificationStatus: 'unverified',
         limits: { daily: 500, monthly: 2000 }
       };
@@ -403,6 +425,10 @@ export const AuthProvider = ({ children }) => {
     dispatch({ type: 'UPDATE_BALANCE', payload: Number(newBalance) });
   };
 
+  const updateSavingsBalance = (newBalance) => {
+    dispatch({ type: 'UPDATE_SAVINGS_BALANCE', payload: Number(newBalance) });
+  };
+
   const addTransaction = (transaction) => {
     dispatch({ type: 'ADD_TRANSACTION', payload: transaction });
   };
@@ -447,7 +473,9 @@ export const AuthProvider = ({ children }) => {
     register,
     logout,
     updateUser,
+    updateUser,
     updateBalance,
+    updateSavingsBalance,
     addTransaction,
     addNotification,
     markAsRead,
