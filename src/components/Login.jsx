@@ -381,7 +381,7 @@ const Login = () => {
               </button>
               <button
                 onClick={() => handleDemoLogin('admin')}
-                className={`py-3 rounded-xl font-bold border-2 transition-all flex items-center justify-center gap-2 ${isDarkMode
+                className={`hidden md:flex py-3 rounded-xl font-bold border-2 transition-all items-center justify-center gap-2 ${isDarkMode
                   ? 'border-gray-600 hover:bg-gray-700 text-white'
                   : 'border-gray-200 hover:bg-gray-50 text-gray-700'
                   }`}
@@ -403,11 +403,6 @@ const Login = () => {
             <span>|</span>
             <span className="cursor-pointer hover:text-gray-600">Privacy Policy</span>
           </div>
-        </div>
-
-        {/* Bottom Navigation (Mobile Only) */}
-        <div className="md:hidden">
-          <BottomNav />
         </div>
       </div>
     </div>
