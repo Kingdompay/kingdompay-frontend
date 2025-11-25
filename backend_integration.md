@@ -4,22 +4,32 @@ This frontend is built with React and Vite. It currently uses mock data and loca
 
 ## 1. API Configuration
 
-The application uses `axios` for API requests. The base URL and default headers are configured in `src/contexts/AuthContext.jsx`.
+The application uses a centralized `axios` instance configured in `src/services/api.js`. This service automatically handles:
+- Base URL configuration from environment variables.
+- Attaching the `Authorization` header with the JWT token.
+- Global error handling (e.g., auto-logout on 401).
 
 ### Environment Variables
-Create a `.env` file in the root directory:
+Copy `.env.example` to `.env` in the root directory:
+```bash
+cp .env.example .env
+```
+
+Set your API URL:
 ```env
 VITE_API_URL=http://localhost:5000/api
 ```
 
-### Axios Setup
-Ensure your `AuthContext.jsx` or a dedicated `api.js` service uses this environment variable:
+### Using the API Service
+Import the pre-configured `api` instance in your components or contexts:
 ```javascript
-import axios from 'axios';
+import api from '../services/api';
 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-});
+// Example GET request
+const response = await api.get('/user/profile');
+
+// Example POST request
+await api.post('/auth/login', { email, password });
 ```
 
 ## 2. Authentication Flow

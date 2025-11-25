@@ -1,17 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
 
 const IdentityVerification = () => {
-    const [verifications, setVerifications] = useState([
-        { id: 1, name: 'John Doe', email: 'john@example.com', documentType: 'Passport', status: 'pending', submittedAt: '2023-10-25' },
-        { id: 2, name: 'Jane Smith', email: 'jane@example.com', documentType: 'Driver License', status: 'pending', submittedAt: '2023-10-24' },
-        { id: 3, name: 'Robert Johnson', email: 'robert@example.com', documentType: 'National ID', status: 'rejected', submittedAt: '2023-10-23' },
-        { id: 4, name: 'Emily Davis', email: 'emily@example.com', documentType: 'Passport', status: 'approved', submittedAt: '2023-10-22' },
-    ]);
+    const { updateUserStatus } = useAuth();
+    const [verifications, setVerifications] = useState([]);
+
+    useEffect(() => {
+        // Load mock verifications from localStorage
+        const storedVerifications = JSON.parse(localStorage.getItem('mock_verifications') || '[]');
+
+        // Default mock data
+        const defaultVerifications = [
+            { id: 1, name: 'John Doe', email: 'john@example.com', documentType: 'Passport', status: 'pending', submittedAt: '2023-10-25' },
+            { id: 2, name: 'Jane Smith', email: 'jane@example.com', documentType: 'Driver License', status: 'pending', submittedAt: '2023-10-24' },
+            { id: 3, name: 'Robert Johnson', email: 'robert@example.com', documentType: 'National ID', status: 'rejected', submittedAt: '2023-10-23' },
+            { id: 4, name: 'Emily Davis', email: 'emily@example.com', documentType: 'Passport', status: 'approved', submittedAt: '2023-10-22' },
+        ];
+
+        // Merge stored verifications with default ones (avoiding duplicates if needed, but for now simple concat or priority)
+        // Let's just use stored ones + defaults. 
+        // Actually, for a clean demo, let's prioritize stored ones.
+
+        setVerifications([...storedVerifications, ...defaultVerifications]);
+    }, []);
 
     const handleAction = (id, action) => {
         setVerifications(prev => prev.map(v =>
             v.id === id ? { ...v, status: action } : v
         ));
+
+        // Update global auth context if approving
+        if (action === 'approved') {
+            updateUserStatus(id, 'verified');
+        }
     };
 
     const getStatusColor = (status) => {
@@ -30,8 +51,8 @@ const IdentityVerification = () => {
                     <p className="text-gray-500 mt-1">Review and approve user identification documents</p>
                 </div>
                 <div className="flex gap-2">
-                    <button className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 font-medium">Filter</button>
-                    <button className="px-4 py-2 bg-[#1A3F22] text-white rounded-lg hover:bg-[#14301a] font-medium">Export CSV</button>
+                    <button className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 font-medium cursor-pointer">Filter</button>
+                    <button className="px-4 py-2 bg-[#1A3F22] text-white rounded-lg hover:bg-[#14301a] font-medium border-none cursor-pointer">Export CSV</button>
                 </div>
             </header>
 
@@ -53,10 +74,10 @@ const IdentityVerification = () => {
                                     <td className="p-4">
                                         <div className="flex items-center gap-3">
                                             <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center font-bold text-gray-600">
-                                                {item.name.charAt(0)}
+                                                {(item.name || 'U').charAt(0)}
                                             </div>
                                             <div>
-                                                <p className="font-medium text-gray-900 m-0">{item.name}</p>
+                                                <p className="font-medium text-gray-900 m-0">{item.name || 'Unknown User'}</p>
                                                 <p className="text-xs text-gray-500 m-0">{item.email}</p>
                                             </div>
                                         </div>

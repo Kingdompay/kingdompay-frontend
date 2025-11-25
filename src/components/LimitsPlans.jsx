@@ -1,15 +1,19 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import BottomNav from './BottomNav';
+import { useAuth } from '../contexts/AuthContext';
 
 const LimitsPlans = () => {
   const navigate = useNavigate();
-  const [limits] = useState({
+  const { user } = useAuth();
+
+  // Use limits from user object or fallback to defaults
+  const limits = user?.limits || {
     dailySpending: 1000,
     monthlySpending: 5000,
     transferLimit: 2500,
     atmWithdrawal: 500
-  });
+  };
 
   const plans = [
     {
@@ -53,6 +57,18 @@ const LimitsPlans = () => {
     }
   ];
 
+  const getStatusBadge = () => {
+    const status = user?.verificationStatus || 'unverified';
+    switch (status) {
+      case 'verified':
+        return <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-bold flex items-center"><span className="material-symbols-outlined text-sm mr-1">verified</span> Verified</span>;
+      case 'pending':
+        return <span className="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm font-bold flex items-center"><span className="material-symbols-outlined text-sm mr-1">hourglass_empty</span> Pending</span>;
+      default:
+        return <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-bold flex items-center"><span className="material-symbols-outlined text-sm mr-1">error</span> Unverified</span>;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white font-sans flex justify-center">
       <style>{`@keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}} .animate-fade-in-up{animation:fadeInUp .6s ease-out forwards}`}</style>
@@ -82,25 +98,39 @@ const LimitsPlans = () => {
         {/* Main */}
         <main className="flex-grow p-4 pb-28 md:pb-8 overflow-y-auto bg-gray-50 md:bg-white">
           <div className="max-w-3xl mx-auto animate-fade-in-up space-y-8">
+
+            {/* Verification Status Banner */}
+            <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-bold text-[#1A3F22] m-0">Account Status</h2>
+                {getStatusBadge()}
+              </div>
+              <p className="text-gray-500 mb-4">
+                {user?.verificationStatus === 'verified'
+                  ? 'Your account is fully verified. You enjoy higher transaction limits.'
+                  : 'Verify your identity to unlock higher transaction limits and premium features.'}
+              </p>
+              {user?.verificationStatus === 'unverified' && (
+                <button
+                  onClick={() => navigate('/verify-identity')}
+                  className="w-full bg-[#1A3F22] text-white py-3 rounded-xl font-bold hover:bg-[#14301a] transition-colors border-none cursor-pointer"
+                >
+                  Verify Identity Now
+                </button>
+              )}
+            </div>
+
             {/* Current Limits */}
             <section>
               <h2 className="text-base font-semibold text-[#1A3F22] mb-4">Current Limits</h2>
               <div className="space-y-4">
                 <div className="bg-white border border-gray-200 rounded-2xl p-4 flex justify-between items-center">
                   <span className="font-medium">Daily Spending</span>
-                  <span className="text-[#6f9c16] font-bold">${limits.dailySpending.toLocaleString()}</span>
+                  <span className="text-[#6f9c16] font-bold">${(limits.daily || limits.dailySpending).toLocaleString()}</span>
                 </div>
                 <div className="bg-white border border-gray-200 rounded-2xl p-4 flex justify-between items-center">
                   <span className="font-medium">Monthly Spending</span>
-                  <span className="text-[#6f9c16] font-bold">${limits.monthlySpending.toLocaleString()}</span>
-                </div>
-                <div className="bg-white border border-gray-200 rounded-2xl p-4 flex justify-between items-center">
-                  <span className="font-medium">Transfer Limit</span>
-                  <span className="text-[#6f9c16] font-bold">${limits.transferLimit.toLocaleString()}</span>
-                </div>
-                <div className="bg-white border border-gray-200 rounded-2xl p-4 flex justify-between items-center">
-                  <span className="font-medium">ATM Withdrawal</span>
-                  <span className="text-[#6f9c16] font-bold">${limits.atmWithdrawal.toLocaleString()}</span>
+                  <span className="text-[#6f9c16] font-bold">${(limits.monthly || limits.monthlySpending).toLocaleString()}</span>
                 </div>
               </div>
             </section>

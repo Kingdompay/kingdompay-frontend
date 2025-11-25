@@ -32,6 +32,7 @@ import Biometric from './components/Biometric';
 import HelpSupport from './components/HelpSupport';
 import ChatSupport from './components/ChatSupport';
 import FAQs from './components/FAQs';
+import VerificationUpload from './components/VerificationUpload';
 
 // Payment Sub-pages
 import SendMoney from './components/SendMoney';
@@ -100,6 +101,7 @@ const AppContent = () => {
           <Route path="/cards" element={<ProtectedRoute><Cards /></ProtectedRoute>} />
           <Route path="/referrals" element={<ProtectedRoute><Referrals /></ProtectedRoute>} />
           <Route path="/personal-details" element={<ProtectedRoute><PersonalDetails /></ProtectedRoute>} />
+          <Route path="/verify-identity" element={<ProtectedRoute><VerificationUpload /></ProtectedRoute>} />
 
           {/* Payment Sub-pages */}
           <Route path="/send-money" element={<ProtectedRoute><SendMoney /></ProtectedRoute>} />

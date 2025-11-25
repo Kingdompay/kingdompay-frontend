@@ -74,14 +74,18 @@ const SendMoney = () => {
       return;
     }
 
+    // Check limits
+    const dailyLimit = user?.limits?.daily || 500;
+    if (numericAmount > dailyLimit) {
+      setError(`Transaction exceeds your daily limit of $${dailyLimit}. Please verify your identity to increase your limits.`);
+      return;
+    }
+
     setLoading(true);
 
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1500));
-
-      // In a real app, this would be:
-      // const response = await axios.post('/api/transactions/send-money', { ... });
 
       setSuccess(`Successfully sent ${formatAmount(numericAmount.toString())}!`);
 

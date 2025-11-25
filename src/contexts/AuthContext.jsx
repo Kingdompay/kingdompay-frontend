@@ -1,13 +1,13 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 
 const AuthContext = createContext();
 
 const initialState = {
-  user: null,
-  token: localStorage.getItem('token'),
-  isAuthenticated: false,
-  loading: true,
+  user: JSON.parse(localStorage.getItem('user')) || null,
+  token: localStorage.getItem('token') || null,
+  isAuthenticated: !!localStorage.getItem('token'),
+  loading: false,
   error: null,
 };
 
@@ -15,14 +15,11 @@ const authReducer = (state, action) => {
   switch (action.type) {
     case 'LOGIN_START':
     case 'REGISTER_START':
-      return {
-        ...state,
-        loading: true,
-        error: null,
-      };
+      return { ...state, loading: true, error: null };
     case 'LOGIN_SUCCESS':
     case 'REGISTER_SUCCESS':
       localStorage.setItem('token', action.payload.token);
+      localStorage.setItem('user', JSON.stringify(action.payload.user));
       return {
         ...state,
         user: action.payload.user,
@@ -33,13 +30,10 @@ const authReducer = (state, action) => {
       };
     case 'LOGIN_FAILURE':
     case 'REGISTER_FAILURE':
-      return {
-        ...state,
-        loading: false,
-        error: action.payload,
-      };
+      return { ...state, loading: false, error: action.payload };
     case 'LOGOUT':
       localStorage.removeItem('token');
+      localStorage.removeItem('user');
       return {
         ...state,
         user: null,
@@ -47,11 +41,6 @@ const authReducer = (state, action) => {
         isAuthenticated: false,
         loading: false,
         error: null,
-      };
-    case 'SET_LOADING':
-      return {
-        ...state,
-        loading: action.payload,
       };
     default:
       return state;
@@ -61,51 +50,37 @@ const authReducer = (state, action) => {
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  // Set up axios defaults
   useEffect(() => {
-    if (state.token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${state.token}`;
-    } else {
-      delete axios.defaults.headers.common['Authorization'];
+    // Check if token exists and is valid (optional: verify with backend)
+    const token = localStorage.getItem('token');
+    if (token) {
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     }
   }, [state.token]);
-
-  // Check if user is logged in on app start
-  useEffect(() => {
-    const checkAuth = async () => {
-      if (state.token) {
-        try {
-          // Assuming you have an endpoint to get the current user profile
-          // If not, you might need to adjust this or rely on the token being present
-          const response = await axios.get('/api/user/profile');
-          dispatch({
-            type: 'LOGIN_SUCCESS',
-            payload: {
-              user: response.data,
-              token: state.token,
-            },
-          });
-        } catch (error) {
-          console.error("Auth check failed:", error);
-          dispatch({ type: 'LOGOUT' });
-        }
-      } else {
-        dispatch({ type: 'SET_LOADING', payload: false });
-      }
-    };
-
-    checkAuth();
-  }, []);
 
   const login = async (email, password, role = 'user') => {
     dispatch({ type: 'LOGIN_START' });
     try {
       // Mocking role-based login for now since backend might not support it yet
       // In a real app, the backend would return the role
-      const response = await axios.post('/api/auth/login', { email, password });
+      const response = await api.post('/auth/login', { email, password });
 
-      // Inject role into user object for frontend logic
-      const userWithRole = { ...response.data.user, role: role };
+      // Check for persisted verification status in localStorage
+      const mockVerifications = JSON.parse(localStorage.getItem('mock_verifications') || '[]');
+      const userVerification = mockVerifications.find(v => v.email === response.data.user.email);
+
+      const verificationStatus = userVerification ? userVerification.status : 'unverified';
+      const limits = verificationStatus === 'verified'
+        ? { daily: 5000, monthly: 25000 }
+        : { daily: 500, monthly: 2000 };
+
+      // Inject role and verification status into user object for frontend logic
+      const userWithRole = {
+        ...response.data.user,
+        role: role,
+        verificationStatus,
+        limits
+      };
 
       dispatch({
         type: 'LOGIN_SUCCESS',
@@ -118,12 +93,25 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       // Fallback for demo/testing without backend
       if (email.startsWith('demo') || email.startsWith('admin') || email.startsWith('institution')) {
+        // Check for persisted verification status in localStorage
+        const mockVerifications = JSON.parse(localStorage.getItem('mock_verifications') || '[]');
+        const userVerification = mockVerifications.find(v => v.email === email);
+
+        let isVerified = email === 'demo@kingdompay.com';
+        let status = isVerified ? 'verified' : 'unverified';
+
+        if (userVerification) {
+          status = userVerification.status;
+        }
+
         const mockUser = {
           id: '1',
           name: 'Demo User',
           email: email,
           role: role,
-          balance: 5000.00
+          balance: 5000.00,
+          verificationStatus: status,
+          limits: status === 'verified' ? { daily: 5000, monthly: 25000 } : { daily: 500, monthly: 2000 }
         };
         dispatch({
           type: 'LOGIN_SUCCESS',
@@ -144,7 +132,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     dispatch({ type: 'REGISTER_START' });
     try {
-      const response = await axios.post('/api/auth/register', userData);
+      const response = await api.post('/auth/register', userData);
       dispatch({ type: 'REGISTER_SUCCESS', payload: response.data });
       return { success: true };
     } catch (error) {
@@ -154,8 +142,10 @@ export const AuthProvider = ({ children }) => {
         id: 'new-user-' + Date.now(),
         name: userData.name,
         email: userData.email,
-        role: 'user', // Default role for new registrations
-        balance: 0.00
+        role: 'user',
+        balance: 0.00,
+        verificationStatus: 'unverified',
+        limits: { daily: 500, monthly: 2000 }
       };
 
       dispatch({
@@ -166,6 +156,64 @@ export const AuthProvider = ({ children }) => {
         }
       });
       return { success: true };
+    }
+  };
+
+  const uploadDocument = async (file) => {
+    // Mock API call
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        // Update local state to pending
+        if (state.user) {
+          const updatedUser = { ...state.user, verificationStatus: 'pending' };
+
+          // Persist the request to localStorage for Admin to see
+          const mockVerifications = JSON.parse(localStorage.getItem('mock_verifications') || '[]');
+
+          // Remove existing request for this user if any
+          const filtered = mockVerifications.filter(v => v.email !== state.user.email);
+
+          filtered.push({
+            id: Date.now(),
+            name: state.user.name,
+            email: state.user.email,
+            documentType: 'ID Card', // Mock type
+            status: 'pending',
+            submittedAt: new Date().toISOString().split('T')[0]
+          });
+
+          localStorage.setItem('mock_verifications', JSON.stringify(filtered));
+
+          dispatch({
+            type: 'LOGIN_SUCCESS',
+            payload: { user: updatedUser, token: state.token }
+          });
+        }
+        resolve({ success: true });
+      }, 1500);
+    });
+  };
+
+  // Helper to update user status (for Admin demo)
+  const updateUserStatus = (userId, status) => {
+    // This is called by Admin. We need to update the localStorage so the user sees it next time.
+    const mockVerifications = JSON.parse(localStorage.getItem('mock_verifications') || '[]');
+    const updatedVerifications = mockVerifications.map(v =>
+      v.id === userId ? { ...v, status } : v
+    );
+    localStorage.setItem('mock_verifications', JSON.stringify(updatedVerifications));
+
+    // Also update current user if it happens to be the same (unlikely for Admin approving themselves, but good for safety)
+    if (state.user && state.user.id === userId) {
+      const limits = status === 'verified'
+        ? { daily: 5000, monthly: 25000 }
+        : { daily: 500, monthly: 2000 };
+
+      const updatedUser = { ...state.user, verificationStatus: status, limits };
+      dispatch({
+        type: 'LOGIN_SUCCESS',
+        payload: { user: updatedUser, token: state.token }
+      });
     }
   };
 
@@ -187,7 +235,9 @@ export const AuthProvider = ({ children }) => {
     register,
     logout,
     updateUser,
-    hasRole
+    hasRole,
+    uploadDocument,
+    updateUserStatus
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

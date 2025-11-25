@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useDarkMode } from '../contexts/DarkModeContext';
 import BottomNav from './BottomNav';
@@ -13,6 +13,7 @@ const Login = () => {
   const [error, setError] = useState('');
   const [focusedField, setFocusedField] = useState('');
   const [buttonStates, setButtonStates] = useState({});
+  const [validationErrors, setValidationErrors] = useState({});
 
   const { login } = useAuth();
   const { isDarkMode } = useDarkMode();
@@ -395,7 +396,7 @@ const Login = () => {
         {/* Footer Links */}
         <div className={`p-4 text-center text-xs border-t ${isDarkMode ? 'border-gray-700 text-gray-500' : 'border-gray-200 text-gray-400'}`}>
           <p className="mb-2">
-            Don't have an account? <span className="text-primary-600 font-bold cursor-pointer hover:underline">Sign up</span>
+            Don't have an account? <Link to="/register" className="text-[#1A3F22] font-bold hover:underline">Sign up</Link>
           </p>
           <div className="flex justify-center space-x-4">
             <span className="cursor-pointer hover:text-gray-600">Terms of Service</span>
