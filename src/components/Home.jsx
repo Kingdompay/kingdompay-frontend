@@ -1,54 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useDarkMode } from '../contexts/DarkModeContext';
-import axios from 'axios';
-import LoadingSpinner from './LoadingSpinner';
-import ErrorMessage from './ErrorMessage';
 import BottomNav from './BottomNav';
 
 const Home = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth();
   const { theme } = useDarkMode();
   const navigate = useNavigate();
 
-  const [transactions, setTransactions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [buttonStates, setButtonStates] = useState({});
-  const [userBalance, setUserBalance] = useState(user?.balance || 0);
   const [showBalance, setShowBalance] = useState(true);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setError(null);
+  // Use balance and transactions directly from user context
+  const userBalance = user?.balance || 0;
+  const transactions = user?.transactions || [];
+  const unreadNotifications = (user?.notifications || []).filter(n => !n.read).length;
 
-        // Fetch user profile to get updated balance
-        const profileResponse = await axios.get('/api/user/profile');
-        setUserBalance(profileResponse.data.balance);
-
-        // Fetch transactions
-        const transactionsResponse = await axios.get('/api/transactions');
-        setTransactions(transactionsResponse.data);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setError('Failed to load data. Please check your connection.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  const retryFetchTransactions = () => {
-    setLoading(true);
-    setError(null);
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
-  };
+  console.log('Home: Rendered with balance:', userBalance);
 
   const handleWalletClick = () => {
     console.log('Wallet clicked!');
@@ -164,7 +133,9 @@ const Home = () => {
                       <span className="material-symbols-outlined text-white text-xl">
                         notifications
                       </span>
-                      <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#1A3F22]"></span>
+                      {unreadNotifications > 0 && (
+                        <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#1A3F22]"></span>
+                      )}
                     </button>
                   </div>
                 </div>

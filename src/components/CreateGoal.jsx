@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BottomNav from './BottomNav';
+import { useAuth } from '../contexts/AuthContext';
 
 const CreateGoal = () => {
   const navigate = useNavigate();
+  const { createSavingsGoal } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     targetAmount: '',
@@ -29,7 +31,19 @@ const CreateGoal = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Creating goal:', formData);
+
+    const newGoal = {
+      id: Date.now(),
+      name: formData.name,
+      targetAmount: parseFloat(formData.targetAmount),
+      currentAmount: 0,
+      deadline: formData.deadline,
+      icon: formData.icon,
+      status: 'active',
+      createdAt: new Date().toISOString()
+    };
+
+    createSavingsGoal(newGoal);
     navigate('/savings');
   };
 

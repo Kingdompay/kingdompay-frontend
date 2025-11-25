@@ -42,19 +42,170 @@ const authReducer = (state, action) => {
         loading: false,
         error: null,
       };
+    case 'UPDATE_USER':
+      localStorage.setItem('user', JSON.stringify(action.payload));
+      return {
+        ...state,
+        user: action.payload,
+      };
+
+    // Granular updates to prevent race conditions
+    case 'UPDATE_BALANCE': {
+      if (!state.user) return state;
+      const newBalance = action.payload;
+      const updatedUser = { ...state.user, balance: newBalance };
+
+      // Persist
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      localStorage.setItem(`mock_balance_${state.user.email}`, newBalance.toString());
+
+      return { ...state, user: updatedUser };
+    }
+
+    case 'ADD_TRANSACTION': {
+      if (!state.user) return state;
+      const transaction = action.payload;
+      const existingTransactions = state.user.transactions || [];
+      const newTransactions = [transaction, ...existingTransactions];
+      const updatedUser = { ...state.user, transactions: newTransactions };
+
+      // Persist
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      localStorage.setItem(`mock_transactions_${state.user.email}`, JSON.stringify(newTransactions));
+
+      return { ...state, user: updatedUser };
+    }
+
+    case 'ADD_NOTIFICATION': {
+      if (!state.user) return state;
+      const notification = action.payload;
+      const existingNotifications = state.user.notifications || [];
+      const newNotification = {
+        id: Date.now(),
+        read: false,
+        time: new Date().toISOString(),
+        ...notification
+      };
+      const newNotifications = [newNotification, ...existingNotifications];
+      const updatedUser = { ...state.user, notifications: newNotifications };
+
+      // Persist
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      localStorage.setItem(`mock_notifications_${state.user.email}`, JSON.stringify(newNotifications));
+
+      return { ...state, user: updatedUser };
+    }
+
+    case 'MARK_AS_READ': {
+      if (!state.user) return state;
+      const notificationId = action.payload;
+      const updatedNotifications = (state.user.notifications || []).map(n =>
+        n.id === notificationId ? { ...n, read: true } : n
+      );
+      const updatedUser = { ...state.user, notifications: updatedNotifications };
+
+      // Persist
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      localStorage.setItem(`mock_notifications_${state.user.email}`, JSON.stringify(updatedNotifications));
+
+      return { ...state, user: updatedUser };
+    }
+
+    case 'MARK_ALL_READ': {
+      if (!state.user) return state;
+      const updatedNotifications = (state.user.notifications || []).map(n => ({ ...n, read: true }));
+      const updatedUser = { ...state.user, notifications: updatedNotifications };
+
+      // Persist
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      localStorage.setItem(`mock_notifications_${state.user.email}`, JSON.stringify(updatedNotifications));
+
+      return { ...state, user: updatedUser };
+    }
+
+    // Savings Actions
+    case 'ADD_SAVINGS_GOAL': {
+      if (!state.user) return state;
+      const goal = action.payload;
+      const existingGoals = state.user.savingsGoals || [];
+      const newGoals = [...existingGoals, goal];
+      const updatedUser = { ...state.user, savingsGoals: newGoals };
+
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      localStorage.setItem(`mock_savings_${state.user.email}`, JSON.stringify(newGoals));
+
+      return { ...state, user: updatedUser };
+    }
+
+    case 'UPDATE_SAVINGS_GOAL': {
+      if (!state.user) return state;
+      const updatedGoal = action.payload;
+      const existingGoals = state.user.savingsGoals || [];
+      const newGoals = existingGoals.map(g => g.id === updatedGoal.id ? updatedGoal : g);
+      const updatedUser = { ...state.user, savingsGoals: newGoals };
+
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      localStorage.setItem(`mock_savings_${state.user.email}`, JSON.stringify(newGoals));
+
+      return { ...state, user: updatedUser };
+    }
+
+    // Community Actions (Global)
+    case 'ADD_GROUP': {
+      const group = action.payload;
+      const existingGroups = state.groups || [];
+      const newGroups = [...existingGroups, group];
+
+      localStorage.setItem('mock_groups', JSON.stringify(newGroups));
+
+      return { ...state, groups: newGroups };
+    }
+
+    case 'UPDATE_GROUP': {
+      const updatedGroup = action.payload;
+      const existingGroups = state.groups || [];
+      const newGroups = existingGroups.map(g => g.id === updatedGroup.id ? updatedGroup : g);
+
+      localStorage.setItem('mock_groups', JSON.stringify(newGroups));
+
+      return { ...state, groups: newGroups };
+    }
+
+    case 'SET_GROUPS': {
+      return { ...state, groups: action.payload };
+    }
+
     default:
       return state;
   }
 };
 
 export const AuthProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(authReducer, initialState);
+  const [state, dispatch] = useReducer(authReducer, {
+    ...initialState,
+    groups: JSON.parse(localStorage.getItem('mock_groups')) || []
+  });
 
   useEffect(() => {
     // Check if token exists and is valid (optional: verify with backend)
     const token = localStorage.getItem('token');
     if (token) {
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    }
+
+    // Load groups if not loaded
+    const savedGroups = JSON.parse(localStorage.getItem('mock_groups'));
+    if (savedGroups && savedGroups.length > 0 && (!state.groups || state.groups.length === 0)) {
+      dispatch({ type: 'SET_GROUPS', payload: savedGroups });
+    } else if (!savedGroups) {
+      // Initialize default groups if none exist
+      const defaultGroups = [
+        { id: 1, name: 'St. Mary\'s Church', type: 'church', balance: 15000, description: 'Church building fund', members: [] },
+        { id: 2, name: 'Family Savings', type: 'family', balance: 5000, description: 'Joint family savings', members: [] },
+        { id: 3, name: 'Teachers Sacco', type: 'sacco', balance: 50000, description: 'Teachers investment group', members: [] }
+      ];
+      localStorage.setItem('mock_groups', JSON.stringify(defaultGroups));
+      dispatch({ type: 'SET_GROUPS', payload: defaultGroups });
     }
   }, [state.token]);
 
@@ -74,12 +225,23 @@ export const AuthProvider = ({ children }) => {
         ? { daily: 5000, monthly: 25000 }
         : { daily: 500, monthly: 2000 };
 
-      // Inject role and verification status into user object for frontend logic
+      // Load persisted data from localStorage
+      const userEmail = response.data.user.email;
+      const balance = parseFloat(localStorage.getItem(`mock_balance_${userEmail}`)) || 5000.00;
+      const transactions = JSON.parse(localStorage.getItem(`mock_transactions_${userEmail}`)) || [];
+      const notifications = JSON.parse(localStorage.getItem(`mock_notifications_${userEmail}`)) || [];
+      const savingsGoals = JSON.parse(localStorage.getItem(`mock_savings_${userEmail}`)) || [];
+
+      // Inject role, verification status, and persisted data into user object
       const userWithRole = {
         ...response.data.user,
         role: role,
         verificationStatus,
-        limits
+        limits,
+        balance,
+        transactions,
+        notifications,
+        savingsGoals
       };
 
       dispatch({
@@ -104,12 +266,21 @@ export const AuthProvider = ({ children }) => {
           status = userVerification.status;
         }
 
+        // Load persisted data from localStorage
+        const balance = parseFloat(localStorage.getItem(`mock_balance_${email}`)) || 5000.00;
+        const transactions = JSON.parse(localStorage.getItem(`mock_transactions_${email}`)) || [];
+        const notifications = JSON.parse(localStorage.getItem(`mock_notifications_${email}`)) || [];
+        const savingsGoals = JSON.parse(localStorage.getItem(`mock_savings_${email}`)) || [];
+
         const mockUser = {
           id: '1',
           name: 'Demo User',
           email: email,
           role: role,
-          balance: 5000.00,
+          balance,
+          transactions,
+          notifications,
+          savingsGoals,
           verificationStatus: status,
           limits: status === 'verified' ? { daily: 5000, monthly: 25000 } : { daily: 500, monthly: 2000 }
         };
@@ -222,7 +393,48 @@ export const AuthProvider = ({ children }) => {
   };
 
   const updateUser = (userData) => {
-    // Implement if needed
+    if (!state.user) return;
+    const updatedUser = { ...state.user, ...userData };
+    dispatch({ type: 'UPDATE_USER', payload: updatedUser });
+  };
+
+  const updateBalance = (newBalance) => {
+    console.log('AuthContext: updateBalance called with', newBalance);
+    dispatch({ type: 'UPDATE_BALANCE', payload: Number(newBalance) });
+  };
+
+  const addTransaction = (transaction) => {
+    dispatch({ type: 'ADD_TRANSACTION', payload: transaction });
+  };
+
+  const addNotification = (notification) => {
+    dispatch({ type: 'ADD_NOTIFICATION', payload: notification });
+  };
+
+  const markAsRead = (notificationId) => {
+    dispatch({ type: 'MARK_AS_READ', payload: notificationId });
+  };
+
+  const markAllAsRead = () => {
+    dispatch({ type: 'MARK_ALL_READ' });
+  };
+
+  // Savings Helpers
+  const createSavingsGoal = (goal) => {
+    dispatch({ type: 'ADD_SAVINGS_GOAL', payload: goal });
+  };
+
+  const updateSavingsGoal = (goal) => {
+    dispatch({ type: 'UPDATE_SAVINGS_GOAL', payload: goal });
+  };
+
+  // Community Helpers
+  const createGroup = (group) => {
+    dispatch({ type: 'ADD_GROUP', payload: group });
+  };
+
+  const updateGroup = (group) => {
+    dispatch({ type: 'UPDATE_GROUP', payload: group });
   };
 
   const hasRole = (role) => {
@@ -235,6 +447,15 @@ export const AuthProvider = ({ children }) => {
     register,
     logout,
     updateUser,
+    updateBalance,
+    addTransaction,
+    addNotification,
+    markAsRead,
+    markAllAsRead,
+    createSavingsGoal,
+    updateSavingsGoal,
+    createGroup,
+    updateGroup,
     hasRole,
     uploadDocument,
     updateUserStatus

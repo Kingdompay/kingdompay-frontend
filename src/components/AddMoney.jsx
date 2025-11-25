@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import BottomNav from './BottomNav';
 
 const AddMoney = () => {
   const navigate = useNavigate();
+  const { user, updateBalance, addTransaction, addNotification } = useAuth();
   const [amount, setAmount] = useState('');
   const [method, setMethod] = useState('card'); // card, bank, apple
 
@@ -17,9 +19,49 @@ const AddMoney = () => {
   };
 
   const handleAddMoney = () => {
-    // Logic to add money
-    console.log(`Adding ${amount} via ${method}`);
-    navigate('/home');
+    if (!amount || amount === '$0.00') {
+      alert('Please enter an amount');
+      return;
+    }
+
+    const numericAmount = parseFloat(amount.replace(/[^0-9.]/g, ''));
+
+    if (isNaN(numericAmount) || numericAmount <= 0) {
+      alert('Please enter a valid amount');
+      return;
+    }
+
+    // Update balance
+    const currentBalance = Number(user?.balance || 0);
+    const newBalance = currentBalance + numericAmount;
+
+    console.log('AddMoney: Updating balance', { current: currentBalance, add: numericAmount, new: newBalance });
+    updateBalance(newBalance);
+
+    // Add transaction
+    addTransaction({
+      type: 'credit',
+      description: `Added funds via ${method === 'card' ? 'Card' : method === 'bank' ? 'Bank Transfer' : 'Apple Pay'}`,
+      amount: numericAmount,
+      date: new Date().toISOString(),
+      status: 'completed'
+    });
+
+    // Add notification
+    addNotification({
+      type: 'payment',
+      title: 'Funds Added',
+      message: `Successfully added ${amount} to your wallet`,
+      icon: 'account_balance_wallet',
+      color: '#059669'
+    });
+
+    alert(`Successfully added ${amount} to your wallet!`);
+
+    // Delay navigation to allow state update to propagate
+    setTimeout(() => {
+      navigate('/home');
+    }, 100);
   };
 
   return (

@@ -1,73 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import BottomNav from './BottomNav';
 
 const Notifications = () => {
   const navigate = useNavigate();
-  const [notifications] = useState([
-    {
-      id: 1,
-      type: 'payment',
-      title: 'Payment Received',
-      message: 'You received $50.00 from Sarah Johnson',
-      time: '2 minutes ago',
-      read: false,
-      icon: 'payments',
-      color: '#059669'
-    },
-    {
-      id: 2,
-      type: 'savings',
-      title: 'Goal Milestone',
-      message: 'Congratulations! You\'ve reached 50% of your vacation fund goal',
-      time: '1 hour ago',
-      read: false,
-      icon: 'savings',
-      color: '#D99201'
-    },
-    {
-      id: 3,
-      type: 'security',
-      title: 'Security Alert',
-      message: 'New login detected from iPhone 13',
-      time: '3 hours ago',
-      read: true,
-      icon: 'security',
-      color: '#dc2626'
-    },
-    {
-      id: 4,
-      type: 'community',
-      title: 'Group Payment',
-      message: 'The dinner group payment is ready to split',
-      time: '1 day ago',
-      read: true,
-      icon: 'groups',
-      color: '#6f9c16'
-    },
-    {
-      id: 5,
-      type: 'promotion',
-      title: 'Special Offer',
-      message: 'Get 5% cashback on all grocery purchases this week',
-      time: '2 days ago',
-      read: true,
-      icon: 'local_offer',
-      color: '#7c3aed'
-    },
-    {
-      id: 6,
-      type: 'reminder',
-      title: 'Bill Reminder',
-      message: 'Your electricity bill is due in 3 days',
-      time: '3 days ago',
-      read: true,
-      icon: 'schedule',
-      color: '#ea580c'
-    }
-  ]);
-
+  const { user, markAsRead, markAllAsRead } = useAuth();
   const [filter, setFilter] = useState('all');
+
+  const notifications = user?.notifications || [];
 
   const filteredNotifications = notifications.filter(notification => {
     if (filter === 'all') return true;
@@ -84,6 +25,10 @@ const Notifications = () => {
     { key: 'community', label: 'Community', count: notifications.filter(n => n.type === 'community').length },
     { key: 'promotion', label: 'Offers', count: notifications.filter(n => n.type === 'promotion').length }
   ];
+
+  const handleNotificationClick = (id) => {
+    markAsRead(id);
+  };
 
   return (
     <div className="min-h-screen bg-white font-sans flex justify-center">
@@ -125,7 +70,7 @@ const Notifications = () => {
                 )}
               </div>
               <button
-                onClick={() => console.log('Mark all as read')}
+                onClick={markAllAsRead}
                 className="text-[#6f9c16] text-xs font-medium bg-transparent border-none cursor-pointer hover:underline"
               >
                 Mark All
@@ -185,6 +130,7 @@ const Notifications = () => {
                 filteredNotifications.map((notification) => (
                   <div
                     key={notification.id}
+                    onClick={() => handleNotificationClick(notification.id)}
                     className={`rounded-2xl p-4 cursor-pointer transition-all relative ${notification.read
                       ? 'bg-white border border-gray-200'
                       : 'bg-white border-2 border-[#6f9c16] hover:shadow-lg'
@@ -213,7 +159,7 @@ const Notifications = () => {
                             {notification.title}
                           </h3>
                           <span className="text-xs text-gray-500 ml-2 flex-shrink-0">
-                            {notification.time}
+                            {new Date(notification.time).toLocaleString()}
                           </span>
                         </div>
                         <p className="text-sm text-gray-600 m-0 leading-relaxed">

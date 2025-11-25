@@ -6,7 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 const SendMoney = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, updateBalance, addTransaction, addNotification } = useAuth();
   const [formData, setFormData] = useState({
     recipient: '',
     amount: '',
@@ -74,6 +74,13 @@ const SendMoney = () => {
       return;
     }
 
+    // Check balance
+    const currentBalance = Number(user?.balance || 0);
+    if (currentBalance < numericAmount) {
+      setError('Insufficient funds');
+      return;
+    }
+
     // Check limits
     const dailyLimit = user?.limits?.daily || 500;
     if (numericAmount > dailyLimit) {
@@ -84,8 +91,31 @@ const SendMoney = () => {
     setLoading(true);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Update balance
+      const newBalance = currentBalance - numericAmount;
+      console.log('SendMoney: Updating balance', { current: currentBalance, subtract: numericAmount, new: newBalance });
+      updateBalance(newBalance);
+
+      // Add transaction
+      addTransaction({
+        type: 'debit',
+        description: `Sent to ${formData.recipient}`,
+        amount: numericAmount,
+        date: new Date().toISOString(),
+        status: 'completed'
+      });
+
+      // Add notification
+      addNotification({
+        type: 'payment',
+        title: 'Payment Sent',
+        message: `You sent $${formatAmount(numericAmount.toString())} to ${formData.recipient}`,
+        icon: 'payments',
+        color: '#dc2626'
+      });
 
       setSuccess(`Successfully sent ${formatAmount(numericAmount.toString())}!`);
 
@@ -94,6 +124,7 @@ const SendMoney = () => {
         navigate('/home');
       }, 2000);
     } catch (err) {
+      console.error('Send failed:', err);
       setError(err.response?.data?.message || 'Failed to send money. Please try again.');
     } finally {
       setLoading(false);

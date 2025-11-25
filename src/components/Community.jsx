@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 import BottomNav from './BottomNav';
 import { useAuth } from '../contexts/AuthContext';
 
 const Community = () => {
-  const { user, hasRole } = useAuth();
+  const { user, groups, updateBalance, addTransaction, addNotification, updateGroup, hasRole } = useAuth();
   const [activeTab, setActiveTab] = useState('feed');
-  const [groups, setGroups] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
@@ -17,25 +15,6 @@ const Community = () => {
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [contributionAmount, setContributionAmount] = useState('');
   const [contributing, setContributing] = useState(false);
-
-  // Fetch groups (used on mount and after contributions)
-  const fetchGroups = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get('/api/community/groups');
-      setGroups(response.data);
-    } catch (err) {
-      console.error('Error fetching groups:', err);
-      setError('Failed to load groups');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Initial load
-  useEffect(() => {
-    fetchGroups();
-  }, []);
 
   // Open contribution modal
   const openContributeModal = (group) => {
@@ -52,20 +31,52 @@ const Community = () => {
       setError('Please enter a valid amount');
       return;
     }
+
+    const amount = parseFloat(contributionAmount);
+    const currentBalance = Number(user?.balance || 0);
+
+    if (currentBalance < amount) {
+      setError('Insufficient funds in your wallet');
+      return;
+    }
+
     setContributing(true);
     setError('');
+
     try {
-      const response = await axios.post(`/api/community/groups/${selectedGroup.id}/contribute`, {
-        amount: parseFloat(contributionAmount)
+      // Simulate delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // 1. Deduct from user balance
+      updateBalance(currentBalance - amount);
+
+      // 2. Update group balance
+      const updatedGroup = { ...selectedGroup, balance: selectedGroup.balance + amount };
+      updateGroup(updatedGroup);
+
+      // 3. Add transaction
+      addTransaction({
+        type: 'community_contribution',
+        description: `Contribution to ${selectedGroup.name}`,
+        amount: amount,
+        date: new Date().toISOString(),
+        status: 'completed'
       });
-      setSuccess(`Successfully contributed $${contributionAmount} to ${selectedGroup.name}!`);
-      // Refresh groups to get updated balances
-      await fetchGroups();
+
+      // 4. Add notification
+      addNotification({
+        type: 'community',
+        title: 'Community Contribution',
+        message: `You contributed $${amount} to ${selectedGroup.name}`,
+        icon: 'groups',
+        color: '#1A3F22'
+      });
+
+      setSuccess(`Successfully contributed $${amount} to ${selectedGroup.name}!`);
+
       // Update selectedGroup balance for modal display
-      setSelectedGroup(prev => ({
-        ...prev,
-        balance: response.data.groupBalance
-      }));
+      setSelectedGroup(updatedGroup);
+
       // Close modal after short delay
       setTimeout(() => {
         setShowContributeModal(false);
@@ -74,14 +85,14 @@ const Community = () => {
         setSuccess('');
       }, 2000);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to contribute. Please try again.');
+      setError('Failed to contribute. Please try again.');
     } finally {
       setContributing(false);
     }
   };
 
   const handleWithdraw = (group) => {
-    // Mock withdrawal logic
+    // Mock withdrawal logic for now, or implement if needed
     alert(`Withdrawal initiated for ${group.name}. Funds will be transferred to the institution account.`);
   };
 
@@ -189,9 +200,9 @@ const Community = () => {
 
               {loading ? (
                 <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 text-center"><p className="text-gray-500">Loading groups...</p></div>
-              ) : error && groups.length === 0 ? (
+              ) : error && (!groups || groups.length === 0) ? (
                 <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 text-center"><p className="text-red-500">{error}</p></div>
-              ) : groups.length === 0 ? (
+              ) : (!groups || groups.length === 0) ? (
                 <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 text-center"><p className="text-gray-500">No groups found</p></div>
               ) : (
                 groups.map((group) => (

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BottomNav from './BottomNav';
+import { useAuth } from '../contexts/AuthContext';
 
 const CreateGroup = () => {
   const navigate = useNavigate();
+  const { createGroup, user } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -20,7 +22,19 @@ const CreateGroup = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Creating group:', formData);
+
+    const newGroup = {
+      id: Date.now(),
+      name: formData.name,
+      description: formData.description,
+      type: formData.type,
+      targetAmount: formData.targetAmount ? parseFloat(formData.targetAmount) : null,
+      balance: 0,
+      members: [user?.id],
+      createdAt: new Date().toISOString()
+    };
+
+    createGroup(newGroup);
     navigate('/community');
   };
 
