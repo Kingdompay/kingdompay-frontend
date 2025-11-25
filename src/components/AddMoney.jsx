@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useCurrency } from '../contexts/CurrencyContext';
 import BottomNav from './BottomNav';
 
 const AddMoney = () => {
   const navigate = useNavigate();
   const { user, updateBalance, addTransaction, addNotification } = useAuth();
+  const { currency, convertToUSD, formatCurrency } = useCurrency();
   const [amount, setAmount] = useState('');
   const [method, setMethod] = useState('card'); // card, bank, apple
 
@@ -14,7 +16,9 @@ const AddMoney = () => {
     if (isNaN(number)) return '';
     return number.toLocaleString('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: currency,
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1
     });
   };
 
@@ -31,18 +35,21 @@ const AddMoney = () => {
       return;
     }
 
+    // Convert amount to USD for balance update and transaction
+    const amountInUSD = convertToUSD(numericAmount);
+
     // Update balance
     const currentBalance = Number(user?.balance || 0);
-    const newBalance = currentBalance + numericAmount;
+    const newBalance = currentBalance + amountInUSD;
 
-    console.log('AddMoney: Updating balance', { current: currentBalance, add: numericAmount, new: newBalance });
+    console.log('AddMoney: Updating balance', { current: currentBalance, add: amountInUSD, new: newBalance });
     updateBalance(newBalance);
 
     // Add transaction
     addTransaction({
       type: 'credit',
       description: `Added funds via ${method === 'card' ? 'Card' : method === 'bank' ? 'Bank Transfer' : 'Apple Pay'}`,
-      amount: numericAmount,
+      amount: amountInUSD, // Store in USD
       date: new Date().toISOString(),
       status: 'completed'
     });
@@ -141,13 +148,16 @@ const AddMoney = () => {
               </div>
 
               <div className="grid grid-cols-3 gap-3 mt-6">
-                {[10, 25, 50, 100, 200, 500].map((val) => (
+                {(currency === 'KES'
+                  ? [100, 250, 500, 1000, 2500, 5000]
+                  : [10, 25, 50, 100, 200, 500]
+                ).map((val) => (
                   <button
                     key={val}
-                    onClick={() => setAmount(`$${val}.00`)}
+                    onClick={() => setAmount(formatAmount(val.toString()))}
                     className="py-2 px-4 rounded-xl border border-gray-200 text-gray-600 font-medium hover:bg-[#6f9c16] hover:text-white hover:border-[#6f9c16] transition-all"
                   >
-                    ${val}
+                    {currency === 'KES' ? `KSh ${val}` : `$${val}`}
                   </button>
                 ))}
               </div>

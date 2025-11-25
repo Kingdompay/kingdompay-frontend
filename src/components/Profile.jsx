@@ -40,19 +40,6 @@ const Profile = () => {
         {/* Sidebar / Mobile Header */}
         <div className="md:w-1/3 lg:w-1/4 bg-white md:border-r md:border-gray-100 flex flex-col">
           {/* Header */}
-          <header className="sticky top-0 z-10 p-4 bg-white md:bg-transparent">
-            <div className="flex justify-between items-center">
-              <Link to="/home" className="text-[#1A3F22] opacity-80 hover:opacity-100 transition-opacity no-underline">
-                <span className="material-symbols-outlined text-2xl">arrow_back_ios</span>
-              </Link>
-              <h1 className="text-xl font-bold text-[#1A3F22] m-0">Profile</h1>
-              <div className="w-10 h-10 bg-[#E9F0E1] rounded-full flex items-center justify-center cursor-pointer hover:bg-[#dce8d0] transition-colors">
-                <span className="material-symbols-outlined text-[#1A3F22] text-xl">settings</span>
-              </div>
-            </div>
-          </header>
-
-          {/* Profile Info - Sidebar on Desktop */}
           <div className="p-4 text-center md:text-left md:flex md:flex-col md:items-center md:justify-center md:flex-grow">
             <div className="relative inline-block">
               <img

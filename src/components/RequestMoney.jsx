@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BottomNav from './BottomNav';
 import { useAuth } from '../contexts/AuthContext';
+import { useCurrency } from '../contexts/CurrencyContext';
 
 const RequestMoney = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { currency, formatCurrency } = useCurrency();
   const [formData, setFormData] = useState({
     requester: '',
     amount: '',
@@ -62,7 +64,9 @@ const RequestMoney = () => {
     if (isNaN(number)) return '';
     return number.toLocaleString('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: currency,
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1
     });
   };
 
@@ -230,13 +234,16 @@ const RequestMoney = () => {
                 <div>
                   <h3 className="text-sm font-semibold mb-3 text-gray-500">Quick Amounts</h3>
                   <div className="grid grid-cols-3 gap-3">
-                    {[10, 25, 50, 100, 200, 500].map((amount) => (
+                    {(currency === 'KES'
+                      ? [100, 250, 500, 1000, 2500, 5000]
+                      : [10, 25, 50, 100, 200, 500]
+                    ).map((amount) => (
                       <button
                         key={amount}
-                        onClick={() => setFormData({ ...formData, amount: `$${amount}.00` })}
+                        onClick={() => setFormData({ ...formData, amount: formatAmount(amount.toString()) })}
                         className="p-4 rounded-xl border font-semibold transition-all bg-white border-gray-200 hover:bg-[#6f9c16] hover:border-[#6f9c16] hover:text-white text-gray-900"
                       >
-                        ${amount}
+                        {currency === 'KES' ? `KSh ${amount}` : `$${amount}`}
                       </button>
                     ))}
                   </div>

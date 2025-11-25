@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import BottomNav from './BottomNav';
 import { useAuth } from '../contexts/AuthContext';
+import { useCurrency } from '../contexts/CurrencyContext';
 
 const SendMoney = () => {
   const navigate = useNavigate();
   const { user, updateBalance, addTransaction, addNotification } = useAuth();
+  const { currency, exchangeRate, convertToUSD, formatCurrency } = useCurrency();
   const [formData, setFormData] = useState({
     recipient: '',
     amount: '',
@@ -54,7 +56,9 @@ const SendMoney = () => {
     if (isNaN(number)) return '';
     return number.toLocaleString('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: currency,
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1
     });
   };
 
@@ -74,17 +78,20 @@ const SendMoney = () => {
       return;
     }
 
+    // Convert amount to USD for balance check and transaction
+    const amountInUSD = convertToUSD(numericAmount);
+
     // Check balance
     const currentBalance = Number(user?.balance || 0);
-    if (currentBalance < numericAmount) {
+    if (currentBalance < amountInUSD) {
       setError('Insufficient funds');
       return;
     }
 
     // Check limits
     const dailyLimit = user?.limits?.daily || 500;
-    if (numericAmount > dailyLimit) {
-      setError(`Transaction exceeds your daily limit of $${dailyLimit}. Please verify your identity to increase your limits.`);
+    if (amountInUSD > dailyLimit) {
+      setError(`Transaction exceeds your daily limit of ${formatCurrency(dailyLimit)}. Please verify your identity to increase your limits.`);
       return;
     }
 
@@ -95,15 +102,15 @@ const SendMoney = () => {
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       // Update balance
-      const newBalance = currentBalance - numericAmount;
-      console.log('SendMoney: Updating balance', { current: currentBalance, subtract: numericAmount, new: newBalance });
+      const newBalance = currentBalance - amountInUSD;
+      console.log('SendMoney: Updating balance', { current: currentBalance, subtract: amountInUSD, new: newBalance });
       updateBalance(newBalance);
 
       // Add transaction
       addTransaction({
         type: 'debit',
         description: `Sent to ${formData.recipient}`,
-        amount: numericAmount,
+        amount: amountInUSD, // Store in USD
         date: new Date().toISOString(),
         status: 'completed'
       });
@@ -112,12 +119,12 @@ const SendMoney = () => {
       addNotification({
         type: 'payment',
         title: 'Payment Sent',
-        message: `You sent $${formatAmount(numericAmount.toString())} to ${formData.recipient}`,
+        message: `You sent ${formData.amount} to ${formData.recipient}`,
         icon: 'payments',
         color: '#dc2626'
       });
 
-      setSuccess(`Successfully sent ${formatAmount(numericAmount.toString())}!`);
+      setSuccess(`Successfully sent ${formData.amount}!`);
 
       // Redirect to home after 2 seconds
       setTimeout(() => {
@@ -295,13 +302,16 @@ const SendMoney = () => {
                 <div>
                   <h3 className="text-sm font-semibold mb-3 text-gray-500">Quick Amounts</h3>
                   <div className="grid grid-cols-3 gap-3">
-                    {[10, 25, 50, 100, 200, 500].map((amount) => (
+                    {(currency === 'KES'
+                      ? [100, 250, 500, 1000, 2500, 5000]
+                      : [10, 25, 50, 100, 200, 500]
+                    ).map((amount) => (
                       <button
                         key={amount}
-                        onClick={() => setFormData({ ...formData, amount: `$${amount}.00` })}
+                        onClick={() => setFormData({ ...formData, amount: formatAmount(amount.toString()) })}
                         className="p-4 rounded-xl border font-semibold transition-all bg-white border-gray-200 hover:bg-[#6f9c16] hover:border-[#6f9c16] hover:text-white text-gray-900"
                       >
-                        ${amount}
+                        {currency === 'KES' ? `KSh ${amount}` : `$${amount}`}
                       </button>
                     ))}
                   </div>

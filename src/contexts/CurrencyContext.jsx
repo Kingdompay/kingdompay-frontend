@@ -61,12 +61,18 @@ export const CurrencyProvider = ({ children }) => {
         return amount * exchangeRate;
     };
 
+    const convertToUSD = (amount) => {
+        if (currency === 'USD') return amount;
+        return amount / exchangeRate;
+    };
+
     const value = {
         currency,
         setCurrency,
         exchangeRate,
         formatCurrency,
         convertAmount,
+        convertToUSD,
         loading
     };
 

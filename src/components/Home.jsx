@@ -14,6 +14,7 @@ const Home = () => {
   const [buttonStates, setButtonStates] = useState({});
   const [showBalance, setShowBalance] = useState(true);
   const [showWalletModal, setShowWalletModal] = useState(false);
+  const [showMoreModal, setShowMoreModal] = useState(false);
 
   // Use balance and transactions directly from user context
   const userBalance = user?.balance || 0;
@@ -46,7 +47,7 @@ const Home = () => {
         navigate('/request-money');
         break;
       case 'More':
-        console.log('More options clicked');
+        setShowMoreModal(!showMoreModal);
         break;
       default:
         break;
@@ -118,8 +119,9 @@ const Home = () => {
               <div className="p-6 animate-slide-in-left">
                 <div className="flex justify-between items-center">
                   <img
+                    onClick={() => navigate('/profile')}
                     alt="User avatar"
-                    className="w-10 h-10 rounded-full border-2 border-white/50 shadow-md transition-transform duration-300"
+                    className="w-10 h-10 rounded-full border-2 border-white/50 shadow-md transition-transform duration-300 cursor-pointer hover:scale-105"
                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfS87tQQpysb3SZb5EX2azLsLtUChd2UpaGt5D22Tn_Ny7cDwSz2xCl12t4l8mACrP3I0k8dj0_ixIR9rUGVZJjHWYgOy4CP8uMZ0DBkR0fP3CkUAduPLe38Gb86XfLPstMMA9FYtv6ZtKU7jk23KY30EJ6UgPTSaZOfHK7Fxx6rJhLg1e1TNMhHhFKTR7YTL6Z03U-yiGLwhQ9wo9DElyPEPz4JRpH527L3jtyEp_T5-777K8mU6RUowlNtEnkg6d1WptBPUpPPIm"
                   />
                   <div className="flex items-center gap-3">
@@ -186,7 +188,7 @@ const Home = () => {
           <div className="px-6 -mt-16 relative z-20 md:hidden">
             <div className="bg-white/15 backdrop-blur-xl rounded-2xl p-4 shadow-2xl border border-white/25">
               <div className="flex justify-around items-center text-center">
-                {['Add', 'Send', 'Swap', 'More'].map((action) => (
+                {['Add', 'Send', 'More'].map((action) => (
                   <div key={action} className="flex flex-col items-center">
                     <button
                       onClick={(e) => {
@@ -196,7 +198,7 @@ const Home = () => {
                       className={`w-14 h-14 bg-[#1A3F22] rounded-full flex items-center justify-center shadow-lg transition-all duration-300 border-none cursor-pointer relative overflow-hidden hover:scale-110 hover:shadow-xl ${buttonStates[action] ? 'scale-95' : 'scale-100'}`}
                     >
                       <span className="material-symbols-outlined text-white text-2xl">
-                        {action === 'Add' ? 'arrow_downward' : action === 'Send' ? 'arrow_upward' : action === 'Swap' ? 'swap_horiz' : 'more_horiz'}
+                        {action === 'Add' ? 'arrow_downward' : action === 'Send' ? 'arrow_upward' : 'more_horiz'}
                       </span>
                     </button>
                     <p className="text-xs mt-2 text-[#1A3F22] font-bold m-0">
@@ -337,6 +339,48 @@ const Home = () => {
                     <span className="material-symbols-outlined text-gray-400 text-sm">content_copy</span>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* More Options Modal */}
+      {showMoreModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-fade-in-up">
+          <div className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl relative overflow-hidden">
+            {/* Background Decoration */}
+            <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-br from-[#1A3F22] to-[#58761B]"></div>
+
+            <div className="relative z-10">
+              <div className="flex justify-between items-center mb-6 text-white">
+                <h2 className="text-xl font-bold m-0">More Services</h2>
+                <button
+                  onClick={() => setShowMoreModal(false)}
+                  className="bg-white/20 hover:bg-white/30 rounded-full p-1 border-none cursor-pointer text-white transition-colors"
+                >
+                  <span className="material-symbols-outlined">close</span>
+                </button>
+              </div>
+
+              <div className="bg-white rounded-2xl p-4 shadow-lg grid grid-cols-4 gap-4">
+                {[
+                  { name: 'Airtime', icon: 'phone_iphone', color: 'bg-blue-100 text-blue-600' },
+                  { name: 'Data', icon: 'wifi', color: 'bg-green-100 text-green-600' },
+                  { name: 'Bills', icon: 'receipt_long', color: 'bg-orange-100 text-orange-600' },
+                  { name: 'Power', icon: 'bolt', color: 'bg-yellow-100 text-yellow-600' },
+                  { name: 'Internet', icon: 'router', color: 'bg-purple-100 text-purple-600' },
+                  { name: 'Betting', icon: 'sports_soccer', color: 'bg-red-100 text-red-600' },
+                  { name: 'School', icon: 'school', color: 'bg-indigo-100 text-indigo-600' },
+                  { name: 'TV', icon: 'tv', color: 'bg-pink-100 text-pink-600' },
+                ].map((service) => (
+                  <div key={service.name} className="flex flex-col items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center ${service.color}`}>
+                      <span className="material-symbols-outlined">{service.icon}</span>
+                    </div>
+                    <span className="text-xs font-medium text-gray-700">{service.name}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
