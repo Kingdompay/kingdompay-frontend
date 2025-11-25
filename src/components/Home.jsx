@@ -13,16 +13,19 @@ const Home = () => {
 
   const [buttonStates, setButtonStates] = useState({});
   const [showBalance, setShowBalance] = useState(true);
+  const [showWalletModal, setShowWalletModal] = useState(false);
 
   // Use balance and transactions directly from user context
   const userBalance = user?.balance || 0;
+  const savingsBalance = user?.savingsBalance || 0;
+  const totalBalance = userBalance + savingsBalance;
   const transactions = user?.transactions || [];
   const unreadNotifications = (user?.notifications || []).filter(n => !n.read).length;
 
   console.log('Home: Rendered with balance:', userBalance);
 
   const handleWalletClick = () => {
-    console.log('Wallet clicked!');
+    setShowWalletModal(true);
   };
 
   const handleButtonClick = (action) => {
@@ -148,7 +151,7 @@ const Home = () => {
                 <p className="text-sm font-light text-white/80 m-0">
                   Total Balance
                 </p>
-                <p className="text-3xl md:text-4xl font-bold text-white mt-1 m-0 tracking-tight break-words">
+                <p className="text-2xl md:text-3xl font-bold text-white mt-1 m-0 tracking-tight whitespace-nowrap overflow-hidden text-ellipsis">
                   {showBalance
                     ? formatCurrency(userBalance)
                     : '••••••••'
@@ -276,6 +279,69 @@ const Home = () => {
           </div>
         </div>
       </div>
+
+      {/* Wallet Details Modal */}
+      {showWalletModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-fade-in-up">
+          <div className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl relative overflow-hidden">
+            {/* Background Decoration */}
+            <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-br from-[#1A3F22] to-[#58761B]"></div>
+
+            <div className="relative z-10">
+              <div className="flex justify-between items-center mb-6 text-white">
+                <h2 className="text-xl font-bold m-0">Wallet Details</h2>
+                <button
+                  onClick={() => setShowWalletModal(false)}
+                  className="bg-white/20 hover:bg-white/30 rounded-full p-1 border-none cursor-pointer text-white transition-colors"
+                >
+                  <span className="material-symbols-outlined">close</span>
+                </button>
+              </div>
+
+              <div className="bg-white rounded-2xl p-4 shadow-lg mb-6 text-center">
+                <p className="text-gray-500 text-xs uppercase tracking-wider mb-1">Total Net Worth</p>
+                <h3 className="text-3xl font-bold text-[#1A3F22] m-0">{formatCurrency(totalBalance)}</h3>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-[#E9F0E1] flex items-center justify-center text-[#1A3F22]">
+                      <span className="material-symbols-outlined">account_balance_wallet</span>
+                    </div>
+                    <div>
+                      <p className="font-bold text-[#1A3F22] text-sm m-0">Main Wallet</p>
+                      <p className="text-xs text-gray-500 m-0">Available</p>
+                    </div>
+                  </div>
+                  <span className="font-bold text-[#1A3F22]">{formatCurrency(userBalance)}</span>
+                </div>
+
+                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-[#E9F0E1] flex items-center justify-center text-[#1A3F22]">
+                      <span className="material-symbols-outlined">savings</span>
+                    </div>
+                    <div>
+                      <p className="font-bold text-[#1A3F22] text-sm m-0">Savings Wallet</p>
+                      <p className="text-xs text-gray-500 m-0">Reserved</p>
+                    </div>
+                  </div>
+                  <span className="font-bold text-[#1A3F22]">{formatCurrency(savingsBalance)}</span>
+                </div>
+
+                <div className="border-t border-gray-100 pt-4 mt-4">
+                  <p className="text-xs text-gray-500 mb-2 text-center">Your Account Number</p>
+                  <div className="flex items-center justify-center gap-2 bg-gray-100 p-2 rounded-lg cursor-pointer hover:bg-gray-200 transition-colors" onClick={() => navigator.clipboard.writeText('1234 5678 9012')}>
+                    <span className="font-mono text-[#1A3F22] font-medium">1234 5678 9012</span>
+                    <span className="material-symbols-outlined text-gray-400 text-sm">content_copy</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Bottom Navigation (Mobile Only) */}
       <div className="md:hidden">
