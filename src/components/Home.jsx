@@ -17,6 +17,7 @@ const Home = () => {
   const [error, setError] = useState(null);
   const [buttonStates, setButtonStates] = useState({});
   const [userBalance, setUserBalance] = useState(user?.balance || 0);
+  const [showBalance, setShowBalance] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -106,7 +107,7 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F7F7] font-sans flex justify-center">
+    <div className="min-h-screen bg-white font-sans flex justify-center">
       <style>
         {`
           @keyframes ripple {
@@ -130,7 +131,7 @@ const Home = () => {
         `}
       </style>
 
-      <div className="w-full max-w-md md:max-w-6xl bg-[#F7F7F7] md:bg-white md:my-8 md:rounded-3xl md:shadow-2xl min-h-screen md:min-h-[800px] flex flex-col md:flex-row overflow-hidden relative">
+      <div className="w-full max-w-md md:max-w-6xl bg-white md:bg-white md:my-8 md:rounded-3xl md:shadow-2xl min-h-screen md:min-h-[800px] flex flex-col md:flex-row overflow-hidden relative">
 
         {/* Left Column (Desktop) / Top Section (Mobile) */}
         <div className="md:w-1/3 lg:w-1/4 relative flex flex-col">
@@ -147,21 +148,38 @@ const Home = () => {
                     className="w-10 h-10 rounded-full border-2 border-white/50 shadow-md transition-transform duration-300"
                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfS87tQQpysb3SZb5EX2azLsLtUChd2UpaGt5D22Tn_Ny7cDwSz2xCl12t4l8mACrP3I0k8dj0_ixIR9rUGVZJjHWYgOy4CP8uMZ0DBkR0fP3CkUAduPLe38Gb86XfLPstMMA9FYtv6ZtKU7jk23KY30EJ6UgPTSaZOfHK7Fxx6rJhLg1e1TNMhHhFKTR7YTL6Z03U-yiGLwhQ9wo9DElyPEPz4JRpH527L3jtyEp_T5-777K8mU6RUowlNtEnkg6d1WptBPUpPPIm"
                   />
-                  <div>
-                    <span className="material-symbols-outlined animate-pulse text-white/80 text-3xl">
-                      notifications
-                    </span>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => setShowBalance(!showBalance)}
+                      className="bg-white/20 p-2 rounded-full border-none cursor-pointer hover:bg-white/30 transition-colors flex items-center justify-center"
+                    >
+                      <span className="material-symbols-outlined text-white text-xl">
+                        {showBalance ? 'visibility' : 'visibility_off'}
+                      </span>
+                    </button>
+                    <button
+                      onClick={() => navigate('/notifications')}
+                      className="bg-white/20 p-2 rounded-full border-none cursor-pointer hover:bg-white/30 transition-colors flex items-center justify-center relative"
+                    >
+                      <span className="material-symbols-outlined text-white text-xl">
+                        notifications
+                      </span>
+                      <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#1A3F22]"></span>
+                    </button>
                   </div>
                 </div>
               </div>
 
-              {/* Balance Section - NOW USES DYNAMIC BALANCE */}
+              {/* Balance Section */}
               <div className="px-6 pb-4 animate-slide-in-right">
                 <p className="text-sm font-light text-white/80 m-0">
                   Total Balance
                 </p>
-                <p className="text-5xl font-bold text-white mt-1 m-0">
-                  ${userBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                <p className="text-5xl font-bold text-white mt-1 m-0 tracking-tight">
+                  {showBalance
+                    ? `$${userBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                    : '••••••••'
+                  }
                 </p>
               </div>
 

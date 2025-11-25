@@ -1,13 +1,9 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import BottomNav from './BottomNav';
-import { useAuth } from '../contexts/AuthContext';
-import { useDarkMode } from '../contexts/DarkModeContext';
 
 const Cards = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const { isDarkMode } = useDarkMode();
   const [cards] = useState([
     {
       id: 1,
@@ -29,90 +25,74 @@ const Cards = () => {
     }
   ]);
 
-  const SidebarItem = ({ icon, label, active, onClick, path }) => (
-    <div
-      onClick={() => {
-        if (onClick) onClick();
-        if (path) navigate(path);
-      }}
-      className={`flex items-center space-x-3 p-3 rounded-xl cursor-pointer transition-all duration-200 ${active
-        ? 'bg-primary-50 text-primary-700'
-        : isDarkMode
-          ? 'text-gray-300 hover:bg-gray-800'
-          : 'text-gray-600 hover:bg-gray-50'
-        }`}
-    >
-      <span className="material-symbols-outlined">{icon}</span>
-      <span className="font-medium">{label}</span>
-    </div>
-  );
-
   return (
-    <div className={`flex h-screen ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
-      {/* Desktop Sidebar */}
-      <aside className={`hidden md:flex flex-col w-64 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-r`}>
-        <div className="p-6">
-          <div className="flex items-center space-x-3 mb-8">
-            <div className="w-10 h-10 bg-primary-600 rounded-xl flex items-center justify-center">
-              <span className="material-symbols-outlined text-white text-xl">account_balance_wallet</span>
-            </div>
-            <h1 className="text-xl font-bold text-primary-600">KingdomPay</h1>
-          </div>
+    <div className="min-h-screen bg-white font-sans flex justify-center">
+      <style>
+        {`
+          @keyframes fadeInUp {
+            from {
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+          }
+        `}
+      </style>
 
-          <nav className="space-y-2">
-            <SidebarItem icon="dashboard" label="Home" path="/home" />
-            <SidebarItem icon="send" label="Send Money" path="/send-money" />
-            <SidebarItem icon="request_quote" label="Request Money" path="/request-money" />
-            <SidebarItem icon="account_balance" label="Savings" path="/savings" />
-            <SidebarItem icon="receipt_long" label="Activity" path="/activity" />
-            <SidebarItem icon="credit_card" label="Cards" active={true} path="/cards" />
-            <SidebarItem icon="person" label="Profile" path="/profile" />
-          </nav>
+      <div className="w-full max-w-md md:max-w-6xl bg-white md:my-8 md:rounded-3xl md:shadow-2xl min-h-screen md:min-h-[800px] flex flex-col md:flex-row overflow-hidden relative">
+
+        {/* Sidebar / Mobile Header */}
+        <div className="md:w-1/3 lg:w-1/4 bg-white md:border-r md:border-gray-100 flex flex-col">
+          {/* Header */}
+          <header className="sticky top-0 z-10 p-4 bg-white md:bg-transparent">
+            <div className="flex justify-between items-center">
+              <button
+                onClick={() => navigate('/profile')}
+                className="bg-gray-100 border-none cursor-pointer flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-200 transition-colors"
+              >
+                <span className="material-symbols-outlined text-[#1A3F22] text-xl">arrow_back</span>
+              </button>
+              <h1 className="text-lg font-bold text-[#1A3F22] m-0">Cards</h1>
+              <button
+                onClick={() => console.log('Add new card')}
+                className="w-10 h-10 bg-[#E9F0E1] rounded-full flex items-center justify-center cursor-pointer hover:bg-[#dce8d0] transition-colors border-none"
+              >
+                <span className="material-symbols-outlined text-[#1A3F22] text-xl">add</span>
+              </button>
+            </div>
+          </header>
+
+          {/* Desktop Nav Links */}
+          <div className="hidden md:block p-4 mt-auto">
+            <nav className="space-y-2">
+              <Link to="/home" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">home</span> Home
+              </Link>
+              <Link to="/profile" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">person</span> Profile
+              </Link>
+              <Link to="/settings" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">settings</span> Settings
+              </Link>
+            </nav>
+          </div>
         </div>
 
-        <div className={`mt-auto p-6 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold">
-              {user?.name?.[0] || 'U'}
-            </div>
-            <div>
-              <p className="font-medium">{user?.name || 'User'}</p>
-              <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{user?.email || 'user@example.com'}</p>
-            </div>
-          </div>
-        </div>
-      </aside>
+        {/* Main Content Area */}
+        <main className="flex-grow p-4 pb-28 md:pb-8 overflow-y-auto bg-gray-50 md:bg-white">
+          <div className="max-w-4xl mx-auto animate-fade-in-up">
 
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <header className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-b p-4 flex items-center justify-between sticky top-0 z-10`}>
-          <div className="flex items-center">
-            <button
-              onClick={() => navigate('/profile')}
-              className={`md:hidden mr-4 p-2 rounded-full ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
-            >
-              <span className="material-symbols-outlined">arrow_back</span>
-            </button>
-            <h1 className="text-lg font-bold">Cards</h1>
-          </div>
-          <button
-            onClick={() => console.log('Add new card')}
-            className={`p-2 rounded-full ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
-          >
-            <span className="material-symbols-outlined">add</span>
-          </button>
-        </header>
-
-        {/* Content Scroll Area */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-8">
-          <div className="max-w-4xl mx-auto">
-
-            {/* Add New Card Button (Desktop/Prominent) */}
+            {/* Add New Card Button */}
             <div className="mb-8">
               <button
                 onClick={() => console.log('Add new card')}
-                className="w-full md:w-auto px-6 py-3 bg-primary-600 text-white rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-primary-700 transition-colors shadow-lg shadow-primary-600/20"
+                className="w-full md:w-auto px-6 py-3 bg-[#6f9c16] text-white rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-[#5a8012] transition-colors shadow-lg border-none cursor-pointer"
               >
                 <span className="material-symbols-outlined">add</span>
                 Add New Card
@@ -143,12 +123,12 @@ const Cards = () => {
                   {/* Card Details */}
                   <div className="flex justify-between items-end relative z-10">
                     <div>
-                      <p className="text-xs opacity-80 mb-1">CARDHOLDER</p>
-                      <p className="font-medium">{card.name}</p>
+                      <p className="text-xs opacity-80 mb-1 m-0">CARDHOLDER</p>
+                      <p className="font-medium m-0">{card.name}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-xs opacity-80 mb-1">EXPIRES</p>
-                      <p className="font-medium">{card.expiry}</p>
+                      <p className="text-xs opacity-80 mb-1 m-0">EXPIRES</p>
+                      <p className="font-medium m-0">{card.expiry}</p>
                     </div>
                   </div>
 
@@ -161,71 +141,65 @@ const Cards = () => {
 
             {/* Card Management Options */}
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold mb-4">Card Settings</h2>
+              <h2 className="text-lg font-semibold mb-4 text-[#1A3F22]">Card Settings</h2>
 
               {/* Freeze Card */}
-              <div className={`p-4 rounded-2xl border flex items-center justify-between ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-                }`}>
+              <div className="p-4 rounded-2xl border bg-white border-gray-200 flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isDarkMode ? 'bg-gray-700' : 'bg-primary-50'
-                    }`}>
-                    <span className="material-symbols-outlined text-primary-600">pause</span>
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[#E9F0E1]">
+                    <span className="material-symbols-outlined text-[#58761B]">pause</span>
                   </div>
                   <div>
-                    <h3 className="font-semibold">Freeze Card</h3>
-                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Temporarily disable your card</p>
+                    <h3 className="font-semibold text-[#1A3F22] m-0">Freeze Card</h3>
+                    <p className="text-sm text-gray-500 m-0">Temporarily disable your card</p>
                   </div>
                 </div>
-                <button className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors">
+                <button className="px-4 py-2 bg-[#6f9c16] text-white rounded-lg text-sm font-medium hover:bg-[#5a8012] transition-colors border-none cursor-pointer">
                   Freeze
                 </button>
               </div>
 
               {/* Card Limits */}
-              <div className={`p-4 rounded-2xl border flex items-center justify-between ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-                }`}>
+              <div className="p-4 rounded-2xl border bg-white border-gray-200 flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isDarkMode ? 'bg-gray-700' : 'bg-primary-50'
-                    }`}>
-                    <span className="material-symbols-outlined text-primary-600">account_balance</span>
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[#E9F0E1]">
+                    <span className="material-symbols-outlined text-[#58761B]">account_balance</span>
                   </div>
                   <div>
-                    <h3 className="font-semibold">Set Limits</h3>
-                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Manage spending limits</p>
+                    <h3 className="font-semibold text-[#1A3F22] m-0">Set Limits</h3>
+                    <p className="text-sm text-gray-500 m-0">Manage spending limits</p>
                   </div>
                 </div>
-                <button className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors">
+                <button className="px-4 py-2 bg-[#6f9c16] text-white rounded-lg text-sm font-medium hover:bg-[#5a8012] transition-colors border-none cursor-pointer">
                   Manage
                 </button>
               </div>
 
               {/* Card History */}
-              <div className={`p-4 rounded-2xl border flex items-center justify-between ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-                }`}>
+              <div className="p-4 rounded-2xl border bg-white border-gray-200 flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isDarkMode ? 'bg-gray-700' : 'bg-primary-50'
-                    }`}>
-                    <span className="material-symbols-outlined text-primary-600">history</span>
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[#E9F0E1]">
+                    <span className="material-symbols-outlined text-[#58761B]">history</span>
                   </div>
                   <div>
-                    <h3 className="font-semibold">Transaction History</h3>
-                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>View card transactions</p>
+                    <h3 className="font-semibold text-[#1A3F22] m-0">Transaction History</h3>
+                    <p className="text-sm text-gray-500 m-0">View card transactions</p>
                   </div>
                 </div>
-                <button className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors">
+                <button className="px-4 py-2 bg-[#6f9c16] text-white rounded-lg text-sm font-medium hover:bg-[#5a8012] transition-colors border-none cursor-pointer">
                   View
                 </button>
               </div>
             </div>
 
           </div>
-        </div>
+        </main>
+      </div>
 
-        {/* Bottom Navigation (Mobile Only) */}
-        <div className="md:hidden">
-          <BottomNav />
-        </div>
-      </main>
+      {/* Bottom Navigation (Mobile Only) */}
+      <div className="md:hidden">
+        <BottomNav />
+      </div>
     </div>
   );
 };

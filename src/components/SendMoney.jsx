@@ -3,12 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import BottomNav from './BottomNav';
 import { useAuth } from '../contexts/AuthContext';
-import { useDarkMode } from '../contexts/DarkModeContext';
 
 const SendMoney = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { isDarkMode } = useDarkMode();
   const [formData, setFormData] = useState({
     recipient: '',
     amount: '',
@@ -51,6 +49,15 @@ const SendMoney = () => {
     });
   };
 
+  const formatAmount = (value) => {
+    const number = parseFloat(value.replace(/[^0-9.]/g, ''));
+    if (isNaN(number)) return '';
+    return number.toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    });
+  };
+
   const handleSend = async () => {
     setError('');
     setSuccess('');
@@ -70,11 +77,11 @@ const SendMoney = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post('/api/transactions/send-money', {
-        recipientEmail: formData.recipient,
-        amount: numericAmount,
-        note: formData.message || 'Money transfer'
-      });
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      // In a real app, this would be:
+      // const response = await axios.post('/api/transactions/send-money', { ... });
 
       setSuccess(`Successfully sent ${formatAmount(numericAmount.toString())}!`);
 
@@ -89,119 +96,95 @@ const SendMoney = () => {
     }
   };
 
-  const formatAmount = (value) => {
-    const number = parseFloat(value.replace(/[^0-9.]/g, ''));
-    if (isNaN(number)) return '';
-    return number.toLocaleString('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    });
-  };
-
-  const SidebarItem = ({ icon, label, active, onClick, path }) => (
-    <div
-      onClick={() => {
-        if (onClick) onClick();
-        if (path) navigate(path);
-      }}
-      className={`flex items-center space-x-3 p-3 rounded-xl cursor-pointer transition-all duration-200 ${active
-        ? 'bg-primary-50 text-primary-700'
-        : isDarkMode
-          ? 'text-gray-300 hover:bg-gray-800'
-          : 'text-gray-600 hover:bg-gray-50'
-        }`}
-    >
-      <span className="material-symbols-outlined">{icon}</span>
-      <span className="font-medium">{label}</span>
-    </div>
-  );
-
   return (
-    <div className={`flex h-screen ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
-      {/* Desktop Sidebar */}
-      <aside className={`hidden md:flex flex-col w-64 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-r`}>
-        <div className="p-6">
-          <div className="flex items-center space-x-3 mb-8">
-            <div className="w-10 h-10 bg-primary-600 rounded-xl flex items-center justify-center">
-              <span className="material-symbols-outlined text-white text-xl">account_balance_wallet</span>
-            </div>
-            <h1 className="text-xl font-bold text-primary-600">KingdomPay</h1>
-          </div>
+    <div className="min-h-screen bg-white font-sans flex justify-center">
+      <style>
+        {`
+          @keyframes fadeInUp {
+            from {
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+          }
+        `}
+      </style>
 
-          <nav className="space-y-2">
-            <SidebarItem icon="dashboard" label="Home" path="/home" />
-            <SidebarItem icon="send" label="Send Money" active={true} path="/send-money" />
-            <SidebarItem icon="request_quote" label="Request Money" path="/request-money" />
-            <SidebarItem icon="account_balance" label="Savings" path="/savings" />
-            <SidebarItem icon="receipt_long" label="Activity" path="/activity" />
-            <SidebarItem icon="person" label="Profile" path="/profile" />
-          </nav>
+      <div className="w-full max-w-md md:max-w-6xl bg-white md:my-8 md:rounded-3xl md:shadow-2xl min-h-screen md:min-h-[800px] flex flex-col md:flex-row overflow-hidden relative">
+
+        {/* Sidebar / Mobile Header */}
+        <div className="md:w-1/3 lg:w-1/4 bg-white md:border-r md:border-gray-100 flex flex-col">
+          {/* Header */}
+          <header className="sticky top-0 z-10 p-4 bg-white md:bg-transparent">
+            <div className="flex justify-between items-center">
+              <button
+                onClick={() => navigate('/payments')}
+                className="bg-gray-100 border-none cursor-pointer flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-200 transition-colors"
+              >
+                <span className="material-symbols-outlined text-[#1A3F22] text-xl">arrow_back</span>
+              </button>
+              <h1 className="text-lg font-bold text-[#1A3F22] m-0">Send Money</h1>
+              <div className="w-10"></div>
+            </div>
+          </header>
+
+          {/* Desktop Nav Links */}
+          <div className="hidden md:block p-4 mt-auto">
+            <nav className="space-y-2">
+              <div onClick={() => navigate('/home')} className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors cursor-pointer">
+                <span className="material-symbols-outlined mr-3">home</span> Home
+              </div>
+              <div onClick={() => navigate('/payments')} className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors cursor-pointer">
+                <span className="material-symbols-outlined mr-3">qr_code_scanner</span> Payments
+              </div>
+              <div onClick={() => navigate('/profile')} className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors cursor-pointer">
+                <span className="material-symbols-outlined mr-3">person</span> Profile
+              </div>
+            </nav>
+          </div>
         </div>
 
-        <div className={`mt-auto p-6 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold">
-              {user?.name?.[0] || 'U'}
-            </div>
-            <div>
-              <p className="font-medium">{user?.name || 'User'}</p>
-              <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{user?.email || 'user@example.com'}</p>
-            </div>
-          </div>
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <header className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-b p-4 flex items-center justify-between sticky top-0 z-10`}>
-          <div className="flex items-center">
-            <button
-              onClick={() => navigate('/home')}
-              className={`md:hidden mr-4 p-2 rounded-full ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
-            >
-              <span className="material-symbols-outlined">arrow_back</span>
-            </button>
-            <h1 className="text-lg font-bold">Send Money</h1>
-          </div>
-          <div className="w-10 md:w-0"></div>
-        </header>
-
-        {/* Content Scroll Area */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-8">
-          <div className="max-w-2xl mx-auto">
+        {/* Main Content Area */}
+        <main className="flex-grow p-4 pb-28 md:pb-8 overflow-y-auto bg-gray-50 md:bg-white">
+          <div className="max-w-2xl mx-auto animate-fade-in-up">
 
             {/* Progress Steps */}
-            <div className={`mb-8 p-4 rounded-2xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
+            <div className="mb-8 p-4 rounded-2xl bg-white shadow-sm border border-gray-100">
               <div className="flex justify-between items-center">
                 {[1, 2, 3].map((stepNumber) => (
                   <div key={stepNumber} className="flex items-center flex-1 last:flex-none">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors duration-300 ${step >= stepNumber
-                      ? 'bg-primary-600 text-white'
-                      : isDarkMode ? 'bg-gray-700 text-gray-400' : 'bg-gray-200 text-gray-400'
+                      ? 'bg-[#6f9c16] text-white'
+                      : 'bg-gray-200 text-gray-400'
                       }`}>
                       {stepNumber}
                     </div>
                     {stepNumber < 3 && (
                       <div className={`flex-1 h-0.5 mx-2 ${step > stepNumber
-                        ? 'bg-primary-600'
-                        : isDarkMode ? 'bg-gray-700' : 'bg-gray-200'
+                        ? 'bg-[#6f9c16]'
+                        : 'bg-gray-200'
                         }`}></div>
                     )}
                   </div>
                 ))}
               </div>
               <div className="flex justify-between mt-2 text-xs font-medium">
-                <span className={step >= 1 ? 'text-primary-600' : 'text-gray-400'}>Recipient</span>
-                <span className={`text-center ${step >= 2 ? 'text-primary-600' : 'text-gray-400'}`}>Amount</span>
-                <span className={`text-right ${step >= 3 ? 'text-primary-600' : 'text-gray-400'}`}>Review</span>
+                <span className={step >= 1 ? 'text-[#6f9c16]' : 'text-gray-400'}>Recipient</span>
+                <span className={`text-center ${step >= 2 ? 'text-[#6f9c16]' : 'text-gray-400'}`}>Amount</span>
+                <span className={`text-right ${step >= 3 ? 'text-[#6f9c16]' : 'text-gray-400'}`}>Review</span>
               </div>
             </div>
 
             {/* Step 1: Recipient */}
             {step === 1 && (
               <div className="space-y-6">
-                <h2 className="text-xl font-semibold">Who do you want to send money to?</h2>
+                <h2 className="text-xl font-semibold text-[#1A3F22]">Who do you want to send money to?</h2>
 
                 {/* Search Input */}
                 <div className="relative">
@@ -212,10 +195,7 @@ const SendMoney = () => {
                     value={formData.recipient}
                     onChange={handleChange}
                     placeholder="Enter phone number, email, or name"
-                    className={`w-full pl-12 pr-4 py-3 rounded-xl border-2 outline-none transition-colors ${isDarkMode
-                      ? 'bg-gray-800 border-gray-700 focus:border-primary-500 text-white'
-                      : 'bg-gray-50 border-gray-200 focus:border-primary-500 text-gray-900'
-                      }`}
+                    className="w-full pl-12 pr-4 py-3 rounded-xl border-2 bg-gray-50 border-gray-200 focus:border-[#6f9c16] text-gray-900 outline-none transition-colors"
                   />
                 </div>
 
@@ -227,19 +207,16 @@ const SendMoney = () => {
                       <div
                         key={contact.id}
                         onClick={() => {
-                          setFormData({ ...formData, recipient: contact.name });
+                          setFormData({ ...formData, recipient: contact.email });
                           setStep(2);
                         }}
-                        className={`flex items-center p-4 rounded-xl border cursor-pointer transition-all hover:shadow-md ${isDarkMode
-                          ? 'bg-gray-800 border-gray-700 hover:border-primary-500'
-                          : 'bg-white border-gray-200 hover:border-primary-500'
-                          }`}
+                        className="flex items-center p-4 rounded-xl border bg-white border-gray-200 hover:border-[#6f9c16] cursor-pointer transition-all hover:shadow-md"
                       >
-                        <div className="w-10 h-10 rounded-full bg-primary-600 text-white flex items-center justify-center font-bold mr-3">
+                        <div className="w-10 h-10 rounded-full bg-[#6f9c16] text-white flex items-center justify-center font-bold mr-3">
                           {contact.avatar}
                         </div>
                         <div>
-                          <h4 className="font-semibold">{contact.name}</h4>
+                          <h4 className="font-semibold text-[#1A3F22]">{contact.name}</h4>
                           <p className="text-sm text-gray-500">{contact.phone}</p>
                         </div>
                         <span className="material-symbols-outlined ml-auto text-gray-400">chevron_right</span>
@@ -247,17 +224,24 @@ const SendMoney = () => {
                     ))}
                   </div>
                 </div>
+
+                <button
+                  onClick={() => setStep(2)}
+                  disabled={!formData.recipient}
+                  className="w-full py-4 rounded-xl font-bold text-white transition-colors bg-[#6f9c16] hover:bg-[#5a8012] shadow-lg disabled:bg-gray-300 disabled:cursor-not-allowed border-none cursor-pointer"
+                >
+                  Continue
+                </button>
               </div>
             )}
 
             {/* Step 2: Amount */}
             {step === 2 && (
               <div className="space-y-6">
-                <h2 className="text-xl font-semibold">How much do you want to send?</h2>
+                <h2 className="text-xl font-semibold text-[#1A3F22]">How much do you want to send?</h2>
 
                 {/* Amount Input */}
-                <div className={`p-6 rounded-2xl text-center border-2 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'
-                  }`}>
+                <div className="p-6 rounded-2xl text-center border-2 bg-gray-50 border-gray-200">
                   <p className="text-sm text-gray-500 mb-2">Amount</p>
                   <input
                     type="text"
@@ -268,8 +252,7 @@ const SendMoney = () => {
                       setFormData({ ...formData, amount: formatted });
                     }}
                     placeholder="$0.00"
-                    className={`text-4xl font-bold text-center bg-transparent border-none outline-none w-full ${isDarkMode ? 'text-white' : 'text-gray-900'
-                      }`}
+                    className="text-4xl font-bold text-center bg-transparent border-none outline-none w-full text-gray-900"
                   />
                 </div>
 
@@ -281,10 +264,7 @@ const SendMoney = () => {
                       <button
                         key={amount}
                         onClick={() => setFormData({ ...formData, amount: `$${amount}.00` })}
-                        className={`p-4 rounded-xl border font-semibold transition-all ${isDarkMode
-                          ? 'bg-gray-800 border-gray-700 hover:bg-primary-600 hover:border-primary-600 text-white'
-                          : 'bg-white border-gray-200 hover:bg-primary-600 hover:border-primary-600 hover:text-white text-gray-900'
-                          }`}
+                        className="p-4 rounded-xl border font-semibold transition-all bg-white border-gray-200 hover:bg-[#6f9c16] hover:border-[#6f9c16] hover:text-white text-gray-900"
                       >
                         ${amount}
                       </button>
@@ -294,18 +274,31 @@ const SendMoney = () => {
 
                 {/* Message */}
                 <div>
-                  <label className="block text-sm font-medium mb-2">Message (Optional)</label>
+                  <label className="block text-sm font-medium mb-2 text-[#1A3F22]">Message (Optional)</label>
                   <textarea
                     name="message"
                     value={formData.message}
                     onChange={handleChange}
                     placeholder="Add a note..."
                     rows={3}
-                    className={`w-full p-3 rounded-xl border-2 outline-none transition-colors resize-none ${isDarkMode
-                      ? 'bg-gray-800 border-gray-700 focus:border-primary-500 text-white'
-                      : 'bg-gray-50 border-gray-200 focus:border-primary-500 text-gray-900'
-                      }`}
+                    className="w-full p-3 rounded-xl border-2 outline-none transition-colors resize-none bg-gray-50 border-gray-200 focus:border-[#6f9c16] text-gray-900"
                   />
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setStep(1)}
+                    className="flex-1 py-4 rounded-xl font-bold border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+                  >
+                    Back
+                  </button>
+                  <button
+                    onClick={() => setStep(3)}
+                    disabled={!formData.amount}
+                    className="flex-1 py-4 rounded-xl font-bold text-white bg-[#6f9c16] hover:bg-[#5a8012] shadow-lg disabled:bg-gray-300 disabled:cursor-not-allowed border-none cursor-pointer"
+                  >
+                    Continue
+                  </button>
                 </div>
               </div>
             )}
@@ -313,63 +306,69 @@ const SendMoney = () => {
             {/* Step 3: Review */}
             {step === 3 && (
               <div className="space-y-6">
-                <h2 className="text-xl font-semibold">Review your payment</h2>
+                <h2 className="text-xl font-semibold text-[#1A3F22]">Review your payment</h2>
 
-                <div className={`p-6 rounded-2xl border ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'
-                  }`}>
+                <div className="p-6 rounded-2xl border bg-gray-50 border-gray-200">
                   <div className="flex justify-between items-center mb-4">
                     <span className="text-gray-500">To</span>
-                    <span className="font-semibold">{formData.recipient}</span>
+                    <span className="font-semibold text-[#1A3F22]">{formData.recipient}</span>
                   </div>
                   <div className="flex justify-between items-center mb-4">
                     <span className="text-gray-500">Amount</span>
-                    <span className="text-2xl font-bold text-primary-600">{formData.amount}</span>
+                    <span className="text-2xl font-bold text-[#6f9c16]">{formData.amount}</span>
                   </div>
                   <div className="flex justify-between items-center mb-4">
                     <span className="text-gray-500">Fee</span>
                     <span className="font-semibold text-green-600">Free</span>
                   </div>
                   {formData.message && (
-                    <div className={`pt-4 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                    <div className="pt-4 border-t border-gray-200">
                       <span className="text-gray-500 text-sm">Message</span>
-                      <p className="mt-1">{formData.message}</p>
+                      <p className="mt-1 text-[#1A3F22]">{formData.message}</p>
                     </div>
                   )}
+                </div>
+
+                {error && (
+                  <div className="bg-red-50 text-red-600 p-4 rounded-xl flex items-center text-sm">
+                    <span className="material-symbols-outlined mr-2">error</span>
+                    {error}
+                  </div>
+                )}
+
+                {success && (
+                  <div className="bg-green-50 text-green-600 p-4 rounded-xl flex items-center text-sm">
+                    <span className="material-symbols-outlined mr-2">check_circle</span>
+                    {success}
+                  </div>
+                )}
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setStep(2)}
+                    className="flex-1 py-4 rounded-xl font-bold border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+                  >
+                    Back
+                  </button>
+                  <button
+                    onClick={handleSend}
+                    disabled={loading}
+                    className="flex-1 py-4 rounded-xl font-bold text-white bg-[#6f9c16] hover:bg-[#5a8012] shadow-lg disabled:opacity-70 disabled:cursor-not-allowed border-none cursor-pointer"
+                  >
+                    {loading ? 'Sending...' : 'Send Money'}
+                  </button>
                 </div>
               </div>
             )}
 
-            {/* Action Buttons */}
-            <div className="mt-8">
-              {step < 3 ? (
-                <button
-                  onClick={() => setStep(step + 1)}
-                  disabled={!formData.recipient || (step === 2 && !formData.amount)}
-                  className={`w-full py-4 rounded-xl font-bold text-white transition-colors ${(!formData.recipient || (step === 2 && !formData.amount))
-                    ? 'bg-gray-300 cursor-not-allowed'
-                    : 'bg-primary-600 hover:bg-primary-700 shadow-lg shadow-primary-600/30'
-                    }`}
-                >
-                  Continue
-                </button>
-              ) : (
-                <button
-                  onClick={handleSend}
-                  className="w-full py-4 rounded-xl font-bold text-white bg-primary-600 hover:bg-primary-700 shadow-lg shadow-primary-600/30 transition-colors"
-                >
-                  Send Money
-                </button>
-              )}
-            </div>
-
           </div>
-        </div>
+        </main>
+      </div>
 
-        {/* Bottom Navigation (Mobile Only) */}
-        <div className="md:hidden">
-          <BottomNav />
-        </div>
-      </main>
+      {/* Bottom Navigation (Mobile Only) */}
+      <div className="md:hidden">
+        <BottomNav />
+      </div>
     </div>
   );
 };

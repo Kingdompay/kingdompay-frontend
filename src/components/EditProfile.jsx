@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import BottomNav from './BottomNav';
 
 const EditProfile = () => {
@@ -25,279 +25,151 @@ const EditProfile = () => {
   };
 
   return (
-    <div style={{ color: '#1A3F22' }}>
-      <div style={{
-        maxWidth: '384px',
-        margin: '0 auto',
-        backgroundColor: 'white',
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
-        {/* Header */}
-        <header style={{
-          backgroundColor: 'white',
-          position: 'sticky',
-          top: 0,
-          zIndex: 100,
-          padding: '16px 24px',
-          borderBottom: '1px solid #e5e7eb',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}>
-          <button
-            onClick={() => navigate('/profile')}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              backgroundColor: '#f3f4f6'
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ color: '#1A3F22', fontSize: '20px' }}>
-              arrow_back
-            </span>
-          </button>
-          <h1 style={{
-            fontSize: '18px',
-            fontWeight: 'bold',
-            color: '#1A3F22',
-            margin: 0
-          }}>
-            Edit Profile
-          </h1>
-          <div style={{ width: '40px' }}></div>
-        </header>
+    <div className="min-h-screen bg-white font-sans flex justify-center">
+      <style>
+        {`
+          @keyframes fadeInUp {
+            from {
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+          }
+        `}
+      </style>
 
-        {/* Main Content */}
-        <main style={{
-          flex: 1,
-          padding: '24px',
-          overflowY: 'auto'
-        }}>
-          {/* Profile Photo Section */}
-          <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-            <div style={{
-              width: '100px',
-              height: '100px',
-              borderRadius: '50%',
-              backgroundColor: '#f3f4f6',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              margin: '0 auto 16px auto',
-              border: '3px solid #e5e7eb'
-            }}>
-              <img 
-                alt="Profile" 
-                style={{
-                  width: '94px',
-                  height: '94px',
-                  borderRadius: '50%'
-                }}
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfS87tQQpysb3SZb5EX2azLsLtUChd2UpaGt5D22Tn_Ny7cDwSz2xCl12t4l8mACrP3I0k8dj0_ixIR9rUGVZJjHWYgOy4CP8uMZ0DBkR0fP3CkUAduPLe38Gb86XfLPstMMA9FYtv6ZtKU7jk23KY30EJ6UgPTSaZOfHK7Fxx6rJhLg1e1TNMhHhFKTR7YTL6Z03U-yiGLwhQ9wo9DElyPEPz4JRpH527L3jtyEp_T5-777K8mU6RUowlNtEnkg6d1WptBPUpPPIm"
-              />
+      <div className="w-full max-w-md md:max-w-6xl bg-white md:my-8 md:rounded-3xl md:shadow-2xl min-h-screen md:min-h-[800px] flex flex-col md:flex-row overflow-hidden relative">
+
+        {/* Sidebar / Mobile Header */}
+        <div className="md:w-1/3 lg:w-1/4 bg-white md:border-r md:border-gray-100 flex flex-col">
+          {/* Header */}
+          <header className="sticky top-0 z-10 p-4 bg-white md:bg-transparent">
+            <div className="flex justify-between items-center">
+              <button
+                onClick={() => navigate('/profile')}
+                className="bg-gray-100 border-none cursor-pointer flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-200 transition-colors"
+              >
+                <span className="material-symbols-outlined text-[#1A3F22] text-xl">arrow_back</span>
+              </button>
+              <h1 className="text-lg font-bold text-[#1A3F22] m-0">Edit Profile</h1>
+              <div className="w-10"></div>
             </div>
-            <button style={{
-              backgroundColor: '#6f9c16',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              padding: '8px 16px',
-              fontSize: '14px',
-              fontWeight: '500',
-              cursor: 'pointer'
-            }}>
-              Change Photo
-            </button>
+          </header>
+
+          {/* Desktop Nav Links */}
+          <div className="hidden md:block p-4 mt-auto">
+            <nav className="space-y-2">
+              <Link to="/home" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">home</span> Home
+              </Link>
+              <Link to="/profile" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">person</span> Profile
+              </Link>
+              <Link to="/settings" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">settings</span> Settings
+              </Link>
+            </nav>
           </div>
+        </div>
 
-          {/* Form Fields */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <div>
-              <label style={{
-                display: 'block',
-                fontSize: '14px',
-                fontWeight: '500',
-                color: '#1A3F22',
-                marginBottom: '8px'
-              }}>
-                First Name
-              </label>
-              <input
-                type="text"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleChange}
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  border: '2px solid #e5e7eb',
-                  borderRadius: '12px',
-                  fontSize: '16px',
-                  backgroundColor: '#f9fafb',
-                  outline: 'none',
-                  transition: 'border-color 0.3s ease'
-                }}
-                onFocus={(e) => e.target.style.borderColor = '#6f9c16'}
-                onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
-              />
+        {/* Main Content Area */}
+        <main className="flex-grow p-4 pb-28 md:pb-8 overflow-y-auto bg-gray-50 md:bg-white">
+          <div className="max-w-2xl mx-auto animate-fade-in-up">
+
+            {/* Profile Photo Section */}
+            <div className="text-center mb-8">
+              <div className="relative inline-block">
+                <img
+                  alt="Profile"
+                  className="w-24 h-24 rounded-full border-4 border-[#58761B] object-cover shadow-lg"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfS87tQQpysb3SZb5EX2azLsLtUChd2UpaGt5D22Tn_Ny7cDwSz2xCl12t4l8mACrP3I0k8dj0_ixIR9rUGVZJjHWYgOy4CP8uMZ0DBkR0fP3CkUAduPLe38Gb86XfLPstMMA9FYtv6ZtKU7jk23KY30EJ6UgPTSaZOfHK7Fxx6rJhLg1e1TNMhHhFKTR7YTL6Z03U-yiGLwhQ9wo9DElyPEPz4JRpH527L3jtyEp_T5-777K8mU6RUowlNtEnkg6d1WptBPUpPPIm"
+                />
+              </div>
+              <button className="mt-4 bg-[#6f9c16] text-white border-none rounded-lg px-4 py-2 text-sm font-medium cursor-pointer hover:bg-[#5a8012] transition-colors">
+                Change Photo
+              </button>
             </div>
 
-            <div>
-              <label style={{
-                display: 'block',
-                fontSize: '14px',
-                fontWeight: '500',
-                color: '#1A3F22',
-                marginBottom: '8px'
-              }}>
-                Last Name
-              </label>
-              <input
-                type="text"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleChange}
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  border: '2px solid #e5e7eb',
-                  borderRadius: '12px',
-                  fontSize: '16px',
-                  backgroundColor: '#f9fafb',
-                  outline: 'none',
-                  transition: 'border-color 0.3s ease'
-                }}
-                onFocus={(e) => e.target.style.borderColor = '#6f9c16'}
-                onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
-              />
-            </div>
+            {/* Form Fields */}
+            <form className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-[#1A3F22] mb-2">First Name</label>
+                <input
+                  type="text"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6f9c16] focus:border-transparent transition-all"
+                />
+              </div>
 
-            <div>
-              <label style={{
-                display: 'block',
-                fontSize: '14px',
-                fontWeight: '500',
-                color: '#1A3F22',
-                marginBottom: '8px'
-              }}>
-                Email Address
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  border: '2px solid #e5e7eb',
-                  borderRadius: '12px',
-                  fontSize: '16px',
-                  backgroundColor: '#f9fafb',
-                  outline: 'none',
-                  transition: 'border-color 0.3s ease'
-                }}
-                onFocus={(e) => e.target.style.borderColor = '#6f9c16'}
-                onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
-              />
-            </div>
+              <div>
+                <label className="block text-sm font-medium text-[#1A3F22] mb-2">Last Name</label>
+                <input
+                  type="text"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6f9c16] focus:border-transparent transition-all"
+                />
+              </div>
 
-            <div>
-              <label style={{
-                display: 'block',
-                fontSize: '14px',
-                fontWeight: '500',
-                color: '#1A3F22',
-                marginBottom: '8px'
-              }}>
-                Phone Number
-              </label>
-              <input
-                type="tel"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  border: '2px solid #e5e7eb',
-                  borderRadius: '12px',
-                  fontSize: '16px',
-                  backgroundColor: '#f9fafb',
-                  outline: 'none',
-                  transition: 'border-color 0.3s ease'
-                }}
-                onFocus={(e) => e.target.style.borderColor = '#6f9c16'}
-                onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
-              />
-            </div>
+              <div>
+                <label className="block text-sm font-medium text-[#1A3F22] mb-2">Email Address</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6f9c16] focus:border-transparent transition-all"
+                />
+              </div>
 
-            <div>
-              <label style={{
-                display: 'block',
-                fontSize: '14px',
-                fontWeight: '500',
-                color: '#1A3F22',
-                marginBottom: '8px'
-              }}>
-                Date of Birth
-              </label>
-              <input
-                type="date"
-                name="dateOfBirth"
-                value={formData.dateOfBirth}
-                onChange={handleChange}
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  border: '2px solid #e5e7eb',
-                  borderRadius: '12px',
-                  fontSize: '16px',
-                  backgroundColor: '#f9fafb',
-                  outline: 'none',
-                  transition: 'border-color 0.3s ease'
-                }}
-                onFocus={(e) => e.target.style.borderColor = '#6f9c16'}
-                onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
-              />
-            </div>
-          </div>
+              <div>
+                <label className="block text-sm font-medium text-[#1A3F22] mb-2">Phone Number</label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6f9c16] focus:border-transparent transition-all"
+                />
+              </div>
 
-          {/* Save Button */}
-          <div style={{ marginTop: '32px' }}>
-            <button
-              onClick={handleSave}
-              style={{
-                width: '100%',
-                backgroundColor: '#6f9c16',
-                color: 'white',
-                border: 'none',
-                borderRadius: '12px',
-                padding: '16px',
-                fontSize: '16px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                transition: 'background-color 0.3s ease'
-              }}
-              onMouseEnter={(e) => e.target.style.backgroundColor = '#5a7a12'}
-              onMouseLeave={(e) => e.target.style.backgroundColor = '#6f9c16'}
-            >
-              Save Changes
-            </button>
+              <div>
+                <label className="block text-sm font-medium text-[#1A3F22] mb-2">Date of Birth</label>
+                <input
+                  type="date"
+                  name="dateOfBirth"
+                  value={formData.dateOfBirth}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6f9c16] focus:border-transparent transition-all"
+                />
+              </div>
+
+              {/* Save Button */}
+              <div className="pt-4">
+                <button
+                  type="button"
+                  onClick={handleSave}
+                  className="w-full bg-[#6f9c16] text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:bg-[#5a8012] transition-colors border-none cursor-pointer"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </form>
           </div>
         </main>
+      </div>
 
-        {/* Bottom Navigation */}
+      {/* Bottom Navigation (Mobile Only) */}
+      <div className="md:hidden">
         <BottomNav />
       </div>
     </div>

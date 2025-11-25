@@ -16,7 +16,7 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F7F7] font-sans flex justify-center">
+    <div className="min-h-screen bg-white font-sans flex justify-center">
       <style>
         {`
           @keyframes fadeInUp {
@@ -29,41 +29,8 @@ const Profile = () => {
               transform: translateY(0);
             }
           }
-          @keyframes slideInLeft {
-            from {
-              opacity: 0;
-              transform: translateX(-30px);
-            }
-            to {
-              opacity: 1;
-              transform: translateX(0);
-            }
-          }
-          @keyframes slideInRight {
-            from {
-              opacity: 0;
-              transform: translateX(30px);
-            }
-            to {
-              opacity: 1;
-              transform: translateX(0);
-            }
-          }
-          @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-          }
           .animate-fade-in-up {
             animation: fadeInUp 0.6s ease-out forwards;
-          }
-          .animate-slide-in-left {
-            animation: slideInLeft 0.6s ease-out forwards;
-          }
-          .animate-slide-in-right {
-            animation: slideInRight 0.6s ease-out forwards;
-          }
-          .animate-pulse {
-            animation: pulse 2s ease-in-out infinite;
           }
         `}
       </style>
@@ -117,7 +84,7 @@ const Profile = () => {
           </div>
 
           {/* Desktop Nav Links */}
-          <div className="hidden md:block p-4">
+          <div className="hidden md:block p-4 mt-auto">
             <nav className="space-y-2">
               <Link to="/home" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
                 <span className="material-symbols-outlined mr-3">home</span> Home
@@ -131,6 +98,9 @@ const Profile = () => {
               <Link to="/savings" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
                 <span className="material-symbols-outlined mr-3">savings</span> Savings
               </Link>
+              <Link to="/profile" className="flex items-center text-[#1A3F22] bg-gray-50 font-medium p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">person</span> Profile
+              </Link>
             </nav>
           </div>
         </div>
@@ -138,9 +108,9 @@ const Profile = () => {
         {/* Main Content Area */}
         <main className="flex-grow p-4 pb-28 md:pb-8 overflow-y-auto bg-gray-50 md:bg-white">
 
-          {/* Action Buttons Grid */}
+          {/* Action Buttons Grid - Removed Referrals */}
           <section className="mt-4 md:mt-0">
-            <div className="grid grid-cols-4 gap-4 md:gap-8 max-w-2xl mx-auto">
+            <div className="grid grid-cols-3 gap-4 md:gap-8 max-w-2xl mx-auto">
               <div className="text-center flex flex-col items-center">
                 <button
                   onClick={() => navigate('/edit-profile')}
@@ -178,18 +148,6 @@ const Profile = () => {
                 </button>
                 <p className="text-xs mt-2 text-[#1A3F22] font-medium m-0">
                   Cards
-                </p>
-              </div>
-
-              <div className="text-center flex flex-col items-center">
-                <button
-                  onClick={() => navigate('/referrals')}
-                  className="w-16 h-16 rounded-2xl bg-[#D99201] flex items-center justify-center shadow-sm border-none cursor-pointer hover:bg-[#b37801] transition-colors"
-                >
-                  <span className="material-symbols-outlined text-white text-xl">card_giftcard</span>
-                </button>
-                <p className="text-xs mt-2 text-[#1A3F22] font-medium m-0">
-                  Referrals
                 </p>
               </div>
             </div>
@@ -331,34 +289,7 @@ const Profile = () => {
                 </button>
               </div>
             </section>
-
-            {/* Privacy Section */}
-            <section className="bg-white rounded-xl shadow-sm p-2 border border-gray-100">
-              <h3 className="font-bold text-lg mb-2 px-3 pt-2 text-[#1A3F22] m-0">Privacy</h3>
-              <div className="border-t border-gray-100">
-                <button onClick={() => navigate('/privacy')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 rounded-lg transition-colors">
-                  <div className="flex items-center gap-4">
-                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] flex items-center justify-center">
-                      <span className="material-symbols-outlined text-[#58761B] text-base">shield</span>
-                    </div>
-                    <span className="text-[#1A3F22] font-medium">Privacy & Data</span>
-                  </div>
-                  <span className="material-symbols-outlined text-gray-400 text-base">chevron_right</span>
-                </button>
-              </div>
-            </section>
           </div>
-
-          {/* Premium Upgrade */}
-          <section className="mt-8 max-w-4xl mx-auto">
-            <div className="bg-gradient-to-r from-[#905A01] to-[#D99201] rounded-xl p-6 text-center text-white shadow-md">
-              <h3 className="text-lg font-semibold m-0">Upgrade to KingdomPay Premium</h3>
-              <p className="text-sm mt-1 opacity-90 m-0">Unlock exclusive features and benefits.</p>
-              <button className="mt-4 bg-transparent border-2 border-white rounded-full px-6 py-2 text-sm font-semibold text-white cursor-pointer hover:bg-white/10 transition-colors">
-                Explore
-              </button>
-            </div>
-          </section>
 
           {/* Logout */}
           <section className="mt-8 text-center max-w-xs mx-auto">

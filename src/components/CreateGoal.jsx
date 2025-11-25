@@ -1,37 +1,23 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import BottomNav from './BottomNav';
 
 const CreateGoal = () => {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     targetAmount: '',
-    targetDate: '',
-    category: 'general',
-    description: '',
-    frequency: 'monthly'
+    deadline: '',
+    icon: 'savings'
   });
 
-  const categories = [
-    { id: 'general', label: 'General Savings', icon: 'savings', color: '#6f9c16' },
-    { id: 'emergency', label: 'Emergency Fund', icon: 'emergency', color: '#dc2626' },
-    { id: 'vacation', label: 'Vacation', icon: 'flight', color: '#2563eb' },
-    { id: 'education', label: 'Education', icon: 'school', color: '#7c3aed' },
-    { id: 'home', label: 'Home Purchase', icon: 'home', color: '#059669' },
-    { id: 'car', label: 'Car Purchase', icon: 'directions_car', color: '#d97706' },
-    { id: 'wedding', label: 'Wedding', icon: 'favorite', color: '#ec4899' },
-    { id: 'retirement', label: 'Retirement', icon: 'elderly', color: '#6b7280' }
-  ];
-
-  const frequencies = [
-    { id: 'weekly', label: 'Weekly' },
-    { id: 'monthly', label: 'Monthly' },
-    { id: 'quarterly', label: 'Quarterly' },
-    { id: 'yearly', label: 'Yearly' }
+  const icons = [
+    { id: 'savings', icon: 'savings', label: 'General' },
+    { id: 'flight', icon: 'flight', label: 'Travel' },
+    { id: 'directions_car', icon: 'directions_car', label: 'Car' },
+    { id: 'home', icon: 'home', label: 'Home' },
+    { id: 'school', icon: 'school', label: 'Education' },
+    { id: 'favorite', icon: 'favorite', label: 'Wedding' }
   ];
 
   const handleChange = (e) => {
@@ -41,363 +27,158 @@ const CreateGoal = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
-
-    try {
-      const numericAmount = parseFloat(formData.targetAmount.replace(/[^0-9.]/g, ''));
-      if (!numericAmount || numericAmount <= 0) {
-        setError('Please enter a valid target amount');
-        setLoading(false);
-        return;
-      }
-
-      const selectedCategory = categories.find(c => c.id === formData.category);
-
-      await axios.post('/api/savings/goals', {
-        name: formData.name,
-        targetAmount: numericAmount,
-        icon: selectedCategory ? selectedCategory.icon : 'savings',
-        // We could send other fields if backend supported them, but currently it only takes name, targetAmount, icon
-        // We can extend backend later if needed. For now this matches the server.js implementation.
-      });
-
-      navigate('/savings');
-    } catch (err) {
-      console.error('Error creating goal:', err);
-      setError(err.response?.data?.message || 'Failed to create goal. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const formatAmount = (value) => {
-    const number = parseFloat(value.replace(/[^0-9.]/g, ''));
-    if (isNaN(number)) return '';
-    return number.toLocaleString('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    });
+    console.log('Creating goal:', formData);
+    navigate('/savings');
   };
 
   return (
-    <div style={{ color: '#1A3F22' }}>
-      <div style={{
-        maxWidth: '384px',
-        margin: '0 auto',
-        backgroundColor: 'white',
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
-        {/* Header */}
-        <header style={{
-          backgroundColor: 'white',
-          position: 'sticky',
-          top: 0,
-          zIndex: 100,
-          padding: '16px 24px',
-          borderBottom: '1px solid #e5e7eb',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}>
-          <button
-            onClick={() => navigate('/savings')}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              backgroundColor: '#f3f4f6'
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ color: '#1A3F22', fontSize: '20px' }}>
-              arrow_back
-            </span>
-          </button>
-          <h1 style={{
-            fontSize: '18px',
-            fontWeight: 'bold',
-            color: '#1A3F22',
-            margin: 0
-          }}>
-            Create Goal
-          </h1>
-          <div style={{ width: '40px' }}></div>
-        </header>
+    <div className="min-h-screen bg-white font-sans flex justify-center">
+      <style>
+        {`
+          @keyframes fadeInUp {
+            from {
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+          }
+        `}
+      </style>
 
-        {/* Main Content */}
-        <main style={{
-          flex: 1,
-          padding: '24px',
-          overflowY: 'auto',
-          paddingBottom: '100px'
-        }}>
+      <div className="w-full max-w-md md:max-w-6xl bg-white md:my-8 md:rounded-3xl md:shadow-2xl min-h-screen md:min-h-[800px] flex flex-col md:flex-row overflow-hidden relative">
 
-          {error && (
-            <div style={{
-              backgroundColor: '#fee2e2',
-              border: '1px solid #fecaca',
-              color: '#dc2626',
-              padding: '12px',
-              borderRadius: '8px',
-              marginBottom: '16px',
-              fontSize: '14px'
-            }}>
-              {error}
+        {/* Sidebar / Mobile Header */}
+        <div className="md:w-1/3 lg:w-1/4 bg-white md:border-r md:border-gray-100 flex flex-col">
+          {/* Header */}
+          <header className="sticky top-0 z-10 p-4 bg-white md:bg-transparent">
+            <div className="flex justify-between items-center">
+              <button
+                onClick={() => navigate('/savings')}
+                className="bg-gray-100 border-none cursor-pointer flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-200 transition-colors"
+              >
+                <span className="material-symbols-outlined text-[#1A3F22] text-xl">arrow_back</span>
+              </button>
+              <h1 className="text-lg font-bold text-[#1A3F22] m-0">Create Goal</h1>
+              <div className="w-10"></div>
             </div>
-          )}
+          </header>
 
-          <form onSubmit={handleSubmit}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          {/* Desktop Nav Links */}
+          <div className="hidden md:block p-4 mt-auto">
+            <nav className="space-y-2">
+              <div onClick={() => navigate('/home')} className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors cursor-pointer">
+                <span className="material-symbols-outlined mr-3">home</span> Home
+              </div>
+              <div onClick={() => navigate('/savings')} className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors cursor-pointer">
+                <span className="material-symbols-outlined mr-3">savings</span> Savings
+              </div>
+              <div onClick={() => navigate('/profile')} className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors cursor-pointer">
+                <span className="material-symbols-outlined mr-3">person</span> Profile
+              </div>
+            </nav>
+          </div>
+        </div>
+
+        {/* Main Content Area */}
+        <main className="flex-grow p-4 pb-28 md:pb-8 overflow-y-auto bg-gray-50 md:bg-white">
+          <div className="max-w-2xl mx-auto animate-fade-in-up">
+
+            <div className="text-center mb-8">
+              <div className="w-20 h-20 bg-[#E9F0E1] rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="material-symbols-outlined text-[#58761B] text-4xl">flag</span>
+              </div>
+              <h2 className="text-2xl font-bold text-[#1A3F22]">Set a New Goal</h2>
+              <p className="text-gray-500">What are you saving for?</p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-6">
 
               {/* Goal Name */}
               <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  color: '#1A3F22',
-                  marginBottom: '8px'
-                }}>
-                  Goal Name
-                </label>
+                <label className="block text-sm font-medium text-[#1A3F22] mb-2">Goal Name</label>
                 <input
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  placeholder="e.g., Emergency Fund, Vacation Savings"
+                  placeholder="e.g. New Laptop"
+                  className="w-full p-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-[#6f9c16] outline-none transition-colors"
                   required
-                  style={{
-                    width: '100%',
-                    padding: '12px 16px',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '12px',
-                    fontSize: '16px',
-                    backgroundColor: '#f9fafb',
-                    outline: 'none',
-                    transition: 'border-color 0.3s ease'
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = '#6f9c16'}
-                  onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
                 />
               </div>
 
-              {/* Target Amount */}
+              {/* Icon Selection */}
               <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  color: '#1A3F22',
-                  marginBottom: '8px'
-                }}>
-                  Target Amount
-                </label>
-                <input
-                  type="text"
-                  name="targetAmount"
-                  value={formData.targetAmount}
-                  onChange={(e) => {
-                    const formatted = formatAmount(e.target.value);
-                    setFormData({ ...formData, targetAmount: formatted });
-                  }}
-                  placeholder="$0.00"
-                  required
-                  style={{
-                    width: '100%',
-                    padding: '12px 16px',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '12px',
-                    fontSize: '16px',
-                    backgroundColor: '#f9fafb',
-                    outline: 'none',
-                    transition: 'border-color 0.3s ease'
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = '#6f9c16'}
-                  onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
-                />
-              </div>
-
-              {/* Target Date */}
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  color: '#1A3F22',
-                  marginBottom: '8px'
-                }}>
-                  Target Date
-                </label>
-                <input
-                  type="date"
-                  name="targetDate"
-                  value={formData.targetDate}
-                  onChange={handleChange}
-                  style={{
-                    width: '100%',
-                    padding: '12px 16px',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '12px',
-                    fontSize: '16px',
-                    backgroundColor: '#f9fafb',
-                    outline: 'none',
-                    transition: 'border-color 0.3s ease'
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = '#6f9c16'}
-                  onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
-                />
-              </div>
-
-              {/* Category */}
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  color: '#1A3F22',
-                  marginBottom: '12px'
-                }}>
-                  Category
-                </label>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
-                  {categories.map((category) => (
+                <label className="block text-sm font-medium text-[#1A3F22] mb-2">Choose Icon</label>
+                <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+                  {icons.map((item) => (
                     <div
-                      key={category.id}
-                      onClick={() => setFormData({ ...formData, category: category.id })}
-                      style={{
-                        backgroundColor: formData.category === category.id ? '#f0f9ff' : 'white',
-                        borderRadius: '16px',
-                        padding: '16px',
-                        border: formData.category === category.id ? '2px solid #6f9c16' : '1px solid #e5e7eb',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease',
-                        textAlign: 'center'
-                      }}
+                      key={item.id}
+                      onClick={() => setFormData({ ...formData, icon: item.id })}
+                      className={`p-3 rounded-xl border-2 text-center cursor-pointer transition-all flex flex-col items-center justify-center aspect-square ${formData.icon === item.id
+                        ? 'border-[#6f9c16] bg-green-50 text-[#1A3F22]'
+                        : 'border-gray-100 text-gray-400 hover:border-gray-200'
+                        }`}
                     >
-                      <div style={{
-                        width: '40px',
-                        height: '40px',
-                        borderRadius: '50%',
-                        backgroundColor: `${category.color}20`,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        margin: '0 auto 8px auto'
-                      }}>
-                        <span className="material-symbols-outlined" style={{
-                          color: category.color,
-                          fontSize: '20px'
-                        }}>
-                          {category.icon}
-                        </span>
-                      </div>
-                      <h3 style={{ fontSize: '12px', fontWeight: '600', color: '#1A3F22', margin: 0 }}>
-                        {category.label}
-                      </h3>
+                      <span className="material-symbols-outlined mb-1">{item.icon}</span>
+                      <span className="text-[10px] font-medium">{item.label}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* Description */}
+              {/* Target Amount */}
               <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  color: '#1A3F22',
-                  marginBottom: '8px'
-                }}>
-                  Description (Optional)
-                </label>
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  placeholder="Add notes about your savings goal..."
-                  rows={3}
-                  style={{
-                    width: '100%',
-                    padding: '12px 16px',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '12px',
-                    fontSize: '16px',
-                    backgroundColor: '#f9fafb',
-                    outline: 'none',
-                    resize: 'none',
-                    transition: 'border-color 0.3s ease'
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = '#6f9c16'}
-                  onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
-                />
-              </div>
-
-              {/* Contribution Frequency */}
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  color: '#1A3F22',
-                  marginBottom: '12px'
-                }}>
-                  Contribution Frequency
-                </label>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {frequencies.map((freq) => (
-                    <label key={freq.id} style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-                      <input
-                        type="radio"
-                        name="frequency"
-                        value={freq.id}
-                        checked={formData.frequency === freq.id}
-                        onChange={handleChange}
-                        style={{ marginRight: '12px' }}
-                      />
-                      <span style={{ fontSize: '14px', color: '#1A3F22' }}>{freq.label}</span>
-                    </label>
-                  ))}
+                <label className="block text-sm font-medium text-[#1A3F22] mb-2">Target Amount</label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-bold">$</span>
+                  <input
+                    type="number"
+                    name="targetAmount"
+                    value={formData.targetAmount}
+                    onChange={handleChange}
+                    placeholder="0.00"
+                    className="w-full p-4 pl-8 rounded-xl bg-gray-50 border border-gray-200 focus:border-[#6f9c16] outline-none transition-colors"
+                    required
+                  />
                 </div>
               </div>
 
-              {/* Submit Button */}
+              {/* Deadline */}
+              <div>
+                <label className="block text-sm font-medium text-[#1A3F22] mb-2">Target Date (Optional)</label>
+                <input
+                  type="date"
+                  name="deadline"
+                  value={formData.deadline}
+                  onChange={handleChange}
+                  className="w-full p-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-[#6f9c16] outline-none transition-colors"
+                />
+              </div>
+
               <button
                 type="submit"
-                disabled={loading}
-                style={{
-                  width: '100%',
-                  backgroundColor: loading ? '#9ca3af' : '#6f9c16',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '12px',
-                  padding: '16px',
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  cursor: loading ? 'not-allowed' : 'pointer',
-                  transition: 'background-color 0.3s ease'
-                }}
-                onMouseEnter={(e) => !loading && (e.target.style.backgroundColor = '#5a7a12')}
-                onMouseLeave={(e) => !loading && (e.target.style.backgroundColor = '#6f9c16')}
+                className="w-full py-4 rounded-xl bg-[#6f9c16] text-white font-bold text-lg shadow-lg hover:bg-[#5a8012] transition-all mt-8"
               >
-                {loading ? 'Creating Goal...' : 'Create Goal'}
+                Create Goal
               </button>
-            </div>
-          </form>
-        </main>
 
-        {/* Bottom Navigation */}
+            </form>
+
+          </div>
+        </main>
+      </div>
+
+      {/* Bottom Navigation (Mobile Only) */}
+      <div className="md:hidden">
         <BottomNav />
       </div>
     </div>

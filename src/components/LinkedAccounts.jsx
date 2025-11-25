@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import BottomNav from './BottomNav';
 
 const LinkedAccounts = () => {
@@ -38,7 +38,6 @@ const LinkedAccounts = () => {
       number: '**** **** **** 1234',
       name: 'John Doe',
       expiry: '12/25',
-      color: '#1A3F22',
       gradient: 'linear-gradient(135deg, #1A3F22, #58761B)'
     },
     {
@@ -47,7 +46,6 @@ const LinkedAccounts = () => {
       number: '**** **** **** 5678',
       name: 'John Doe',
       expiry: '08/26',
-      color: '#D99201',
       gradient: 'linear-gradient(135deg, #D99201, #905A01)'
     }
   ]);
@@ -62,390 +60,186 @@ const LinkedAccounts = () => {
   };
 
   return (
-    <div style={{ color: '#1A3F22' }}>
-      <div style={{
-        maxWidth: '384px',
-        margin: '0 auto',
-        backgroundColor: 'white',
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
-        {/* Header */}
-        <header style={{
-          backgroundColor: 'white',
-          position: 'sticky',
-          top: 0,
-          zIndex: 100,
-          padding: '16px 24px',
-          borderBottom: '1px solid #e5e7eb',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}>
-          <button
-            onClick={() => navigate('/profile')}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              backgroundColor: '#f3f4f6'
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ color: '#1A3F22', fontSize: '20px' }}>
-              arrow_back
-            </span>
-          </button>
-          <h1 style={{
-            fontSize: '18px',
-            fontWeight: 'bold',
-            color: '#1A3F22',
-            margin: 0
-          }}>
-            Linked Accounts
-          </h1>
-          <button
-            onClick={() => console.log('Add new account')}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              backgroundColor: '#f3f4f6'
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ color: '#1A3F22', fontSize: '20px' }}>
-              add
-            </span>
-          </button>
-        </header>
+    <div className="min-h-screen bg-white font-sans flex justify-center">
+      <style>
+        {`
+          @keyframes fadeInUp {
+            from {
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+          }
+        `}
+      </style>
 
-        {/* Main Content */}
-        <main style={{
-          flex: 1,
-          padding: '24px',
-          overflowY: 'auto',
-          paddingBottom: '100px'
-        }}>
-          
-          {/* Add New Account Button */}
-          <div style={{ marginBottom: '24px' }}>
+      <div className="w-full max-w-md md:max-w-6xl bg-white md:my-8 md:rounded-3xl md:shadow-2xl min-h-screen md:min-h-[800px] flex flex-col md:flex-row overflow-hidden relative">
+
+        {/* Sidebar / Mobile Header */}
+        <div className="md:w-1/3 lg:w-1/4 bg-white md:border-r md:border-gray-100 flex flex-col">
+          <header className="sticky top-0 z-10 p-4 bg-white md:bg-transparent">
+            <div className="flex justify-between items-center">
+              <button
+                onClick={() => navigate('/profile')}
+                className="bg-gray-100 border-none cursor-pointer flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-200 transition-colors"
+              >
+                <span className="material-symbols-outlined text-[#1A3F22] text-xl">arrow_back</span>
+              </button>
+              <h1 className="text-lg font-bold text-[#1A3F22] m-0">Linked Accounts</h1>
+              <button
+                onClick={() => console.log('Add new account')}
+                className="bg-gray-100 border-none cursor-pointer flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-200 transition-colors"
+              >
+                <span className="material-symbols-outlined text-[#1A3F22] text-xl">add</span>
+              </button>
+            </div>
+          </header>
+
+          <div className="hidden md:block p-4 mt-auto">
+            <nav className="space-y-2">
+              <Link to="/home" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">home</span> Home
+              </Link>
+              <Link to="/profile" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">person</span> Profile
+              </Link>
+              <Link to="/cards" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">credit_card</span> Cards
+              </Link>
+            </nav>
+          </div>
+        </div>
+
+        {/* Main Content Area */}
+        <main className="flex-grow p-4 pb-28 md:pb-8 overflow-y-auto bg-gray-50 md:bg-white">
+          <div className="max-w-3xl mx-auto animate-fade-in-up space-y-8">
+
+            {/* Add New Account Button */}
             <button
               onClick={() => console.log('Add new account')}
-              style={{
-                width: '100%',
-                backgroundColor: '#6f9c16',
-                color: 'white',
-                border: 'none',
-                borderRadius: '16px',
-                padding: '16px',
-                fontSize: '16px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                transition: 'background-color 0.3s ease'
-              }}
-              onMouseEnter={(e) => e.target.style.backgroundColor = '#5a7a12'}
-              onMouseLeave={(e) => e.target.style.backgroundColor = '#6f9c16'}
+              className="w-full bg-[#6f9c16] text-white border-none rounded-2xl py-4 px-6 text-base font-semibold cursor-pointer flex items-center justify-center gap-2 hover:bg-[#5a8012] transition-colors shadow-md"
             >
-              <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
-                add
-              </span>
+              <span className="material-symbols-outlined text-xl">add</span>
               Add New Account
             </button>
-          </div>
 
-          {/* Bank Accounts */}
-          <div style={{ marginBottom: '32px' }}>
-            <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: '0 0 16px 0' }}>
-              Bank Accounts
-            </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {accounts.map((account) => (
-                <div
-                  key={account.id}
-                  style={{
-                    backgroundColor: 'white',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '16px',
-                    padding: '20px',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.target.style.transform = 'translateY(-2px)';
-                    e.target.style.boxShadow = '0 8px 25px -5px rgba(0, 0, 0, 0.1)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.transform = 'translateY(0)';
-                    e.target.style.boxShadow = 'none';
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                      <div style={{
-                        width: '40px',
-                        height: '40px',
-                        borderRadius: '50%',
-                        backgroundColor: '#E9F0E1',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginRight: '12px'
-                      }}>
-                        <span className="material-symbols-outlined" style={{ color: '#58761B', fontSize: '20px' }}>
-                          account_balance
-                        </span>
+            {/* Bank Accounts */}
+            <section>
+              <h2 className="text-base font-semibold text-[#1A3F22] mb-4 m-0">Bank Accounts</h2>
+              <div className="space-y-3">
+                {accounts.map((account) => (
+                  <div
+                    key={account.id}
+                    className="bg-white border border-gray-200 rounded-2xl p-5 cursor-pointer transition-all hover:-translate-y-1 hover:shadow-lg"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-[#E9F0E1] flex items-center justify-center">
+                          <span className="material-symbols-outlined text-[#58761B] text-xl">account_balance</span>
+                        </div>
+                        <div>
+                          <h3 className="text-base font-semibold text-[#1A3F22] m-0">{account.name}</h3>
+                          <p className="text-sm text-gray-500 m-0">{account.accountNumber}</p>
+                        </div>
                       </div>
-                      <div>
-                        <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: 0 }}>
-                          {account.name}
-                        </h3>
-                        <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
-                          {account.accountNumber}
-                        </p>
-                      </div>
-                    </div>
-                    <span style={{
-                      fontSize: '12px',
-                      fontWeight: '500',
-                      color: getStatusColor(account.status),
-                      textTransform: 'capitalize',
-                      padding: '4px 8px',
-                      borderRadius: '6px',
-                      backgroundColor: `${getStatusColor(account.status)}20`
-                    }}>
-                      {account.status}
-                    </span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
-                      {account.type}
-                    </p>
-                    <p style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: 0 }}>
-                      {account.balance}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Cards */}
-          <div style={{ marginBottom: '32px' }}>
-            <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: '0 0 16px 0' }}>
-              Cards
-            </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {cards.map((card) => (
-                <div
-                  key={card.id}
-                  style={{
-                    background: card.gradient,
-                    borderRadius: '16px',
-                    padding: '20px',
-                    color: 'white',
-                    position: 'relative',
-                    overflow: 'hidden',
-                    cursor: 'pointer',
-                    transition: 'transform 0.3s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.target.style.transform = 'translateY(-4px)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.transform = 'translateY(0)';
-                  }}
-                >
-                  {/* Card Type */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                    <span style={{ fontSize: '18px', fontWeight: 'bold' }}>{card.type}</span>
-                    <div style={{
-                      width: '40px',
-                      height: '40px',
-                      borderRadius: '50%',
-                      backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                      <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
-                        credit_card
+                      <span
+                        className="text-xs font-medium capitalize px-2 py-1 rounded-lg"
+                        style={{
+                          color: getStatusColor(account.status),
+                          backgroundColor: `${getStatusColor(account.status)}20`
+                        }}
+                      >
+                        {account.status}
                       </span>
                     </div>
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm text-gray-500 m-0">{account.type}</p>
+                      <p className="text-base font-semibold text-[#1A3F22] m-0">{account.balance}</p>
+                    </div>
                   </div>
+                ))}
+              </div>
+            </section>
 
-                  {/* Card Number */}
-                  <div style={{ marginBottom: '16px' }}>
-                    <span style={{ fontSize: '20px', fontWeight: '500', letterSpacing: '2px' }}>
-                      {card.number}
-                    </span>
+            {/* Cards */}
+            <section>
+              <h2 className="text-base font-semibold text-[#1A3F22] mb-4 m-0">Cards</h2>
+              <div className="space-y-3">
+                {cards.map((card) => (
+                  <div
+                    key={card.id}
+                    className="rounded-2xl p-5 text-white relative overflow-hidden cursor-pointer transition-transform hover:-translate-y-1"
+                    style={{ background: card.gradient }}
+                  >
+                    <div className="flex justify-between items-center mb-5">
+                      <span className="text-lg font-bold">{card.type}</span>
+                      <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                        <span className="material-symbols-outlined text-xl">credit_card</span>
+                      </div>
+                    </div>
+                    <div className="mb-4">
+                      <span className="text-xl font-medium tracking-wider">{card.number}</span>
+                    </div>
+                    <div className="flex justify-between items-end">
+                      <div>
+                        <p className="text-xs m-0 mb-1 opacity-80">CARDHOLDER</p>
+                        <p className="text-sm font-medium m-0">{card.name}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs m-0 mb-1 opacity-80">EXPIRES</p>
+                        <p className="text-sm font-medium m-0">{card.expiry}</p>
+                      </div>
+                    </div>
+                    <div className="absolute -top-5 -right-5 w-20 h-20 rounded-full bg-white/10 opacity-50"></div>
+                    <div className="absolute -bottom-7 -left-7 w-24 h-24 rounded-full bg-white/5 opacity-70"></div>
                   </div>
+                ))}
+              </div>
+            </section>
 
-                  {/* Card Details */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+            {/* Quick Actions */}
+            <section>
+              <h2 className="text-base font-semibold text-[#1A3F22] mb-4 m-0">Quick Actions</h2>
+              <div className="space-y-3">
+                <div className="bg-gray-50 rounded-2xl p-5 border border-gray-200 flex items-center justify-between cursor-pointer transition-all hover:bg-gray-100 hover:-translate-y-1">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-[#E9F0E1] flex items-center justify-center">
+                      <span className="material-symbols-outlined text-[#58761B] text-xl">account_balance</span>
+                    </div>
                     <div>
-                      <p style={{ fontSize: '12px', margin: '0 0 4px 0', opacity: 0.8 }}>CARDHOLDER</p>
-                      <p style={{ fontSize: '14px', fontWeight: '500', margin: 0 }}>{card.name}</p>
-                    </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <p style={{ fontSize: '12px', margin: '0 0 4px 0', opacity: 0.8 }}>EXPIRES</p>
-                      <p style={{ fontSize: '14px', fontWeight: '500', margin: 0 }}>{card.expiry}</p>
+                      <h3 className="text-base font-semibold text-[#1A3F22] m-0">Link Bank Account</h3>
+                      <p className="text-sm text-gray-500 m-0">Connect your bank account</p>
                     </div>
                   </div>
-
-                  {/* Decorative Elements */}
-                  <div style={{
-                    position: 'absolute',
-                    top: '-20px',
-                    right: '-20px',
-                    width: '80px',
-                    height: '80px',
-                    borderRadius: '50%',
-                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                    opacity: 0.5
-                  }}></div>
-                  <div style={{
-                    position: 'absolute',
-                    bottom: '-30px',
-                    left: '-30px',
-                    width: '100px',
-                    height: '100px',
-                    borderRadius: '50%',
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    opacity: 0.7
-                  }}></div>
+                  <span className="material-symbols-outlined text-gray-400 text-xl">chevron_right</span>
                 </div>
-              ))}
-            </div>
-          </div>
 
-          {/* Quick Actions */}
-          <div>
-            <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: '0 0 16px 0' }}>
-              Quick Actions
-            </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              
-              {/* Link Bank Account */}
-              <div style={{
-                backgroundColor: '#f9fafb',
-                borderRadius: '16px',
-                padding: '20px',
-                border: '1px solid #e5e7eb',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease'
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.backgroundColor = '#f3f4f6';
-                e.target.style.transform = 'translateY(-2px)';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.backgroundColor = '#f9fafb';
-                e.target.style.transform = 'translateY(0)';
-              }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <div style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '50%',
-                    backgroundColor: '#E9F0E1',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginRight: '12px'
-                  }}>
-                    <span className="material-symbols-outlined" style={{ color: '#58761B', fontSize: '20px' }}>
-                      account_balance
-                    </span>
+                <div className="bg-gray-50 rounded-2xl p-5 border border-gray-200 flex items-center justify-between cursor-pointer transition-all hover:bg-gray-100 hover:-translate-y-1">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-[#E9F0E1] flex items-center justify-center">
+                      <span className="material-symbols-outlined text-[#58761B] text-xl">credit_card</span>
+                    </div>
+                    <div>
+                      <h3 className="text-base font-semibold text-[#1A3F22] m-0">Add Credit Card</h3>
+                      <p className="text-sm text-gray-500 m-0">Add a new credit card</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: 0 }}>
-                      Link Bank Account
-                    </h3>
-                    <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
-                      Connect your bank account
-                    </p>
-                  </div>
+                  <span className="material-symbols-outlined text-gray-400 text-xl">chevron_right</span>
                 </div>
-                <span className="material-symbols-outlined" style={{ color: '#6b7280', fontSize: '20px' }}>
-                  chevron_right
-                </span>
               </div>
+            </section>
 
-              {/* Add Credit Card */}
-              <div style={{
-                backgroundColor: '#f9fafb',
-                borderRadius: '16px',
-                padding: '20px',
-                border: '1px solid #e5e7eb',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease'
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.backgroundColor = '#f3f4f6';
-                e.target.style.transform = 'translateY(-2px)';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.backgroundColor = '#f9fafb';
-                e.target.style.transform = 'translateY(0)';
-              }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <div style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '50%',
-                    backgroundColor: '#E9F0E1',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginRight: '12px'
-                  }}>
-                    <span className="material-symbols-outlined" style={{ color: '#58761B', fontSize: '20px' }}>
-                      credit_card
-                    </span>
-                  </div>
-                  <div>
-                    <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: 0 }}>
-                      Add Credit Card
-                    </h3>
-                    <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
-                      Add a new credit card
-                    </p>
-                  </div>
-                </div>
-                <span className="material-symbols-outlined" style={{ color: '#6b7280', fontSize: '20px' }}>
-                  chevron_right
-                </span>
-              </div>
-            </div>
           </div>
         </main>
+      </div>
 
-        {/* Bottom Navigation */}
+      <div className="md:hidden">
         <BottomNav />
       </div>
     </div>

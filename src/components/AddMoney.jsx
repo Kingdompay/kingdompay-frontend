@@ -1,48 +1,11 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import BottomNav from './BottomNav';
 
 const AddMoney = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
   const [amount, setAmount] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('bank');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-
-  const paymentMethods = [
-    {
-      id: 'bank',
-      name: 'Bank Transfer',
-      icon: 'account_balance',
-      description: 'Transfer from your bank account',
-      fee: 'Free'
-    },
-    {
-      id: 'card',
-      name: 'Credit/Debit Card',
-      icon: 'credit_card',
-      description: 'Add money using your card',
-      fee: '2.9% fee'
-    },
-    {
-      id: 'cash',
-      name: 'Cash Deposit',
-      icon: 'local_atm',
-      description: 'Deposit cash at partner locations',
-      fee: '$1.00 fee'
-    },
-    {
-      id: 'crypto',
-      name: 'Cryptocurrency',
-      icon: 'currency_bitcoin',
-      description: 'Convert crypto to wallet balance',
-      fee: '1% fee'
-    }
-  ];
+  const [method, setMethod] = useState('card'); // card, bank, apple
 
   const formatAmount = (value) => {
     const number = parseFloat(value.replace(/[^0-9.]/g, ''));
@@ -53,42 +16,14 @@ const AddMoney = () => {
     });
   };
 
-  const handleAddMoney = async () => {
-    setError('');
-    setSuccess('');
-
-    const numericAmount = parseFloat(amount.replace(/[^0-9.]/g, ''));
-
-    if (!numericAmount || numericAmount <= 0) {
-      setError('Please enter a valid amount');
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const selectedMethod = paymentMethods.find(m => m.id === paymentMethod);
-      const response = await axios.post('/api/transactions/add-money', {
-        amount: numericAmount,
-        paymentMethod: selectedMethod.name
-      });
-
-      setSuccess(`Successfully added ${formatAmount(numericAmount.toString())} to your wallet!`);
-
-      // Redirect to home after 2 seconds
-      setTimeout(() => {
-        navigate('/home');
-      }, 2000);
-    } catch (err) {
-      setError(err.response?.data?.message || 'Failed to add money. Please try again.');
-    } finally {
-      setLoading(false);
-    }
+  const handleAddMoney = () => {
+    // Logic to add money
+    console.log(`Adding ${amount} via ${method}`);
+    navigate('/home');
   };
 
-
   return (
-    <div className="min-h-screen bg-[#F7F7F7] font-sans flex justify-center">
+    <div className="min-h-screen bg-white font-sans flex justify-center">
       <style>
         {`
           @keyframes fadeInUp {
@@ -115,7 +50,7 @@ const AddMoney = () => {
           <header className="sticky top-0 z-10 p-4 bg-white md:bg-transparent">
             <div className="flex justify-between items-center">
               <button
-                onClick={() => navigate('/home')}
+                onClick={() => navigate('/payments')}
                 className="bg-gray-100 border-none cursor-pointer flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-200 transition-colors"
               >
                 <span className="material-symbols-outlined text-[#1A3F22] text-xl">arrow_back</span>
@@ -128,171 +63,101 @@ const AddMoney = () => {
           {/* Desktop Nav Links */}
           <div className="hidden md:block p-4 mt-auto">
             <nav className="space-y-2">
-              <Link to="/home" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+              <div onClick={() => navigate('/home')} className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors cursor-pointer">
                 <span className="material-symbols-outlined mr-3">home</span> Home
-              </Link>
-              <Link to="/community" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
-                <span className="material-symbols-outlined mr-3">groups</span> Community
-              </Link>
-              <Link to="/profile" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+              </div>
+              <div onClick={() => navigate('/payments')} className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors cursor-pointer">
+                <span className="material-symbols-outlined mr-3">qr_code_scanner</span> Payments
+              </div>
+              <div onClick={() => navigate('/profile')} className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors cursor-pointer">
                 <span className="material-symbols-outlined mr-3">person</span> Profile
-              </Link>
+              </div>
             </nav>
           </div>
         </div>
 
         {/* Main Content Area */}
         <main className="flex-grow p-4 pb-28 md:pb-8 overflow-y-auto bg-gray-50 md:bg-white">
+          <div className="max-w-2xl mx-auto animate-fade-in-up space-y-6">
 
-          <div className="max-w-2xl mx-auto animate-fade-in-up space-y-8">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-[#1A3F22] mb-2">Top Up Wallet</h2>
+              <p className="text-gray-500">Add funds to your KingdomPay wallet</p>
+            </div>
 
-            {/* Amount Section */}
-            <section>
-              <h2 className="text-base font-semibold text-[#1A3F22] mb-4 m-0">How much do you want to add?</h2>
-
-              {/* Amount Input */}
-              <div className="mb-6">
-                <div className="bg-gray-50 rounded-2xl p-6 text-center border-2 border-gray-200">
-                  <p className="text-sm text-gray-500 mb-2 m-0">Amount</p>
-                  <input
-                    type="text"
-                    value={amount}
-                    onChange={(e) => {
-                      const formatted = formatAmount(e.target.value);
-                      setAmount(formatted);
-                    }}
-                    placeholder="$0.00"
-                    className="text-4xl font-bold text-[#1A3F22] border-none bg-transparent text-center outline-none w-full placeholder-gray-300"
-                  />
-                </div>
+            {/* Amount Input */}
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Amount</label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={amount}
+                  onChange={(e) => setAmount(formatAmount(e.target.value))}
+                  placeholder="$0.00"
+                  className="w-full text-4xl font-bold text-[#1A3F22] placeholder-gray-300 border-b-2 border-gray-200 focus:border-[#6f9c16] outline-none py-2 bg-transparent transition-colors text-center"
+                />
               </div>
 
-              {/* Quick Amount Buttons */}
-              <div>
-                <h3 className="text-sm font-semibold text-[#1A3F22] mb-3 m-0">Quick Amounts</h3>
-                <div className="grid grid-cols-3 gap-3">
-                  {[25, 50, 100, 200, 500, 1000].map((quickAmount) => (
-                    <button
-                      key={quickAmount}
-                      onClick={() => setAmount(`$${quickAmount}.00`)}
-                      className="bg-white border border-gray-200 rounded-xl p-4 text-base font-semibold text-[#1A3F22] cursor-pointer transition-all duration-300 hover:bg-[#6f9c16] hover:text-white hover:border-[#6f9c16]"
-                    >
-                      ${quickAmount}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </section>
-
-            {/* Payment Methods */}
-            <section>
-              <h2 className="text-base font-semibold text-[#1A3F22] mb-4 m-0">Choose Payment Method</h2>
-              <div className="space-y-3">
-                {paymentMethods.map((method) => (
-                  <div
-                    key={method.id}
-                    onClick={() => setPaymentMethod(method.id)}
-                    className={`bg-white rounded-2xl p-5 border cursor-pointer transition-all duration-300 relative ${paymentMethod === method.id ? 'border-[#6f9c16] bg-blue-50/30' : 'border-gray-200 hover:bg-gray-50'}`}
+              <div className="grid grid-cols-3 gap-3 mt-6">
+                {[10, 25, 50, 100, 200, 500].map((val) => (
+                  <button
+                    key={val}
+                    onClick={() => setAmount(`$${val}.00`)}
+                    className="py-2 px-4 rounded-xl border border-gray-200 text-gray-600 font-medium hover:bg-[#6f9c16] hover:text-white hover:border-[#6f9c16] transition-all"
                   >
-                    {paymentMethod === method.id && (
-                      <div className="absolute -top-2 right-5 bg-[#6f9c16] text-white px-3 py-1 rounded-full text-xs font-semibold">
-                        Selected
-                      </div>
-                    )}
-
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <div className={`w-12 h-12 rounded-full flex items-center justify-center mr-4 ${paymentMethod === method.id ? 'bg-[#E9F0E1]' : 'bg-gray-100'}`}>
-                          <span className={`material-symbols-outlined text-2xl ${paymentMethod === method.id ? 'text-[#58761B]' : 'text-gray-500'}`}>
-                            {method.icon}
-                          </span>
-                        </div>
-                        <div>
-                          <h3 className="text-base font-semibold text-[#1A3F22] m-0">{method.name}</h3>
-                          <p className="text-sm text-gray-500 m-0">{method.description}</p>
-                        </div>
-                      </div>
-                      <span className={`text-sm font-semibold ${method.fee === 'Free' ? 'text-green-600' : 'text-amber-600'}`}>
-                        {method.fee}
-                      </span>
-                    </div>
-                  </div>
+                    ${val}
+                  </button>
                 ))}
               </div>
-            </section>
+            </div>
 
-            {/* Summary */}
-            {amount && (
-              <section className="bg-gray-50 rounded-2xl p-5 border border-gray-200">
-                <h3 className="text-base font-semibold text-[#1A3F22] mb-4 m-0">Transaction Summary</h3>
-                <div className="flex justify-between items-center mb-3">
-                  <span className="text-sm text-gray-500">Amount to Add</span>
-                  <span className="text-lg font-bold text-[#6f9c16]">{amount}</span>
-                </div>
-                <div className="flex justify-between items-center mb-3">
-                  <span className="text-sm text-gray-500">Payment Method</span>
-                  <span className="text-sm font-semibold text-[#1A3F22]">
-                    {paymentMethods.find(m => m.id === paymentMethod)?.name}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center mb-3">
-                  <span className="text-sm text-gray-500">Fee</span>
-                  <span className="text-sm font-semibold text-[#1A3F22]">
-                    {paymentMethods.find(m => m.id === paymentMethod)?.fee}
-                  </span>
-                </div>
-                <div className="border-t border-gray-200 pt-3 mt-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-base font-semibold text-[#1A3F22]">Total</span>
-                    <span className="text-lg font-bold text-[#1A3F22]">
-                      {amount}
-                    </span>
+            {/* Payment Method */}
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+              <h3 className="text-lg font-bold text-[#1A3F22] mb-4">Payment Method</h3>
+
+              <div className="space-y-3">
+                <div
+                  onClick={() => setMethod('card')}
+                  className={`flex items-center p-4 rounded-xl border-2 cursor-pointer transition-all ${method === 'card' ? 'border-[#6f9c16] bg-green-50' : 'border-gray-100 hover:border-gray-200'}`}
+                >
+                  <div className="w-10 h-10 rounded-full bg-[#E9F0E1] flex items-center justify-center mr-4">
+                    <span className="material-symbols-outlined text-[#58761B]">credit_card</span>
+                  </div>
+                  <div className="flex-grow">
+                    <p className="font-bold text-[#1A3F22]">Debit/Credit Card</p>
+                    <p className="text-xs text-gray-500">Instant • Fee: 1.5%</p>
+                  </div>
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${method === 'card' ? 'border-[#6f9c16]' : 'border-gray-300'}`}>
+                    {method === 'card' && <div className="w-2.5 h-2.5 rounded-full bg-[#6f9c16]"></div>}
                   </div>
                 </div>
-              </section>
-            )}
 
-            {/* Security Notice */}
-            <div className="bg-amber-50 rounded-2xl p-4 border border-amber-200">
-              <div className="flex items-center mb-2">
-                <span className="material-symbols-outlined text-amber-600 text-xl mr-2">security</span>
-                <h3 className="text-sm font-semibold text-amber-600 m-0">Secure Transaction</h3>
-              </div>
-              <p className="text-xs text-amber-800 m-0 leading-relaxed">
-                All transactions are encrypted and protected by bank-level security. Your financial information is safe with us.
-              </p>
-            </div>
-
-            {/* Error Message */}
-            {error && (
-              <div className="bg-red-50 rounded-2xl p-4 border border-red-200">
-                <div className="flex items-center">
-                  <span className="material-symbols-outlined text-red-600 text-xl mr-2">error</span>
-                  <p className="text-sm text-red-800 m-0">{error}</p>
+                <div
+                  onClick={() => setMethod('bank')}
+                  className={`flex items-center p-4 rounded-xl border-2 cursor-pointer transition-all ${method === 'bank' ? 'border-[#6f9c16] bg-green-50' : 'border-gray-100 hover:border-gray-200'}`}
+                >
+                  <div className="w-10 h-10 rounded-full bg-[#E9F0E1] flex items-center justify-center mr-4">
+                    <span className="material-symbols-outlined text-[#58761B]">account_balance</span>
+                  </div>
+                  <div className="flex-grow">
+                    <p className="font-bold text-[#1A3F22]">Bank Transfer</p>
+                    <p className="text-xs text-gray-500">1-3 Days • Free</p>
+                  </div>
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${method === 'bank' ? 'border-[#6f9c16]' : 'border-gray-300'}`}>
+                    {method === 'bank' && <div className="w-2.5 h-2.5 rounded-full bg-[#6f9c16]"></div>}
+                  </div>
                 </div>
               </div>
-            )}
-
-            {/* Success Message */}
-            {success && (
-              <div className="bg-green-50 rounded-2xl p-4 border border-green-200">
-                <div className="flex items-center">
-                  <span className="material-symbols-outlined text-green-600 text-xl mr-2">check_circle</span>
-                  <p className="text-sm text-green-800 m-0">{success}</p>
-                </div>
-              </div>
-            )}
-
-            {/* Footer Actions */}
-            <div className="pt-4 border-t border-gray-200">
-              <button
-                onClick={handleAddMoney}
-                disabled={!amount || !paymentMethod || loading}
-                className={`w-full border-none rounded-xl p-4 text-base font-semibold transition-colors duration-300 ${(!amount || !paymentMethod || loading) ? 'bg-gray-300 text-white cursor-not-allowed' : 'bg-[#6f9c16] text-white cursor-pointer hover:bg-[#5a8012]'}`}
-              >
-                {loading ? 'Processing...' : 'Add Money'}
-              </button>
             </div>
+
+            <button
+              onClick={handleAddMoney}
+              disabled={!amount}
+              className="w-full py-4 rounded-xl bg-[#6f9c16] text-white font-bold text-lg shadow-lg hover:bg-[#5a8012] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            >
+              Add Funds
+            </button>
+
           </div>
         </main>
       </div>

@@ -1,26 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDarkMode } from '../contexts/DarkModeContext';
 import BottomNav from './BottomNav';
 
 const CreateGroup = () => {
   const navigate = useNavigate();
-  const { isDarkMode } = useDarkMode();
   const [formData, setFormData] = useState({
     name: '',
-    type: 'church',
     description: '',
-    goal: '',
-    privacy: 'public'
+    type: 'savings', // savings, expense, trip
+    targetAmount: ''
   });
-
-  const groupTypes = [
-    { id: 'church', label: 'Church', icon: 'church', description: 'Religious community group' },
-    { id: 'family', label: 'Family', icon: 'cottage', description: 'Family savings group' },
-    { id: 'sacco', label: 'SACCO', icon: 'work', description: 'Savings and credit cooperative' },
-    { id: 'friends', label: 'Friends', icon: 'groups', description: 'Friend group savings' },
-    { id: 'business', label: 'Business', icon: 'business', description: 'Business investment group' }
-  ];
 
   const handleChange = (e) => {
     setFormData({
@@ -36,154 +25,101 @@ const CreateGroup = () => {
   };
 
   return (
-    <div style={{ color: isDarkMode ? 'var(--text-primary)' : '#1A3F22' }}>
-      <div style={{
-        maxWidth: '384px',
-        margin: '0 auto',
-        backgroundColor: isDarkMode ? 'var(--bg-primary)' : 'white',
-        boxShadow: isDarkMode ? 'none' : '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
-        {/* Header */}
-        <header style={{
-          backgroundColor: isDarkMode ? 'var(--bg-surface)' : 'white',
-          position: 'sticky',
-          top: 0,
-          zIndex: 100,
-          padding: '16px 24px',
-          borderBottom: isDarkMode ? '1px solid var(--border-color)' : '1px solid #e5e7eb',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}>
-          <button
-            onClick={() => navigate('/community')}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              backgroundColor: isDarkMode ? 'var(--bg-secondary)' : '#f3f4f6'
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ color: isDarkMode ? 'var(--text-primary)' : '#1A3F22', fontSize: '20px' }}>
-              arrow_back
-            </span>
-          </button>
-          <h1 style={{
-            fontSize: '18px',
-            fontWeight: 'bold',
-            color: isDarkMode ? 'var(--text-primary)' : '#1A3F22',
-            margin: 0
-          }}>
-            Create Group
-          </h1>
-          <div style={{ width: '40px' }}></div>
-        </header>
+    <div className="min-h-screen bg-white font-sans flex justify-center">
+      <style>
+        {`
+          @keyframes fadeInUp {
+            from {
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+          }
+        `}
+      </style>
 
-        {/* Main Content */}
-        <main style={{
-          flex: 1,
-          padding: '24px',
-          overflowY: 'auto',
-          paddingBottom: '100px'
-        }}>
-          
-          <form onSubmit={handleSubmit}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-              
+      <div className="w-full max-w-md md:max-w-6xl bg-white md:my-8 md:rounded-3xl md:shadow-2xl min-h-screen md:min-h-[800px] flex flex-col md:flex-row overflow-hidden relative">
+
+        {/* Sidebar / Mobile Header */}
+        <div className="md:w-1/3 lg:w-1/4 bg-white md:border-r md:border-gray-100 flex flex-col">
+          {/* Header */}
+          <header className="sticky top-0 z-10 p-4 bg-white md:bg-transparent">
+            <div className="flex justify-between items-center">
+              <button
+                onClick={() => navigate('/community')}
+                className="bg-gray-100 border-none cursor-pointer flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-200 transition-colors"
+              >
+                <span className="material-symbols-outlined text-[#1A3F22] text-xl">arrow_back</span>
+              </button>
+              <h1 className="text-lg font-bold text-[#1A3F22] m-0">Create Group</h1>
+              <div className="w-10"></div>
+            </div>
+          </header>
+
+          {/* Desktop Nav Links */}
+          <div className="hidden md:block p-4 mt-auto">
+            <nav className="space-y-2">
+              <div onClick={() => navigate('/home')} className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors cursor-pointer">
+                <span className="material-symbols-outlined mr-3">home</span> Home
+              </div>
+              <div onClick={() => navigate('/community')} className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors cursor-pointer">
+                <span className="material-symbols-outlined mr-3">groups</span> Community
+              </div>
+              <div onClick={() => navigate('/profile')} className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors cursor-pointer">
+                <span className="material-symbols-outlined mr-3">person</span> Profile
+              </div>
+            </nav>
+          </div>
+        </div>
+
+        {/* Main Content Area */}
+        <main className="flex-grow p-4 pb-28 md:pb-8 overflow-y-auto bg-gray-50 md:bg-white">
+          <div className="max-w-2xl mx-auto animate-fade-in-up">
+
+            <div className="text-center mb-8">
+              <div className="w-20 h-20 bg-[#E9F0E1] rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="material-symbols-outlined text-[#58761B] text-4xl">group_add</span>
+              </div>
+              <h2 className="text-2xl font-bold text-[#1A3F22]">Create New Group</h2>
+              <p className="text-gray-500">Start a community for savings or expenses</p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+
               {/* Group Name */}
               <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  color: isDarkMode ? 'var(--text-primary)' : '#1A3F22',
-                  marginBottom: '8px'
-                }}>
-                  Group Name
-                </label>
+                <label className="block text-sm font-medium text-[#1A3F22] mb-2">Group Name</label>
                 <input
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  placeholder="Enter group name"
-                  style={{
-                    width: '100%',
-                    padding: '12px 16px',
-                    border: isDarkMode ? '2px solid var(--border-color)' : '2px solid #e5e7eb',
-                    borderRadius: '12px',
-                    fontSize: '16px',
-                    backgroundColor: isDarkMode ? 'var(--bg-surface)' : '#f9fafb',
-                    color: isDarkMode ? 'var(--text-primary)' : '#1A3F22',
-                    outline: 'none',
-                    transition: 'border-color 0.3s ease'
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = '#6f9c16'}
-                  onBlur={(e) => e.target.style.borderColor = isDarkMode ? 'var(--border-color)' : '#e5e7eb'}
+                  placeholder="e.g. Family Vacation"
+                  className="w-full p-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-[#6f9c16] outline-none transition-colors"
+                  required
                 />
               </div>
 
               {/* Group Type */}
               <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  color: '#1A3F22',
-                  marginBottom: '12px'
-                }}>
-                  Group Type
-                </label>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  {groupTypes.map((type) => (
+                <label className="block text-sm font-medium text-[#1A3F22] mb-2">Group Type</label>
+                <div className="grid grid-cols-3 gap-3">
+                  {['savings', 'expense', 'trip'].map((type) => (
                     <div
-                      key={type.id}
-                      onClick={() => setFormData({ ...formData, type: type.id })}
-                      style={{
-                        backgroundColor: formData.type === type.id ? '#f0f9ff' : 'white',
-                        borderRadius: '16px',
-                        padding: '16px',
-                        border: formData.type === type.id ? '2px solid #6f9c16' : '1px solid #e5e7eb',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease'
-                      }}
+                      key={type}
+                      onClick={() => setFormData({ ...formData, type })}
+                      className={`p-3 rounded-xl border-2 text-center cursor-pointer capitalize transition-all ${formData.type === type
+                        ? 'border-[#6f9c16] bg-green-50 text-[#1A3F22] font-bold'
+                        : 'border-gray-100 text-gray-500 hover:border-gray-200'
+                        }`}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <div style={{
-                          width: '40px',
-                          height: '40px',
-                          borderRadius: '50%',
-                          backgroundColor: formData.type === type.id ? '#E9F0E1' : '#f3f4f6',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          marginRight: '12px'
-                        }}>
-                          <span className="material-symbols-outlined" style={{ 
-                            color: formData.type === type.id ? '#58761B' : '#6b7280', 
-                            fontSize: '20px' 
-                          }}>
-                            {type.icon}
-                          </span>
-                        </div>
-                        <div>
-                          <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: 0 }}>
-                            {type.label}
-                          </h3>
-                          <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
-                            {type.description}
-                          </p>
-                        </div>
-                      </div>
+                      {type}
                     </div>
                   ))}
                 </div>
@@ -191,131 +127,45 @@ const CreateGroup = () => {
 
               {/* Description */}
               <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  color: '#1A3F22',
-                  marginBottom: '8px'
-                }}>
-                  Description
-                </label>
+                <label className="block text-sm font-medium text-[#1A3F22] mb-2">Description</label>
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
-                  placeholder="Describe your group's purpose..."
-                  rows={4}
-                  style={{
-                    width: '100%',
-                    padding: '12px 16px',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '12px',
-                    fontSize: '16px',
-                    backgroundColor: '#f9fafb',
-                    outline: 'none',
-                    resize: 'none',
-                    transition: 'border-color 0.3s ease'
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = '#6f9c16'}
-                  onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                  placeholder="What is this group for?"
+                  rows={3}
+                  className="w-full p-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-[#6f9c16] outline-none transition-colors resize-none"
                 />
               </div>
 
-              {/* Savings Goal */}
+              {/* Target Amount */}
               <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  color: '#1A3F22',
-                  marginBottom: '8px'
-                }}>
-                  Savings Goal (Optional)
-                </label>
+                <label className="block text-sm font-medium text-[#1A3F22] mb-2">Target Amount (Optional)</label>
                 <input
                   type="number"
-                  name="goal"
-                  value={formData.goal}
+                  name="targetAmount"
+                  value={formData.targetAmount}
                   onChange={handleChange}
-                  placeholder="Enter target amount"
-                  style={{
-                    width: '100%',
-                    padding: '12px 16px',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '12px',
-                    fontSize: '16px',
-                    backgroundColor: '#f9fafb',
-                    outline: 'none',
-                    transition: 'border-color 0.3s ease'
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = '#6f9c16'}
-                  onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                  placeholder="0.00"
+                  className="w-full p-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-[#6f9c16] outline-none transition-colors"
                 />
               </div>
 
-              {/* Privacy Settings */}
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  color: '#1A3F22',
-                  marginBottom: '12px'
-                }}>
-                  Privacy
-                </label>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-                    <input
-                      type="radio"
-                      name="privacy"
-                      value="public"
-                      checked={formData.privacy === 'public'}
-                      onChange={handleChange}
-                      style={{ marginRight: '8px' }}
-                    />
-                    <span style={{ fontSize: '14px', color: '#1A3F22' }}>Public - Anyone can join</span>
-                  </label>
-                  <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-                    <input
-                      type="radio"
-                      name="privacy"
-                      value="private"
-                      checked={formData.privacy === 'private'}
-                      onChange={handleChange}
-                      style={{ marginRight: '8px' }}
-                    />
-                    <span style={{ fontSize: '14px', color: '#1A3F22' }}>Private - Invite only</span>
-                  </label>
-                </div>
-              </div>
-
-              {/* Submit Button */}
               <button
                 type="submit"
-                style={{
-                  width: '100%',
-                  backgroundColor: '#6f9c16',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '12px',
-                  padding: '16px',
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.3s ease'
-                }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#5a7a12'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = '#6f9c16'}
+                className="w-full py-4 rounded-xl bg-[#6f9c16] text-white font-bold text-lg shadow-lg hover:bg-[#5a8012] transition-all mt-8"
               >
                 Create Group
               </button>
-            </div>
-          </form>
-        </main>
 
-        {/* Bottom Navigation */}
+            </form>
+
+          </div>
+        </main>
+      </div>
+
+      {/* Bottom Navigation (Mobile Only) */}
+      <div className="md:hidden">
         <BottomNav />
       </div>
     </div>

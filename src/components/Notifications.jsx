@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import BottomNav from './BottomNav';
 
 const Notifications = () => {
@@ -86,314 +86,177 @@ const Notifications = () => {
   ];
 
   return (
-    <div style={{ color: '#1A3F22' }}>
-      <div style={{
-        maxWidth: '384px',
-        margin: '0 auto',
-        backgroundColor: 'white',
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
-        {/* Header */}
-        <header style={{
-          backgroundColor: 'white',
-          position: 'sticky',
-          top: 0,
-          zIndex: 100,
-          padding: '16px 24px',
-          borderBottom: '1px solid #e5e7eb',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}>
-          <button
-            onClick={() => navigate('/profile')}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              backgroundColor: '#f3f4f6'
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ color: '#1A3F22', fontSize: '20px' }}>
-              arrow_back
-            </span>
-          </button>
-          <div style={{ textAlign: 'center' }}>
-            <h1 style={{
-              fontSize: '18px',
-              fontWeight: 'bold',
-              color: '#1A3F22',
-              margin: 0
-            }}>
-              Notifications
-            </h1>
-            {unreadCount > 0 && (
-              <p style={{
-                fontSize: '12px',
-                color: '#6f9c16',
-                margin: '2px 0 0 0'
-              }}>
-                {unreadCount} unread
-              </p>
-            )}
-          </div>
-          <button
-            onClick={() => console.log('Mark all as read')}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              color: '#6f9c16',
-              fontSize: '14px',
-              fontWeight: '500'
-            }}
-          >
-            Mark All Read
-          </button>
-        </header>
+    <div className="min-h-screen bg-white font-sans flex justify-center">
+      <style>
+        {`
+          @keyframes fadeInUp {
+            from {
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+          }
+        `}
+      </style>
 
-        {/* Main Content */}
-        <main style={{
-          flex: 1,
-          padding: '24px',
-          overflowY: 'auto',
-          paddingBottom: '100px'
-        }}>
-          
-          {/* Filter Tabs */}
-          <div style={{ marginBottom: '24px' }}>
-            <div style={{
-              display: 'flex',
-              overflowX: 'auto',
-              gap: '8px',
-              paddingBottom: '4px'
-            }}>
-              {notificationTypes.map((type) => (
-                <button
-                  key={type.key}
-                  onClick={() => setFilter(type.key)}
-                  style={{
-                    backgroundColor: filter === type.key ? '#6f9c16' : '#f3f4f6',
-                    color: filter === type.key ? 'white' : '#1A3F22',
-                    border: 'none',
-                    borderRadius: '20px',
-                    padding: '8px 16px',
-                    fontSize: '14px',
-                    fontWeight: '500',
-                    cursor: 'pointer',
-                    whiteSpace: 'nowrap',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    transition: 'all 0.3s ease'
-                  }}
-                >
-                  <span>{type.label}</span>
-                  {type.count > 0 && (
-                    <span style={{
-                      backgroundColor: filter === type.key ? 'rgba(255,255,255,0.2)' : '#6f9c16',
-                      color: filter === type.key ? 'white' : 'white',
-                      borderRadius: '10px',
-                      padding: '2px 6px',
-                      fontSize: '12px',
-                      minWidth: '18px',
-                      textAlign: 'center'
-                    }}>
-                      {type.count}
-                    </span>
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
+      <div className="w-full max-w-md md:max-w-6xl bg-white md:my-8 md:rounded-3xl md:shadow-2xl min-h-screen md:min-h-[800px] flex flex-col md:flex-row overflow-hidden relative">
 
-          {/* Notifications List */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {filteredNotifications.length > 0 ? (
-              filteredNotifications.map((notification) => (
-                <div
-                  key={notification.id}
-                  style={{
-                    backgroundColor: notification.read ? '#f9fafb' : 'white',
-                    border: notification.read ? '1px solid #e5e7eb' : '2px solid #6f9c16',
-                    borderRadius: '16px',
-                    padding: '16px',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                    position: 'relative'
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!notification.read) {
-                      e.target.style.transform = 'translateY(-2px)';
-                      e.target.style.boxShadow = '0 8px 25px -5px rgba(111, 156, 22, 0.2)';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!notification.read) {
-                      e.target.style.transform = 'translateY(0)';
-                      e.target.style.boxShadow = 'none';
-                    }
-                  }}
-                >
-                  {/* Unread indicator */}
-                  {!notification.read && (
-                    <div style={{
-                      position: 'absolute',
-                      top: '16px',
-                      right: '16px',
-                      width: '8px',
-                      height: '8px',
-                      borderRadius: '50%',
-                      backgroundColor: '#6f9c16'
-                    }}></div>
-                  )}
-                  
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                    {/* Icon */}
-                    <div style={{
-                      width: '40px',
-                      height: '40px',
-                      borderRadius: '50%',
-                      backgroundColor: `${notification.color}20`,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0
-                    }}>
-                      <span 
-                        className="material-symbols-outlined" 
-                        style={{ 
-                          color: notification.color, 
-                          fontSize: '20px' 
-                        }}
-                      >
-                        {notification.icon}
-                      </span>
-                    </div>
-                    
-                    {/* Content */}
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '4px' }}>
-                        <h3 style={{ 
-                          fontSize: '16px', 
-                          fontWeight: notification.read ? '500' : '600', 
-                          color: '#1A3F22', 
-                          margin: 0,
-                          flex: 1
-                        }}>
-                          {notification.title}
-                        </h3>
-                        <span style={{ 
-                          fontSize: '12px', 
-                          color: '#6b7280',
-                          marginLeft: '8px',
-                          flexShrink: 0
-                        }}>
-                          {notification.time}
-                        </span>
-                      </div>
-                      <p style={{ 
-                        fontSize: '14px', 
-                        color: '#6b7280', 
-                        margin: 0,
-                        lineHeight: '1.4'
-                      }}>
-                        {notification.message}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div style={{
-                textAlign: 'center',
-                padding: '40px 20px',
-                backgroundColor: '#f9fafb',
-                borderRadius: '16px',
-                border: '1px solid #e5e7eb'
-              }}>
-                <div style={{
-                  width: '60px',
-                  height: '60px',
-                  borderRadius: '50%',
-                  backgroundColor: '#E9F0E1',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto 16px auto'
-                }}>
-                  <span className="material-symbols-outlined" style={{ color: '#58761B', fontSize: '24px' }}>
-                    notifications_none
-                  </span>
-                </div>
-                <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: '0 0 8px 0' }}>
-                  No notifications
-                </h3>
-                <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
-                  You're all caught up!
-                </p>
+        {/* Sidebar / Mobile Header */}
+        <div className="md:w-1/3 lg:w-1/4 bg-white md:border-r md:border-gray-100 flex flex-col">
+          {/* Header */}
+          <header className="sticky top-0 z-10 p-4 bg-white md:bg-transparent">
+            <div className="flex justify-between items-center">
+              <button
+                onClick={() => navigate('/profile')}
+                className="bg-gray-100 border-none cursor-pointer flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-200 transition-colors"
+              >
+                <span className="material-symbols-outlined text-[#1A3F22] text-xl">arrow_back</span>
+              </button>
+              <div className="text-center">
+                <h1 className="text-lg font-bold text-[#1A3F22] m-0">Notifications</h1>
+                {unreadCount > 0 && (
+                  <p className="text-xs text-[#6f9c16] m-0">{unreadCount} unread</p>
+                )}
               </div>
-            )}
-          </div>
-
-          {/* Quick Actions */}
-          <div style={{ marginTop: '32px' }}>
-            <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: '0 0 16px 0' }}>
-              Notification Settings
-            </h2>
-            <div style={{
-              backgroundColor: '#f9fafb',
-              borderRadius: '16px',
-              padding: '20px',
-              border: '1px solid #e5e7eb',
-              textAlign: 'center'
-            }}>
-              <div style={{
-                width: '48px',
-                height: '48px',
-                borderRadius: '50%',
-                backgroundColor: '#E9F0E1',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                margin: '0 auto 12px auto'
-              }}>
-                <span className="material-symbols-outlined" style={{ color: '#58761B', fontSize: '24px' }}>
-                  settings
-                </span>
-              </div>
-              <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: '0 0 8px 0' }}>
-                Manage Notifications
-              </h3>
-              <p style={{ fontSize: '14px', color: '#6b7280', margin: '0 0 16px 0' }}>
-                Customize which notifications you receive
-              </p>
-              <button style={{
-                backgroundColor: '#6f9c16',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                padding: '10px 20px',
-                fontSize: '14px',
-                fontWeight: '500',
-                cursor: 'pointer'
-              }}>
-                Open Settings
+              <button
+                onClick={() => console.log('Mark all as read')}
+                className="text-[#6f9c16] text-xs font-medium bg-transparent border-none cursor-pointer hover:underline"
+              >
+                Mark All
               </button>
             </div>
+          </header>
+
+          {/* Desktop Nav Links */}
+          <div className="hidden md:block p-4 mt-auto">
+            <nav className="space-y-2">
+              <Link to="/home" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">home</span> Home
+              </Link>
+              <Link to="/profile" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">person</span> Profile
+              </Link>
+              <Link to="/settings" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">settings</span> Settings
+              </Link>
+            </nav>
+          </div>
+        </div>
+
+        {/* Main Content Area */}
+        <main className="flex-grow p-4 pb-28 md:pb-8 overflow-y-auto bg-gray-50 md:bg-white">
+          <div className="max-w-3xl mx-auto animate-fade-in-up">
+
+            {/* Filter Tabs */}
+            <div className="mb-6 overflow-x-auto">
+              <div className="flex gap-2 pb-2">
+                {notificationTypes.map((type) => (
+                  <button
+                    key={type.key}
+                    onClick={() => setFilter(type.key)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap flex items-center gap-2 transition-all border-none cursor-pointer ${filter === type.key
+                      ? 'bg-[#6f9c16] text-white'
+                      : 'bg-gray-100 text-[#1A3F22] hover:bg-gray-200'
+                      }`}
+                  >
+                    <span>{type.label}</span>
+                    {type.count > 0 && (
+                      <span className={`px-2 py-0.5 rounded-full text-xs ${filter === type.key
+                        ? 'bg-white/20 text-white'
+                        : 'bg-[#6f9c16] text-white'
+                        }`}>
+                        {type.count}
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Notifications List */}
+            <div className="space-y-3">
+              {filteredNotifications.length > 0 ? (
+                filteredNotifications.map((notification) => (
+                  <div
+                    key={notification.id}
+                    className={`rounded-2xl p-4 cursor-pointer transition-all relative ${notification.read
+                      ? 'bg-white border border-gray-200'
+                      : 'bg-white border-2 border-[#6f9c16] hover:shadow-lg'
+                      }`}
+                  >
+                    {/* Unread indicator */}
+                    {!notification.read && (
+                      <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-[#6f9c16]"></div>
+                    )}
+
+                    <div className="flex items-start gap-3">
+                      {/* Icon */}
+                      <div
+                        className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                        style={{ backgroundColor: `${notification.color}20` }}
+                      >
+                        <span className="material-symbols-outlined text-xl" style={{ color: notification.color }}>
+                          {notification.icon}
+                        </span>
+                      </div>
+
+                      {/* Content */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between mb-1">
+                          <h3 className={`text-base m-0 flex-1 ${notification.read ? 'font-medium' : 'font-semibold'} text-[#1A3F22]`}>
+                            {notification.title}
+                          </h3>
+                          <span className="text-xs text-gray-500 ml-2 flex-shrink-0">
+                            {notification.time}
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-600 m-0 leading-relaxed">
+                          {notification.message}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center p-12 bg-white rounded-2xl border border-gray-200">
+                  <div className="w-16 h-16 bg-[#E9F0E1] rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="material-symbols-outlined text-[#58761B] text-2xl">
+                      notifications_none
+                    </span>
+                  </div>
+                  <h3 className="text-base font-semibold text-[#1A3F22] mb-2 m-0">No notifications</h3>
+                  <p className="text-sm text-gray-500 m-0">You're all caught up!</p>
+                </div>
+              )}
+            </div>
+
+            {/* Notification Settings */}
+            <div className="mt-8">
+              <h2 className="text-base font-semibold text-[#1A3F22] mb-4">Notification Settings</h2>
+              <div className="bg-white rounded-2xl p-6 border border-gray-200 text-center">
+                <div className="w-12 h-12 bg-[#E9F0E1] rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="material-symbols-outlined text-[#58761B] text-xl">settings</span>
+                </div>
+                <h3 className="text-base font-semibold text-[#1A3F22] mb-2 m-0">Manage Notifications</h3>
+                <p className="text-sm text-gray-500 mb-4 m-0">Customize which notifications you receive</p>
+                <button className="bg-[#6f9c16] text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-[#5a8012] transition-colors border-none cursor-pointer">
+                  Open Settings
+                </button>
+              </div>
+            </div>
+
           </div>
         </main>
+      </div>
 
-        {/* Bottom Navigation */}
+      {/* Bottom Navigation (Mobile Only) */}
+      <div className="md:hidden">
         <BottomNav />
       </div>
     </div>

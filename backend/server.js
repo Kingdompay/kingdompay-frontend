@@ -201,6 +201,96 @@ app.post('/api/savings/goals/:id/contribute', authenticateToken, async (req, res
   }
 });
 
+app.post('/api/savings/goals/:id/withdraw', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { amount } = req.body;
+    const withdrawal = parseFloat(amount);
+
+    if (!withdrawal || withdrawal <= 0) return res.status(400).json({ message: 'Invalid amount' });
+
+    const goal = savingsGoals.find(g => g.id === id && g.userId === req.user.userId);
+    if (!goal) return res.status(404).json({ message: 'Goal not found' });
+
+    const userIdx = users.findIndex(u => u.id === req.user.userId);
+    if (userIdx === -1) return res.status(404).json({ message: 'User not found' });
+
+    if (goal.currentAmount < withdrawal) return res.status(400).json({ message: 'Insufficient funds in goal' });
+
+    // Deduct from goal
+    goal.currentAmount -= withdrawal;
+
+    // Add to wallet
+    users[userIdx].balance += withdrawal;
+
+    // Deduct from total savings balance
+    users[userIdx].savingsBalance -= withdrawal;
+
+    // Record transaction
+    const transaction = {
+      id: generateId(),
+      userId: req.user.userId,
+      type: 'credit',
+      amount: withdrawal,
+      description: `Withdrawal from ${goal.name}`,
+      category: 'Savings',
+      merchant: 'KingdomPay Savings',
+      date: new Date()
+    };
+    transactions.push(transaction);
+
+    res.json({
+      message: 'Withdrawal successful',
+      goal,
+      newWalletBalance: users[userIdx].balance,
+      newSavingsBalance: users[userIdx].savingsBalance
+    });
+  } catch (e) {
+    res.status(500).json({ message: 'Server error', error: e.message });
+  }
+});
+
+app.post('/api/savings/withdraw', authenticateToken, async (req, res) => {
+  try {
+    const { amount } = req.body;
+    const withdrawal = parseFloat(amount);
+
+    if (!withdrawal || withdrawal <= 0) return res.status(400).json({ message: 'Invalid amount' });
+
+    const userIdx = users.findIndex(u => u.id === req.user.userId);
+    if (userIdx === -1) return res.status(404).json({ message: 'User not found' });
+
+    if (users[userIdx].savingsBalance < withdrawal) return res.status(400).json({ message: 'Insufficient savings balance' });
+
+    // Add to wallet
+    users[userIdx].balance += withdrawal;
+
+    // Deduct from total savings balance
+    users[userIdx].savingsBalance -= withdrawal;
+
+    // Record transaction
+    const transaction = {
+      id: generateId(),
+      userId: req.user.userId,
+      type: 'credit',
+      amount: withdrawal,
+      description: 'Withdrawal from Savings',
+      category: 'Savings',
+      merchant: 'KingdomPay Savings',
+      date: new Date()
+    };
+    transactions.push(transaction);
+
+    res.json({
+      message: 'Withdrawal successful',
+      newWalletBalance: users[userIdx].balance,
+      newSavingsBalance: users[userIdx].savingsBalance
+    });
+  } catch (e) {
+    res.status(500).json({ message: 'Server error', error: e.message });
+  }
+});
+
 // ---------- Community routes ----------
 app.get('/api/community/groups', authenticateToken, async (req, res) => {
   try {

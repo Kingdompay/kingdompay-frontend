@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import BottomNav from './BottomNav';
 
 const Biometric = () => {
@@ -7,336 +7,127 @@ const Biometric = () => {
   const [isEnabled, setIsEnabled] = useState(true);
   const [biometricType, setBiometricType] = useState('fingerprint');
 
-  const toggleBiometric = () => {
-    setIsEnabled(!isEnabled);
-  };
+  const toggleBiometric = () => setIsEnabled(!isEnabled);
 
   const biometricOptions = [
     { id: 'fingerprint', label: 'Fingerprint', icon: 'fingerprint', available: true },
     { id: 'face', label: 'Face Recognition', icon: 'face', available: true },
-    { id: 'voice', label: 'Voice Recognition', icon: 'mic', available: false }
+    { id: 'voice', label: 'Voice Recognition', icon: 'mic', available: false },
   ];
 
   return (
-    <div style={{ color: '#1A3F22' }}>
-      <div style={{
-        maxWidth: '384px',
-        margin: '0 auto',
-        backgroundColor: 'white',
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
-        {/* Header */}
-        <header style={{
-          backgroundColor: 'white',
-          position: 'sticky',
-          top: 0,
-          zIndex: 100,
-          padding: '16px 24px',
-          borderBottom: '1px solid #e5e7eb',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}>
-          <button
-            onClick={() => navigate('/profile')}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              backgroundColor: '#f3f4f6'
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ color: '#1A3F22', fontSize: '20px' }}>
-              arrow_back
-            </span>
-          </button>
-          <h1 style={{
-            fontSize: '18px',
-            fontWeight: 'bold',
-            color: '#1A3F22',
-            margin: 0
-          }}>
-            Biometric Login
-          </h1>
-          <div style={{ width: '40px' }}></div>
-        </header>
-
-        {/* Main Content */}
-        <main style={{
-          flex: 1,
-          padding: '24px',
-          overflowY: 'auto',
-          paddingBottom: '100px'
-        }}>
-          
-          {/* Biometric Status */}
-          <div style={{
-            backgroundColor: isEnabled ? '#f0fdf4' : '#fef2f2',
-            borderRadius: '16px',
-            padding: '20px',
-            border: `1px solid ${isEnabled ? '#bbf7d0' : '#fecaca'}`,
-            marginBottom: '24px'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <span className="material-symbols-outlined" style={{ 
-                  color: isEnabled ? '#059669' : '#dc2626', 
-                  fontSize: '24px', 
-                  marginRight: '12px' 
-                }}>
-                  {isEnabled ? 'fingerprint' : 'fingerprint_off'}
-                </span>
-                <div>
-                  <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: 0 }}>
-                    {isEnabled ? 'Biometric Login Enabled' : 'Biometric Login Disabled'}
-                  </h3>
-                  <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
-                    {isEnabled ? 'Use biometric authentication to log in' : 'Enable biometric authentication'}
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={toggleBiometric}
-                style={{
-                  width: '48px',
-                  height: '24px',
-                  borderRadius: '12px',
-                  border: 'none',
-                  backgroundColor: isEnabled ? '#6f9c16' : '#d1d5db',
-                  cursor: 'pointer',
-                  position: 'relative',
-                  transition: 'background-color 0.3s ease'
-                }}
-              >
-                <div style={{
-                  width: '20px',
-                  height: '20px',
-                  borderRadius: '50%',
-                  backgroundColor: 'white',
-                  position: 'absolute',
-                  top: '2px',
-                  left: isEnabled ? '26px' : '2px',
-                  transition: 'left 0.3s ease',
-                  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
-                }}></div>
+    <div className="min-h-screen bg-white font-sans flex justify-center">
+      <style>{`@keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}} .animate-fade-in-up{animation:fadeInUp .6s ease-out forwards}`}</style>
+      <div className="w-full max-w-md md:max-w-6xl bg-white md:my-8 md:rounded-3xl md:shadow-2xl min-h-screen md:min-h-[800px] flex flex-col md:flex-row overflow-hidden relative">
+        {/* Sidebar */}
+        <div className="md:w-1/3 lg:w-1/4 bg-white md:border-r md:border-gray-100 flex flex-col">
+          <header className="sticky top-0 z-10 p-4 bg-white md:bg-transparent">
+            <div className="flex justify-between items-center">
+              <button onClick={() => navigate('/profile')} className="bg-gray-100 rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-200 transition-colors">
+                <span className="material-symbols-outlined text-[#1A3F22] text-xl">arrow_back</span>
               </button>
+              <h1 className="text-lg font-bold text-[#1A3F22] m-0">Biometric Login</h1>
+              <div className="w-10 h-10" />
             </div>
+          </header>
+          <div className="hidden md:block p-4 mt-auto">
+            <nav className="space-y-2">
+              <Link to="/home" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">home</span> Home
+              </Link>
+              <Link to="/profile" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">person</span> Profile
+              </Link>
+            </nav>
           </div>
+        </div>
+        {/* Main */}
+        <main className="flex-grow p-4 pb-28 md:pb-8 overflow-y-auto bg-gray-50 md:bg-white">
+          <div className="max-w-3xl mx-auto animate-fade-in-up space-y-8">
+            {/* Biometric Status */}
+            <section>
+              <div className={`bg-white border ${isEnabled ? 'border-[#bbf7d0]' : 'border-[#fecaca]'} rounded-2xl p-4 flex justify-between items-center`}>
+                <div className="flex items-center">
+                  <span className="material-symbols-outlined mr-3" style={{ color: isEnabled ? '#059669' : '#dc2626', fontSize: '24px' }}>{isEnabled ? 'fingerprint' : 'fingerprint_off'}</span>
+                  <div>
+                    <h3 className="text-lg font-semibold text-[#1A3F22]">{isEnabled ? 'Biometric Login Enabled' : 'Biometric Login Disabled'}</h3>
+                    <p className="text-sm text-[#6b7280]">{isEnabled ? 'Use biometric authentication to log in' : 'Enable biometric authentication'}</p>
+                  </div>
+                </div>
+                <button onClick={toggleBiometric} className={`w-12 h-6 rounded-full ${isEnabled ? 'bg-[#6f9c16]' : 'bg-[#d1d5db]'} relative transition-colors`}>
+                  <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 left-${isEnabled ? '6' : '1'} transition-all shadow`}></div>
+                </button>
+              </div>
+            </section>
 
-          {/* Biometric Types */}
-          <div style={{ marginBottom: '24px' }}>
-            <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: '0 0 16px 0' }}>
-              Available Methods
-            </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {biometricOptions.map((option) => (
-                <div
-                  key={option.id}
-                  style={{
-                    backgroundColor: option.available ? '#f9fafb' : '#f3f4f6',
-                    borderRadius: '16px',
-                    padding: '20px',
-                    border: '1px solid #e5e7eb',
-                    opacity: option.available ? 1 : 0.6,
-                    cursor: option.available ? 'pointer' : 'not-allowed'
-                  }}
-                  onClick={() => option.available && setBiometricType(option.id)}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                      <div style={{
-                        width: '40px',
-                        height: '40px',
-                        borderRadius: '50%',
-                        backgroundColor: option.available ? '#E9F0E1' : '#f3f4f6',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginRight: '12px'
-                      }}>
-                        <span className="material-symbols-outlined" style={{ 
-                          color: option.available ? '#58761B' : '#9ca3af', 
-                          fontSize: '20px' 
-                        }}>
-                          {option.icon}
-                        </span>
+            {/* Biometric Types */}
+            <section>
+              <h2 className="text-base font-semibold text-[#1A3F22] mb-4">Available Methods</h2>
+              <div className="space-y-4">
+                {biometricOptions.map(option => (
+                  <div key={option.id} className={`border ${option.available ? 'border-gray-200' : 'border-gray-300 opacity-60'} rounded-2xl p-4 flex justify-between items-center cursor-${option.available ? 'pointer' : 'not-allowed'}`} onClick={() => option.available && setBiometricType(option.id)}>
+                    <div className="flex items-center">
+                      <div className="w-10 h-10 rounded-full bg-[#E9F0E1] flex items-center justify-center mr-3">
+                        <span className="material-symbols-outlined" style={{ color: option.available ? '#58761B' : '#9ca3af', fontSize: '20px' }}>{option.icon}</span>
                       </div>
                       <div>
-                        <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: 0 }}>
-                          {option.label}
-                        </h3>
-                        <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
-                          {option.available ? 'Available' : 'Coming Soon'}
-                        </p>
+                        <h3 className="text-lg font-semibold text-[#1A3F22]">{option.label}</h3>
+                        <p className="text-sm text-[#6b7280]">{option.available ? 'Available' : 'Coming Soon'}</p>
                       </div>
                     </div>
-                    <div style={{
-                      width: '20px',
-                      height: '20px',
-                      borderRadius: '50%',
-                      border: '2px solid #6f9c16',
-                      backgroundColor: biometricType === option.id ? '#6f9c16' : 'transparent',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                      {biometricType === option.id && (
-                        <div style={{
-                          width: '8px',
-                          height: '8px',
-                          borderRadius: '50%',
-                          backgroundColor: 'white'
-                        }}></div>
-                      )}
-                    </div>
+                    {option.available && (
+                      <div className={`w-5 h-5 rounded-full border-2 ${biometricType === option.id ? 'border-[#6f9c16] bg-[#6f9c16]' : 'border-[#6f9c16] bg-transparent'}`}>
+                        {biometricType === option.id && <div className="w-2 h-2 bg-white rounded-full mx-auto my-1" />}
+                      </div>
+                    )}
                   </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Setup Instructions */}
-          {isEnabled && (
-            <div style={{ marginBottom: '24px' }}>
-              <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: '0 0 16px 0' }}>
-                Setup Instructions
-              </h2>
-              <div style={{
-                backgroundColor: '#f9fafb',
-                borderRadius: '16px',
-                padding: '20px',
-                border: '1px solid #e5e7eb'
-              }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <div style={{
-                      width: '24px',
-                      height: '24px',
-                      borderRadius: '50%',
-                      backgroundColor: '#6f9c16',
-                      color: 'white',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '12px',
-                      fontWeight: 'bold',
-                      marginRight: '12px'
-                    }}>
-                      1
-                    </div>
-                    <p style={{ fontSize: '14px', color: '#1A3F22', margin: 0 }}>
-                      Ensure your device has biometric authentication enabled
-                    </p>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <div style={{
-                      width: '24px',
-                      height: '24px',
-                      borderRadius: '50%',
-                      backgroundColor: '#6f9c16',
-                      color: 'white',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '12px',
-                      fontWeight: 'bold',
-                      marginRight: '12px'
-                    }}>
-                      2
-                    </div>
-                    <p style={{ fontSize: '14px', color: '#1A3F22', margin: 0 }}>
-                      Follow the on-screen prompts to register your biometric
-                    </p>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <div style={{
-                      width: '24px',
-                      height: '24px',
-                      borderRadius: '50%',
-                      backgroundColor: '#6f9c16',
-                      color: 'white',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '12px',
-                      fontWeight: 'bold',
-                      marginRight: '12px'
-                    }}>
-                      3
-                    </div>
-                    <p style={{ fontSize: '14px', color: '#1A3F22', margin: 0 }}>
-                      Use your biometric to log in securely
-                    </p>
-                  </div>
-                </div>
+                ))}
               </div>
-            </div>
-          )}
+            </section>
 
-          {/* Security Notice */}
-          <div style={{
-            backgroundColor: '#fef3c7',
-            borderRadius: '16px',
-            padding: '20px',
-            border: '1px solid #fbbf24',
-            marginBottom: '24px'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
-              <span className="material-symbols-outlined" style={{ color: '#d97706', fontSize: '20px', marginRight: '8px' }}>
-                security
-              </span>
-              <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#d97706', margin: 0 }}>
-                Security Notice
-              </h3>
-            </div>
-            <p style={{ fontSize: '14px', color: '#92400e', margin: 0, lineHeight: '1.4' }}>
-              Biometric data is stored securely on your device and never transmitted to our servers. Your biometric information remains private and secure.
-            </p>
+            {/* Setup Instructions */}
+            {!isEnabled && (
+              <section className="space-y-4">
+                <h2 className="text-base font-semibold text-[#1A3F22]">Setup Instructions</h2>
+                <div className="bg-[#f9fafb] rounded-2xl p-4 border border-[#e5e7eb] space-y-3">
+                  <div className="flex items-center">
+                    <div className="w-6 h-6 rounded-full bg-[#6f9c16] text-white flex items-center justify-center mr-3 text-xs font-bold">1</div>
+                    <p className="text-sm text-[#1A3F22]">Ensure your device has biometric authentication enabled</p>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="w-6 h-6 rounded-full bg-[#6f9c16] text-white flex items-center justify-center mr-3 text-xs font-bold">2</div>
+                    <p className="text-sm text-[#1A3F22]">Follow the on-screen prompts to register your biometric</p>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="w-6 h-6 rounded-full bg-[#6f9c16] text-white flex items-center justify-center mr-3 text-xs font-bold">3</div>
+                    <p className="text-sm text-[#1A3F22]">Use your biometric to log in securely</p>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {/* Security Notice */}
+            <section className="bg-[#fef3c7] rounded-2xl p-4 border border-[#fbbf24]">
+              <div className="flex items-center mb-2">
+                <span className="material-symbols-outlined text-[#d97706] mr-2">security</span>
+                <h3 className="text-sm font-semibold text-[#d97706]">Security Notice</h3>
+              </div>
+              <p className="text-xs text-[#92400e] leading-relaxed">Biometric data is stored securely on your device and never transmitted to our servers. Your biometric information remains private and secure.</p>
+            </section>
+
+            {/* Test Biometric */}
+            {isEnabled && (
+              <section>
+                <button className="w-full bg-[#6f9c16] text-white rounded-md py-2 font-medium hover:bg-[#5a7a12] transition-colors flex items-center justify-center gap-2">
+                  <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>{biometricType === 'fingerprint' ? 'fingerprint' : 'face'}</span>
+                  Test Biometric Authentication
+                </button>
+              </section>
+            )}
           </div>
-
-          {/* Test Biometric */}
-          {isEnabled && (
-            <div>
-              <button style={{
-                width: '100%',
-                backgroundColor: '#6f9c16',
-                color: 'white',
-                border: 'none',
-                borderRadius: '12px',
-                padding: '16px',
-                fontSize: '16px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                transition: 'background-color 0.3s ease'
-              }}
-              onMouseEnter={(e) => e.target.style.backgroundColor = '#5a7a12'}
-              onMouseLeave={(e) => e.target.style.backgroundColor = '#6f9c16'}
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
-                  {biometricType === 'fingerprint' ? 'fingerprint' : 'face'}
-                </span>
-                Test Biometric Authentication
-              </button>
-            </div>
-          )}
         </main>
-
-        {/* Bottom Navigation */}
-        <BottomNav />
       </div>
+      <div className="md:hidden"><BottomNav /></div>
     </div>
   );
 };

@@ -4,8 +4,6 @@ import BottomNav from './BottomNav';
 
 const Payments = () => {
   const navigate = useNavigate();
-  const [scanMode, setScanMode] = useState(false);
-  const [paymentAmount, setPaymentAmount] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('wallet');
 
   const recentPayments = [
@@ -34,33 +32,37 @@ const Payments = () => {
 
   const quickActions = [
     {
+      icon: 'send',
+      title: 'Send',
+      description: 'Transfer money',
+      color: '#1A3F22',
+      path: '/send-money'
+    },
+    {
+      icon: 'request_quote',
+      title: 'Request',
+      description: 'Ask for money',
+      color: '#D99201',
+      path: '/request-money'
+    },
+    {
       icon: 'qr_code_scanner',
       title: 'Scan QR',
       description: 'Scan to pay',
-      color: '#1A3F22'
+      color: '#58761B',
+      path: '/scan-qr'
     },
     {
-      icon: 'qr_code',
-      title: 'My QR',
-      description: 'Show QR to receive',
-      color: '#D99201'
-    },
-    {
-      icon: 'account_balance',
-      title: 'Pay Bills',
-      description: 'Utilities & services',
-      color: '#58761B'
-    },
-    {
-      icon: 'store',
-      title: 'Nearby',
-      description: 'Find merchants',
-      color: '#905A01'
+      icon: 'add_card',
+      title: 'Add Money',
+      description: 'Top up wallet',
+      color: '#905A01',
+      path: '/add-money'
     }
   ];
 
   return (
-    <div className="min-h-screen bg-[#F7F7F7] font-sans flex justify-center">
+    <div className="min-h-screen bg-white font-sans flex justify-center">
       <style>
         {`
           @keyframes scan {
@@ -111,6 +113,7 @@ const Payments = () => {
               {quickActions.map((action, index) => (
                 <div
                   key={index}
+                  onClick={() => navigate(action.path)}
                   className="bg-gray-50 rounded-2xl p-5 border border-gray-200 text-center cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
                 >
                   <div
@@ -140,6 +143,12 @@ const Payments = () => {
               </Link>
               <Link to="/community" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
                 <span className="material-symbols-outlined mr-3">groups</span> Community
+              </Link>
+              <Link to="/payments" className="flex items-center text-[#1A3F22] bg-gray-50 font-medium p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">qr_code_scanner</span> Payments
+              </Link>
+              <Link to="/savings" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">savings</span> Savings
               </Link>
               <Link to="/profile" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
                 <span className="material-symbols-outlined mr-3">person</span> Profile

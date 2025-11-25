@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import BottomNav from './BottomNav';
 
 const LimitsPlans = () => {
@@ -54,248 +54,89 @@ const LimitsPlans = () => {
   ];
 
   return (
-    <div style={{ color: '#1A3F22' }}>
-      <div style={{
-        maxWidth: '384px',
-        margin: '0 auto',
-        backgroundColor: 'white',
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
-        {/* Header */}
-        <header style={{
-          backgroundColor: 'white',
-          position: 'sticky',
-          top: 0,
-          zIndex: 100,
-          padding: '16px 24px',
-          borderBottom: '1px solid #e5e7eb',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}>
-          <button
-            onClick={() => navigate('/profile')}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              backgroundColor: '#f3f4f6'
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ color: '#1A3F22', fontSize: '20px' }}>
-              arrow_back
-            </span>
-          </button>
-          <h1 style={{
-            fontSize: '18px',
-            fontWeight: 'bold',
-            color: '#1A3F22',
-            margin: 0
-          }}>
-            Limits & Plans
-          </h1>
-          <div style={{ width: '40px' }}></div>
-        </header>
-
-        {/* Main Content */}
-        <main style={{
-          flex: 1,
-          padding: '24px',
-          overflowY: 'auto',
-          paddingBottom: '100px'
-        }}>
-          
-          {/* Current Limits */}
-          <div style={{ marginBottom: '32px' }}>
-            <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: '0 0 16px 0' }}>
-              Current Limits
-            </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              
-              {/* Daily Spending */}
-              <div style={{
-                backgroundColor: '#f9fafb',
-                borderRadius: '16px',
-                padding: '20px',
-                border: '1px solid #e5e7eb'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-                  <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: 0 }}>
-                    Daily Spending
-                  </h3>
-                  <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#6f9c16' }}>
-                    ${limits.dailySpending.toLocaleString()}
-                  </span>
-                </div>
-                <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
-                  Maximum amount you can spend per day
-                </p>
-              </div>
-
-              {/* Monthly Spending */}
-              <div style={{
-                backgroundColor: '#f9fafb',
-                borderRadius: '16px',
-                padding: '20px',
-                border: '1px solid #e5e7eb'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-                  <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: 0 }}>
-                    Monthly Spending
-                  </h3>
-                  <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#6f9c16' }}>
-                    ${limits.monthlySpending.toLocaleString()}
-                  </span>
-                </div>
-                <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
-                  Maximum amount you can spend per month
-                </p>
-              </div>
-
-              {/* Transfer Limit */}
-              <div style={{
-                backgroundColor: '#f9fafb',
-                borderRadius: '16px',
-                padding: '20px',
-                border: '1px solid #e5e7eb'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-                  <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: 0 }}>
-                    Transfer Limit
-                  </h3>
-                  <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#6f9c16' }}>
-                    ${limits.transferLimit.toLocaleString()}
-                  </span>
-                </div>
-                <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
-                  Maximum amount you can transfer per transaction
-                </p>
-              </div>
-
-              {/* ATM Withdrawal */}
-              <div style={{
-                backgroundColor: '#f9fafb',
-                borderRadius: '16px',
-                padding: '20px',
-                border: '1px solid #e5e7eb'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-                  <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: 0 }}>
-                    ATM Withdrawal
-                  </h3>
-                  <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#6f9c16' }}>
-                    ${limits.atmWithdrawal.toLocaleString()}
-                  </span>
-                </div>
-                <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
-                  Maximum amount you can withdraw from ATM per day
-                </p>
-              </div>
+    <div className="min-h-screen bg-white font-sans flex justify-center">
+      <style>{`@keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}} .animate-fade-in-up{animation:fadeInUp .6s ease-out forwards}`}</style>
+      <div className="w-full max-w-md md:max-w-6xl bg-white md:my-8 md:rounded-3xl md:shadow-2xl min-h-screen md:min-h-[800px] flex flex-col md:flex-row overflow-hidden relative">
+        {/* Sidebar */}
+        <div className="md:w-1/3 lg:w-1/4 bg-white md:border-r md:border-gray-100 flex flex-col">
+          <header className="sticky top-0 z-10 p-4 bg-white md:bg-transparent">
+            <div className="flex justify-between items-center">
+              <button onClick={() => navigate('/profile')} className="bg-gray-100 border-none rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-200 transition-colors">
+                <span className="material-symbols-outlined text-[#1A3F22] text-xl">arrow_back</span>
+              </button>
+              <h1 className="text-lg font-bold text-[#1A3F22] m-0">Limits & Plans</h1>
+              <div className="w-10 h-10" />
             </div>
+          </header>
+          <div className="hidden md:block p-4 mt-auto">
+            <nav className="space-y-2">
+              <Link to="/home" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">home</span> Home
+              </Link>
+              <Link to="/profile" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">person</span> Profile
+              </Link>
+            </nav>
           </div>
-
-          {/* Plans */}
-          <div>
-            <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: '0 0 16px 0' }}>
-              Available Plans
-            </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {plans.map((plan) => (
-                <div
-                  key={plan.id}
-                  style={{
-                    backgroundColor: plan.current ? '#f0f9ff' : 'white',
-                    borderRadius: '16px',
-                    padding: '20px',
-                    border: plan.current ? '2px solid #6f9c16' : '1px solid #e5e7eb',
-                    position: 'relative'
-                  }}
-                >
-                  {plan.current && (
-                    <div style={{
-                      position: 'absolute',
-                      top: '-8px',
-                      left: '20px',
-                      backgroundColor: '#6f9c16',
-                      color: 'white',
-                      padding: '4px 12px',
-                      borderRadius: '12px',
-                      fontSize: '12px',
-                      fontWeight: '600'
-                    }}>
-                      Current Plan
+        </div>
+        {/* Main */}
+        <main className="flex-grow p-4 pb-28 md:pb-8 overflow-y-auto bg-gray-50 md:bg-white">
+          <div className="max-w-3xl mx-auto animate-fade-in-up space-y-8">
+            {/* Current Limits */}
+            <section>
+              <h2 className="text-base font-semibold text-[#1A3F22] mb-4">Current Limits</h2>
+              <div className="space-y-4">
+                <div className="bg-white border border-gray-200 rounded-2xl p-4 flex justify-between items-center">
+                  <span className="font-medium">Daily Spending</span>
+                  <span className="text-[#6f9c16] font-bold">${limits.dailySpending.toLocaleString()}</span>
+                </div>
+                <div className="bg-white border border-gray-200 rounded-2xl p-4 flex justify-between items-center">
+                  <span className="font-medium">Monthly Spending</span>
+                  <span className="text-[#6f9c16] font-bold">${limits.monthlySpending.toLocaleString()}</span>
+                </div>
+                <div className="bg-white border border-gray-200 rounded-2xl p-4 flex justify-between items-center">
+                  <span className="font-medium">Transfer Limit</span>
+                  <span className="text-[#6f9c16] font-bold">${limits.transferLimit.toLocaleString()}</span>
+                </div>
+                <div className="bg-white border border-gray-200 rounded-2xl p-4 flex justify-between items-center">
+                  <span className="font-medium">ATM Withdrawal</span>
+                  <span className="text-[#6f9c16] font-bold">${limits.atmWithdrawal.toLocaleString()}</span>
+                </div>
+              </div>
+            </section>
+            {/* Plans */}
+            <section>
+              <h2 className="text-base font-semibold text-[#1A3F22] mb-4">Available Plans</h2>
+              <div className="space-y-4">
+                {plans.map(plan => (
+                  <div key={plan.id} className={`border ${plan.current ? 'border-[#6f9c16] bg-[#f0f9ff]' : 'border-gray-200'} rounded-2xl p-4 relative`}>
+                    {plan.current && (
+                      <div className="absolute top-[-8px] left-5 bg-[#6f9c16] text-white px-3 py-1 rounded-full text-xs font-semibold">Current Plan</div>
+                    )}
+                    <div className="flex justify-between items-center mb-2">
+                      <h3 className="text-lg font-bold text-[#1A3F22]">{plan.name}</h3>
+                      <span className="text-[#6f9c16] font-semibold">{plan.price}</span>
                     </div>
-                  )}
-                  
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-                    <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#1A3F22', margin: 0 }}>
-                      {plan.name}
-                    </h3>
-                    <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#6f9c16' }}>
-                      {plan.price}
-                    </span>
-                  </div>
-                  
-                  <div style={{ marginBottom: '16px' }}>
-                    <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                      {plan.features.map((feature, index) => (
-                        <li key={index} style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          marginBottom: '8px',
-                          fontSize: '14px',
-                          color: '#1A3F22'
-                        }}>
-                          <span className="material-symbols-outlined" style={{ 
-                            color: '#6f9c16', 
-                            fontSize: '16px', 
-                            marginRight: '8px' 
-                          }}>
-                            check_circle
-                          </span>
-                          {feature}
+                    <ul className="list-disc list-inside space-y-1 text-[#1A3F22] mb-4">
+                      {plan.features.map((f, i) => (
+                        <li key={i} className="flex items-center">
+                          <span className="material-symbols-outlined text-[#6f9c16] mr-1" style={{ fontSize: '16px' }}>check_circle</span>{f}
                         </li>
                       ))}
                     </ul>
+                    {!plan.current && (
+                      <button className="w-full bg-[#6f9c16] text-white rounded-md py-2 font-medium hover:bg-[#5a7a12] transition-colors">
+                        Upgrade to {plan.name}
+                      </button>
+                    )}
                   </div>
-                  
-                  {!plan.current && (
-                    <button style={{
-                      width: '100%',
-                      backgroundColor: '#6f9c16',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '8px',
-                      padding: '12px',
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                      transition: 'background-color 0.3s ease'
-                    }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#5a7a12'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = '#6f9c16'}
-                    >
-                      Upgrade to {plan.name}
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </section>
           </div>
         </main>
-
-        {/* Bottom Navigation */}
-        <BottomNav />
       </div>
+      <div className="md:hidden"><BottomNav /></div>
     </div>
   );
 };

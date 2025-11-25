@@ -17,6 +17,12 @@ const Savings = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
+  // Withdrawal state
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const [withdrawalAmount, setWithdrawalAmount] = useState('');
+  const [withdrawing, setWithdrawing] = useState(false);
+  const [withdrawType, setWithdrawType] = useState(''); // 'goal' or 'total'
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -28,7 +34,7 @@ const Savings = () => {
 
         setSavingsBalance(profileRes.data.savingsBalance || 0);
         setGoals(goalsRes.data);
-        setTransactions(transactionsRes.data.slice(0, 5)); // Show last 5 transactions
+        setTransactions(transactionsRes.data.slice(0, 5));
       } catch (error) {
         console.error('Error fetching savings data:', error);
       } finally {
@@ -46,7 +52,6 @@ const Savings = () => {
     setSuccess('');
     try {
       const res = await axios.post(`/api/savings/goals/${selectedGoal.id}/contribute`, { amount: contributionAmount });
-      // Update local state
       setGoals(goals.map(g => g.id === selectedGoal.id ? { ...g, currentAmount: g.currentAmount + parseFloat(contributionAmount) } : g));
       setSavingsBalance(res.data.newSavingsBalance);
       setSuccess('Contribution successful!');
@@ -63,8 +68,38 @@ const Savings = () => {
     }
   };
 
+  const handleWithdraw = async () => {
+    if (!withdrawalAmount || parseFloat(withdrawalAmount) <= 0) return;
+    setWithdrawing(true);
+    setError('');
+    setSuccess('');
+    try {
+      let res;
+      if (withdrawType === 'goal' && selectedGoal) {
+        res = await axios.post(`/api/savings/goals/${selectedGoal.id}/withdraw`, { amount: withdrawalAmount });
+        setGoals(goals.map(g => g.id === selectedGoal.id ? { ...g, currentAmount: g.currentAmount - parseFloat(withdrawalAmount) } : g));
+      } else if (withdrawType === 'total') {
+        res = await axios.post('/api/savings/withdraw', { amount: withdrawalAmount });
+      }
+
+      setSavingsBalance(res.data.newSavingsBalance);
+      setSuccess('Withdrawal successful!');
+      setTimeout(() => {
+        setShowWithdrawModal(false);
+        setSelectedGoal(null);
+        setWithdrawalAmount('');
+        setSuccess('');
+        setWithdrawType('');
+      }, 1500);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Withdrawal failed');
+    } finally {
+      setWithdrawing(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-[#F7F7F7] font-sans flex justify-center">
+    <div className="min-h-screen bg-white font-sans flex justify-center">
       <style>
         {`
           @keyframes fadeInUp {
@@ -102,21 +137,17 @@ const Savings = () => {
 
           {/* Total Savings Summary - Sidebar on Desktop */}
           <div className="p-4">
-            <div className="bg-gradient-to-br from-[#1A3F22] to-[#58761B] rounded-2xl p-6 text-white shadow-lg text-center">
+            <div className="bg-gradient-to-br from-[#1A3F22] to-[#58761B] rounded-2xl p-6 text-white shadow-lg">
               <p className="text-sm opacity-80 mb-1 m-0">Total Savings</p>
               <h2 className="text-3xl font-bold mb-4 m-0">
                 {loading ? '...' : `$${savingsBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
               </h2>
-              <div className="flex justify-center gap-4 text-xs">
-                <div className="bg-white/10 px-3 py-1 rounded-full">
-                  <span className="block font-bold">+12%</span>
-                  <span className="opacity-70">this month</span>
-                </div>
-                <div className="bg-white/10 px-3 py-1 rounded-full">
-                  <span className="block font-bold">$450</span>
-                  <span className="opacity-70">interest</span>
-                </div>
-              </div>
+              <button
+                onClick={() => { setWithdrawType('total'); setShowWithdrawModal(true); }}
+                className="w-full bg-white/20 hover:bg-white/30 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors border-none cursor-pointer"
+              >
+                Withdraw from Savings
+              </button>
             </div>
           </div>
 
@@ -128,6 +159,12 @@ const Savings = () => {
               </Link>
               <Link to="/community" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
                 <span className="material-symbols-outlined mr-3">groups</span> Community
+              </Link>
+              <Link to="/payments" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">qr_code_scanner</span> Payments
+              </Link>
+              <Link to="/savings" className="flex items-center text-[#1A3F22] bg-gray-50 font-medium p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">savings</span> Savings
               </Link>
               <Link to="/profile" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
                 <span className="material-symbols-outlined mr-3">person</span> Profile
@@ -171,13 +208,22 @@ const Savings = () => {
                       <div className="w-full bg-gray-100 rounded-full h-2 mb-2">
                         <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${Math.min((goal.currentAmount / goal.targetAmount) * 100, 100)}%` }}></div>
                       </div>
-                      <p className="text-xs text-[#1A3F22] font-medium text-right m-0 mb-2">${goal.currentAmount.toLocaleString()} saved</p>
-                      <button
-                        onClick={() => { setSelectedGoal(goal); setShowContributeModal(true); }}
-                        className="w-full bg-[#E9F0E1] text-[#1A3F22] py-2 rounded-lg text-sm font-medium hover:bg-[#dce8d0] transition-colors border-none cursor-pointer"
-                      >
-                        Add Money
-                      </button>
+                      <p className="text-xs text-[#1A3F22] font-medium text-right m-0 mb-3">${goal.currentAmount.toLocaleString()} saved</p>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => { setSelectedGoal(goal); setShowContributeModal(true); }}
+                          className="flex-1 bg-[#E9F0E1] text-[#1A3F22] py-2 rounded-lg text-sm font-medium hover:bg-[#dce8d0] transition-colors border-none cursor-pointer"
+                        >
+                          Add Money
+                        </button>
+                        <button
+                          onClick={() => { setSelectedGoal(goal); setWithdrawType('goal'); setShowWithdrawModal(true); }}
+                          className="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors border-none cursor-pointer"
+                          disabled={goal.currentAmount <= 0}
+                        >
+                          Withdraw
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -243,6 +289,48 @@ const Savings = () => {
             </div>
             <button onClick={handleContribute} disabled={contributing || !contributionAmount || parseFloat(contributionAmount) <= 0} className="w-full bg-[#1A3F22] text-white px-6 py-3 rounded-full font-medium border-none cursor-pointer hover:bg-[#14301a] transition-colors shadow-md disabled:bg-gray-300 disabled:cursor-not-allowed">
               {contributing ? 'Processing...' : 'Add Money'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Withdrawal Modal */}
+      {showWithdrawModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-[#1A3F22] m-0">
+                {withdrawType === 'goal' && selectedGoal ? `Withdraw from ${selectedGoal.name}` : 'Withdraw from Savings'}
+              </h2>
+              <button onClick={() => { setShowWithdrawModal(false); setSelectedGoal(null); setWithdrawalAmount(''); setError(''); setSuccess(''); setWithdrawType(''); }} className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer">
+                <span className="material-symbols-outlined text-2xl">close</span>
+              </button>
+            </div>
+            {success && (<div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4">{success}</div>)}
+            {error && (<div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">{error}</div>)}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Amount</label>
+              <input type="number" value={withdrawalAmount} onChange={(e) => setWithdrawalAmount(e.target.value)} placeholder="Enter amount" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A3F22] focus:border-transparent" disabled={withdrawing} />
+            </div>
+            <div className="bg-gray-50 p-4 rounded-lg mb-4">
+              {withdrawType === 'goal' && selectedGoal ? (
+                <>
+                  <div className="flex justify-between text-sm mb-2"><span className="text-gray-600">Available:</span><span className="font-medium text-gray-900">${selectedGoal.currentAmount.toLocaleString()}</span></div>
+                  {withdrawalAmount && parseFloat(withdrawalAmount) > 0 && (
+                    <div className="flex justify-between text-sm pt-2 border-t border-gray-200"><span className="text-gray-600">Remaining:</span><span className="font-bold text-[#1A3F22]">${(selectedGoal.currentAmount - parseFloat(withdrawalAmount)).toLocaleString()}</span></div>
+                  )}
+                </>
+              ) : (
+                <>
+                  <div className="flex justify-between text-sm mb-2"><span className="text-gray-600">Total Savings:</span><span className="font-medium text-gray-900">${savingsBalance.toLocaleString()}</span></div>
+                  {withdrawalAmount && parseFloat(withdrawalAmount) > 0 && (
+                    <div className="flex justify-between text-sm pt-2 border-t border-gray-200"><span className="text-gray-600">Remaining:</span><span className="font-bold text-[#1A3F22]">${(savingsBalance - parseFloat(withdrawalAmount)).toLocaleString()}</span></div>
+                  )}
+                </>
+              )}
+            </div>
+            <button onClick={handleWithdraw} disabled={withdrawing || !withdrawalAmount || parseFloat(withdrawalAmount) <= 0} className="w-full bg-[#1A3F22] text-white px-6 py-3 rounded-full font-medium border-none cursor-pointer hover:bg-[#14301a] transition-colors shadow-md disabled:bg-gray-300 disabled:cursor-not-allowed">
+              {withdrawing ? 'Processing...' : 'Withdraw Money'}
             </button>
           </div>
         </div>

@@ -97,7 +97,7 @@ const Community = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F7F7] font-sans flex justify-center">
+    <div className="min-h-screen bg-white font-sans flex justify-center">
       <style>{`\n        @keyframes fadeInUp {\n          from { opacity: 0; transform: translateY(30px); }\n          to { opacity: 1; transform: translateY(0); }\n        }\n        .animate-fade-in-up { animation: fadeInUp 0.6s ease-out forwards; }\n      `}</style>
 
       <div className="w-full max-w-md md:max-w-6xl bg-white md:my-8 md:rounded-3xl md:shadow-2xl min-h-screen md:min-h-[800px] flex flex-col md:flex-row overflow-hidden relative">
@@ -133,6 +133,15 @@ const Community = () => {
             <nav className="space-y-2">
               <Link to="/home" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
                 <span className="material-symbols-outlined mr-3">home</span> Home
+              </Link>
+              <Link to="/community" className="flex items-center text-[#1A3F22] bg-gray-50 font-medium p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">groups</span> Community
+              </Link>
+              <Link to="/payments" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">qr_code_scanner</span> Payments
+              </Link>
+              <Link to="/savings" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">savings</span> Savings
               </Link>
               <Link to="/profile" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
                 <span className="material-symbols-outlined mr-3">person</span> Profile

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import BottomNav from './BottomNav';
 
 const Security = () => {
@@ -16,329 +16,163 @@ const Security = () => {
   };
 
   return (
-    <div style={{ color: '#1A3F22' }}>
-      <div style={{
-        maxWidth: '384px',
-        margin: '0 auto',
-        backgroundColor: 'white',
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
-        {/* Header */}
-        <header style={{
-          backgroundColor: 'white',
-          position: 'sticky',
-          top: 0,
-          zIndex: 100,
-          padding: '16px 24px',
-          borderBottom: '1px solid #e5e7eb',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}>
-          <button
-            onClick={() => navigate('/profile')}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              backgroundColor: '#f3f4f6'
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ color: '#1A3F22', fontSize: '20px' }}>
-              arrow_back
-            </span>
-          </button>
-          <h1 style={{
-            fontSize: '18px',
-            fontWeight: 'bold',
-            color: '#1A3F22',
-            margin: 0
-          }}>
-            Security
-          </h1>
-          <div style={{ width: '40px' }}></div>
-        </header>
+    <div className="min-h-screen bg-white font-sans flex justify-center">
+      <style>
+        {`
+          @keyframes fadeInUp {
+            from {
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+          }
+        `}
+      </style>
 
-        {/* Main Content */}
-        <main style={{
-          flex: 1,
-          padding: '24px',
-          overflowY: 'auto',
-          paddingBottom: '100px'
-        }}>
-          {/* Security Options */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            
+      <div className="w-full max-w-md md:max-w-6xl bg-white md:my-8 md:rounded-3xl md:shadow-2xl min-h-screen md:min-h-[800px] flex flex-col md:flex-row overflow-hidden relative">
+
+        {/* Sidebar / Mobile Header */}
+        <div className="md:w-1/3 lg:w-1/4 bg-white md:border-r md:border-gray-100 flex flex-col">
+          {/* Header */}
+          <header className="sticky top-0 z-10 p-4 bg-white md:bg-transparent">
+            <div className="flex justify-between items-center">
+              <button
+                onClick={() => navigate('/profile')}
+                className="bg-gray-100 border-none cursor-pointer flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-200 transition-colors"
+              >
+                <span className="material-symbols-outlined text-[#1A3F22] text-xl">arrow_back</span>
+              </button>
+              <h1 className="text-lg font-bold text-[#1A3F22] m-0">Security</h1>
+              <div className="w-10"></div>
+            </div>
+          </header>
+
+          {/* Desktop Nav Links */}
+          <div className="hidden md:block p-4 mt-auto">
+            <nav className="space-y-2">
+              <Link to="/home" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">home</span> Home
+              </Link>
+              <Link to="/profile" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">person</span> Profile
+              </Link>
+              <Link to="/settings" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">settings</span> Settings
+              </Link>
+            </nav>
+          </div>
+        </div>
+
+        {/* Main Content Area */}
+        <main className="flex-grow p-4 pb-28 md:pb-8 overflow-y-auto bg-gray-50 md:bg-white">
+          <div className="max-w-2xl mx-auto animate-fade-in-up space-y-6">
+
             {/* Change Password */}
-            <div style={{
-              backgroundColor: '#f9fafb',
-              borderRadius: '16px',
-              padding: '20px',
-              border: '1px solid #e5e7eb'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
-                <div style={{
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: '50%',
-                  backgroundColor: '#E9F0E1',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginRight: '12px'
-                }}>
-                  <span className="material-symbols-outlined" style={{ color: '#58761B', fontSize: '20px' }}>
-                    lock
-                  </span>
+            <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 bg-[#E9F0E1] rounded-full flex items-center justify-center mr-4">
+                  <span className="material-symbols-outlined text-[#58761B] text-xl">lock</span>
                 </div>
                 <div>
-                  <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: 0 }}>
-                    Change Password
-                  </h3>
-                  <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
-                    Update your account password
-                  </p>
+                  <h3 className="text-base font-semibold text-[#1A3F22] m-0">Change Password</h3>
+                  <p className="text-sm text-gray-500 m-0">Update your account password</p>
                 </div>
               </div>
-              <button style={{
-                backgroundColor: '#6f9c16',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                padding: '10px 20px',
-                fontSize: '14px',
-                fontWeight: '500',
-                cursor: 'pointer',
-                width: '100%'
-              }}>
+              <button className="w-full bg-[#6f9c16] text-white py-3 rounded-lg font-medium hover:bg-[#5a8012] transition-colors border-none cursor-pointer">
                 Change Password
               </button>
             </div>
 
             {/* Two-Factor Authentication */}
-            <div style={{
-              backgroundColor: '#f9fafb',
-              borderRadius: '16px',
-              padding: '20px',
-              border: '1px solid #e5e7eb'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <div style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '50%',
-                    backgroundColor: '#E9F0E1',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginRight: '12px'
-                  }}>
-                    <span className="material-symbols-outlined" style={{ color: '#58761B', fontSize: '20px' }}>
-                      security
-                    </span>
+            <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-[#E9F0E1] rounded-full flex items-center justify-center mr-4">
+                    <span className="material-symbols-outlined text-[#58761B] text-xl">security</span>
                   </div>
                   <div>
-                    <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: 0 }}>
-                      Two-Factor Authentication
-                    </h3>
-                    <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
-                      Add extra security to your account
-                    </p>
+                    <h3 className="text-base font-semibold text-[#1A3F22] m-0">Two-Factor Authentication</h3>
+                    <p className="text-sm text-gray-500 m-0">Add extra security to your account</p>
                   </div>
                 </div>
                 <button
                   onClick={toggleTwoFactor}
-                  style={{
-                    width: '48px',
-                    height: '24px',
-                    borderRadius: '12px',
-                    border: 'none',
-                    backgroundColor: twoFactorEnabled ? '#6f9c16' : '#d1d5db',
-                    cursor: 'pointer',
-                    position: 'relative',
-                    transition: 'background-color 0.3s ease'
-                  }}
+                  className={`relative w-12 h-6 rounded-full border-none cursor-pointer transition-colors ${twoFactorEnabled ? 'bg-[#6f9c16]' : 'bg-gray-300'
+                    }`}
                 >
-                  <div style={{
-                    width: '20px',
-                    height: '20px',
-                    borderRadius: '50%',
-                    backgroundColor: 'white',
-                    position: 'absolute',
-                    top: '2px',
-                    left: twoFactorEnabled ? '26px' : '2px',
-                    transition: 'left 0.3s ease',
-                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
-                  }}></div>
+                  <div className={`absolute w-5 h-5 bg-white rounded-full top-0.5 transition-all shadow-md ${twoFactorEnabled ? 'right-0.5' : 'left-0.5'
+                    }`}></div>
                 </button>
               </div>
             </div>
 
             {/* Biometric Authentication */}
-            <div style={{
-              backgroundColor: '#f9fafb',
-              borderRadius: '16px',
-              padding: '20px',
-              border: '1px solid #e5e7eb'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <div style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '50%',
-                    backgroundColor: '#E9F0E1',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginRight: '12px'
-                  }}>
-                    <span className="material-symbols-outlined" style={{ color: '#58761B', fontSize: '20px' }}>
-                      fingerprint
-                    </span>
+            <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-[#E9F0E1] rounded-full flex items-center justify-center mr-4">
+                    <span className="material-symbols-outlined text-[#58761B] text-xl">fingerprint</span>
                   </div>
                   <div>
-                    <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: 0 }}>
-                      Biometric Authentication
-                    </h3>
-                    <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
-                      Use fingerprint or face recognition
-                    </p>
+                    <h3 className="text-base font-semibold text-[#1A3F22] m-0">Biometric Authentication</h3>
+                    <p className="text-sm text-gray-500 m-0">Use fingerprint or face recognition</p>
                   </div>
                 </div>
                 <button
                   onClick={toggleBiometric}
-                  style={{
-                    width: '48px',
-                    height: '24px',
-                    borderRadius: '12px',
-                    border: 'none',
-                    backgroundColor: biometricEnabled ? '#6f9c16' : '#d1d5db',
-                    cursor: 'pointer',
-                    position: 'relative',
-                    transition: 'background-color 0.3s ease'
-                  }}
+                  className={`relative w-12 h-6 rounded-full border-none cursor-pointer transition-colors ${biometricEnabled ? 'bg-[#6f9c16]' : 'bg-gray-300'
+                    }`}
                 >
-                  <div style={{
-                    width: '20px',
-                    height: '20px',
-                    borderRadius: '50%',
-                    backgroundColor: 'white',
-                    position: 'absolute',
-                    top: '2px',
-                    left: biometricEnabled ? '26px' : '2px',
-                    transition: 'left 0.3s ease',
-                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
-                  }}></div>
+                  <div className={`absolute w-5 h-5 bg-white rounded-full top-0.5 transition-all shadow-md ${biometricEnabled ? 'right-0.5' : 'left-0.5'
+                    }`}></div>
                 </button>
               </div>
             </div>
 
             {/* Login History */}
-            <div style={{
-              backgroundColor: '#f9fafb',
-              borderRadius: '16px',
-              padding: '20px',
-              border: '1px solid #e5e7eb'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
-                <div style={{
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: '50%',
-                  backgroundColor: '#E9F0E1',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginRight: '12px'
-                }}>
-                  <span className="material-symbols-outlined" style={{ color: '#58761B', fontSize: '20px' }}>
-                    history
-                  </span>
+            <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 bg-[#E9F0E1] rounded-full flex items-center justify-center mr-4">
+                  <span className="material-symbols-outlined text-[#58761B] text-xl">history</span>
                 </div>
                 <div>
-                  <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: 0 }}>
-                    Login History
-                  </h3>
-                  <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
-                    View recent login activity
-                  </p>
+                  <h3 className="text-base font-semibold text-[#1A3F22] m-0">Login History</h3>
+                  <p className="text-sm text-gray-500 m-0">View recent login activity</p>
                 </div>
               </div>
-              <button style={{
-                backgroundColor: '#6f9c16',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                padding: '10px 20px',
-                fontSize: '14px',
-                fontWeight: '500',
-                cursor: 'pointer',
-                width: '100%'
-              }}>
+              <button className="w-full bg-[#6f9c16] text-white py-3 rounded-lg font-medium hover:bg-[#5a8012] transition-colors border-none cursor-pointer">
                 View Login History
               </button>
             </div>
 
             {/* Security Alerts */}
-            <div style={{
-              backgroundColor: '#f9fafb',
-              borderRadius: '16px',
-              padding: '20px',
-              border: '1px solid #e5e7eb'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
-                <div style={{
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: '50%',
-                  backgroundColor: '#E9F0E1',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginRight: '12px'
-                }}>
-                  <span className="material-symbols-outlined" style={{ color: '#58761B', fontSize: '20px' }}>
-                    notifications
-                  </span>
+            <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 bg-[#E9F0E1] rounded-full flex items-center justify-center mr-4">
+                  <span className="material-symbols-outlined text-[#58761B] text-xl">notifications</span>
                 </div>
                 <div>
-                  <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: 0 }}>
-                    Security Alerts
-                  </h3>
-                  <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
-                    Manage security notifications
-                  </p>
+                  <h3 className="text-base font-semibold text-[#1A3F22] m-0">Security Alerts</h3>
+                  <p className="text-sm text-gray-500 m-0">Manage security notifications</p>
                 </div>
               </div>
-              <button style={{
-                backgroundColor: '#6f9c16',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                padding: '10px 20px',
-                fontSize: '14px',
-                fontWeight: '500',
-                cursor: 'pointer',
-                width: '100%'
-              }}>
+              <button className="w-full bg-[#6f9c16] text-white py-3 rounded-lg font-medium hover:bg-[#5a8012] transition-colors border-none cursor-pointer">
                 Manage Alerts
               </button>
             </div>
+
           </div>
         </main>
+      </div>
 
-        {/* Bottom Navigation */}
+      {/* Bottom Navigation (Mobile Only) */}
+      <div className="md:hidden">
         <BottomNav />
       </div>
     </div>

@@ -4,331 +4,117 @@ import BottomNav from './BottomNav';
 
 const JoinGroup = () => {
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedGroup, setSelectedGroup] = useState(null);
+  const [inviteCode, setInviteCode] = useState('');
 
-  const availableGroups = [
-    {
-      id: 1,
-      name: 'St. Mary\'s Church Fund',
-      type: 'church',
-      description: 'Monthly contributions for church development',
-      members: 45,
-      goal: 50000,
-      current: 32000,
-      privacy: 'public'
-    },
-    {
-      id: 2,
-      name: 'Family Emergency Fund',
-      type: 'family',
-      description: 'Emergency savings for family members',
-      members: 12,
-      goal: 25000,
-      current: 18000,
-      privacy: 'private'
-    },
-    {
-      id: 3,
-      name: 'Tech SACCO',
-      type: 'sacco',
-      description: 'Savings and credit for tech professionals',
-      members: 89,
-      goal: 100000,
-      current: 75000,
-      privacy: 'public'
-    },
-    {
-      id: 4,
-      name: 'College Friends Fund',
-      type: 'friends',
-      description: 'Reunion and travel fund',
-      members: 8,
-      goal: 15000,
-      current: 12000,
-      privacy: 'private'
-    }
-  ];
-
-  const filteredGroups = availableGroups.filter(group =>
-    group.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    group.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const getGroupIcon = (type) => {
-    const iconMap = {
-      church: 'church',
-      family: 'cottage',
-      sacco: 'work',
-      friends: 'groups',
-    };
-    return iconMap[type] || 'groups';
-  };
-
-  const getGroupGradient = (type) => {
-    const gradientMap = {
-      church: 'linear-gradient(135deg, #1A3F22, #58761B)',
-      family: 'linear-gradient(135deg, #58761B, #D99201)',
-      sacco: 'linear-gradient(135deg, #D99201, #905A01)',
-      friends: 'linear-gradient(135deg, #1A3F22, #D99201)',
-    };
-    return gradientMap[type] || 'linear-gradient(135deg, #1A3F22, #58761B)';
-  };
-
-  const handleJoinGroup = (group) => {
-    console.log('Joining group:', group);
+  const handleJoin = (e) => {
+    e.preventDefault();
+    console.log('Joining group with code:', inviteCode);
     navigate('/community');
   };
 
   return (
-    <div style={{ color: '#1A3F22' }}>
-      <div style={{
-        maxWidth: '384px',
-        margin: '0 auto',
-        backgroundColor: 'white',
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
-        {/* Header */}
-        <header style={{
-          backgroundColor: 'white',
-          position: 'sticky',
-          top: 0,
-          zIndex: 100,
-          padding: '16px 24px',
-          borderBottom: '1px solid #e5e7eb',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}>
-          <button
-            onClick={() => navigate('/community')}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              backgroundColor: '#f3f4f6'
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ color: '#1A3F22', fontSize: '20px' }}>
-              arrow_back
-            </span>
-          </button>
-          <h1 style={{
-            fontSize: '18px',
-            fontWeight: 'bold',
-            color: '#1A3F22',
-            margin: 0
-          }}>
-            Join Group
-          </h1>
-          <div style={{ width: '40px' }}></div>
-        </header>
+    <div className="min-h-screen bg-white font-sans flex justify-center">
+      <style>
+        {`
+          @keyframes fadeInUp {
+            from {
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+          }
+        `}
+      </style>
 
-        {/* Main Content */}
-        <main style={{
-          flex: 1,
-          padding: '24px',
-          overflowY: 'auto',
-          paddingBottom: '100px'
-        }}>
-          
-          {/* Search */}
-          <div style={{ marginBottom: '24px' }}>
-            <div style={{ position: 'relative' }}>
-              <input
-                type="text"
-                placeholder="Search groups..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '12px 16px 12px 48px',
-                  border: '2px solid #e5e7eb',
-                  borderRadius: '12px',
-                  fontSize: '16px',
-                  backgroundColor: '#f9fafb',
-                  outline: 'none',
-                  transition: 'border-color 0.3s ease'
-                }}
-                onFocus={(e) => e.target.style.borderColor = '#6f9c16'}
-                onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
-              />
-              <span 
-                className="material-symbols-outlined" 
-                style={{ 
-                  position: 'absolute', 
-                  left: '16px', 
-                  top: '50%', 
-                  transform: 'translateY(-50%)',
-                  color: '#6b7280', 
-                  fontSize: '20px' 
-                }}
+      <div className="w-full max-w-md md:max-w-6xl bg-white md:my-8 md:rounded-3xl md:shadow-2xl min-h-screen md:min-h-[800px] flex flex-col md:flex-row overflow-hidden relative">
+
+        {/* Sidebar / Mobile Header */}
+        <div className="md:w-1/3 lg:w-1/4 bg-white md:border-r md:border-gray-100 flex flex-col">
+          {/* Header */}
+          <header className="sticky top-0 z-10 p-4 bg-white md:bg-transparent">
+            <div className="flex justify-between items-center">
+              <button
+                onClick={() => navigate('/community')}
+                className="bg-gray-100 border-none cursor-pointer flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-200 transition-colors"
               >
-                search
-              </span>
+                <span className="material-symbols-outlined text-[#1A3F22] text-xl">arrow_back</span>
+              </button>
+              <h1 className="text-lg font-bold text-[#1A3F22] m-0">Join Group</h1>
+              <div className="w-10"></div>
             </div>
-          </div>
+          </header>
 
-          {/* Available Groups */}
-          <div>
-            <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: '0 0 16px 0' }}>
-              Available Groups ({filteredGroups.length})
-            </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {filteredGroups.map((group) => (
-                <div
-                  key={group.id}
-                  style={{
-                    backgroundColor: 'white',
-                    borderRadius: '16px',
-                    padding: '20px',
-                    border: '1px solid #e5e7eb',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.target.style.transform = 'translateY(-2px)';
-                    e.target.style.boxShadow = '0 8px 25px -5px rgba(0, 0, 0, 0.1)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.transform = 'translateY(0)';
-                    e.target.style.boxShadow = 'none';
-                  }}
-                >
-                  {/* Group Header */}
-                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
-                    <div style={{
-                      width: '48px',
-                      height: '48px',
-                      borderRadius: '50%',
-                      background: getGroupGradient(group.type),
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginRight: '16px'
-                    }}>
-                      <span className="material-symbols-outlined" style={{ color: 'white', fontSize: '24px' }}>
-                        {getGroupIcon(group.type)}
-                      </span>
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#1A3F22', margin: 0 }}>
-                        {group.name}
-                      </h3>
-                      <p style={{ fontSize: '14px', color: '#6b7280', margin: '4px 0 0 0' }}>
-                        {group.members} members • {group.privacy}
-                      </p>
-                    </div>
-                    <span style={{
-                      fontSize: '12px',
-                      fontWeight: '500',
-                      color: group.privacy === 'public' ? '#059669' : '#d97706',
-                      padding: '4px 8px',
-                      borderRadius: '6px',
-                      backgroundColor: group.privacy === 'public' ? '#dcfce7' : '#fef3c7'
-                    }}>
-                      {group.privacy}
-                    </span>
-                  </div>
-
-                  {/* Group Description */}
-                  <p style={{ fontSize: '14px', color: '#6b7280', margin: '0 0 16px 0', lineHeight: '1.5' }}>
-                    {group.description}
-                  </p>
-
-                  {/* Progress Bar */}
-                  <div style={{ marginBottom: '16px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                      <span style={{ fontSize: '12px', color: '#6b7280' }}>Progress</span>
-                      <span style={{ fontSize: '12px', fontWeight: '600', color: '#1A3F22' }}>
-                        ${group.current.toLocaleString()} / ${group.goal.toLocaleString()}
-                      </span>
-                    </div>
-                    <div style={{
-                      height: '8px',
-                      backgroundColor: '#e5e7eb',
-                      borderRadius: '4px',
-                      overflow: 'hidden'
-                    }}>
-                      <div 
-                        style={{
-                          height: '8px',
-                          background: getGroupGradient(group.type),
-                          width: `${(group.current / group.goal) * 100}%`,
-                          transition: 'width 0.8s ease-in-out',
-                          borderRadius: '4px'
-                        }}
-                      ></div>
-                    </div>
-                  </div>
-
-                  {/* Join Button */}
-                  <button
-                    onClick={() => handleJoinGroup(group)}
-                    style={{
-                      width: '100%',
-                      backgroundColor: '#6f9c16',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '12px',
-                      padding: '12px',
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                      transition: 'background-color 0.3s ease'
-                    }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#5a7a12'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = '#6f9c16'}
-                  >
-                    Join Group
-                  </button>
-                </div>
-              ))}
-            </div>
-
-            {filteredGroups.length === 0 && (
-              <div style={{
-                textAlign: 'center',
-                padding: '40px 20px',
-                backgroundColor: '#f9fafb',
-                borderRadius: '16px',
-                border: '1px solid #e5e7eb'
-              }}>
-                <div style={{
-                  width: '60px',
-                  height: '60px',
-                  borderRadius: '50%',
-                  backgroundColor: '#E9F0E1',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto 16px auto'
-                }}>
-                  <span className="material-symbols-outlined" style={{ color: '#58761B', fontSize: '24px' }}>
-                    search_off
-                  </span>
-                </div>
-                <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: '0 0 8px 0' }}>
-                  No groups found
-                </h3>
-                <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
-                  Try searching with different keywords
-                </p>
+          {/* Desktop Nav Links */}
+          <div className="hidden md:block p-4 mt-auto">
+            <nav className="space-y-2">
+              <div onClick={() => navigate('/home')} className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors cursor-pointer">
+                <span className="material-symbols-outlined mr-3">home</span> Home
               </div>
-            )}
+              <div onClick={() => navigate('/community')} className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors cursor-pointer">
+                <span className="material-symbols-outlined mr-3">groups</span> Community
+              </div>
+              <div onClick={() => navigate('/profile')} className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors cursor-pointer">
+                <span className="material-symbols-outlined mr-3">person</span> Profile
+              </div>
+            </nav>
+          </div>
+        </div>
+
+        {/* Main Content Area */}
+        <main className="flex-grow p-4 pb-28 md:pb-8 overflow-y-auto bg-gray-50 md:bg-white">
+          <div className="max-w-2xl mx-auto animate-fade-in-up">
+
+            <div className="text-center mb-10 pt-8">
+              <div className="w-24 h-24 bg-[#E9F0E1] rounded-full flex items-center justify-center mx-auto mb-6">
+                <span className="material-symbols-outlined text-[#58761B] text-5xl">diversity_3</span>
+              </div>
+              <h2 className="text-2xl font-bold text-[#1A3F22] mb-2">Join a Community</h2>
+              <p className="text-gray-500">Enter the invite code to join an existing group</p>
+            </div>
+
+            <form onSubmit={handleJoin} className="space-y-6 max-w-sm mx-auto">
+
+              {/* Invite Code Input */}
+              <div>
+                <label className="block text-sm font-medium text-[#1A3F22] mb-2 text-center">Invite Code</label>
+                <input
+                  type="text"
+                  value={inviteCode}
+                  onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+                  placeholder="e.g. KNG-1234"
+                  className="w-full p-4 text-center text-2xl font-mono tracking-widest rounded-xl bg-gray-50 border-2 border-gray-200 focus:border-[#6f9c16] outline-none transition-colors uppercase"
+                  maxLength={8}
+                  required
+                />
+              </div>
+
+              <div className="bg-blue-50 p-4 rounded-xl flex items-start text-sm text-blue-800">
+                <span className="material-symbols-outlined text-blue-600 mr-3 mt-0.5">info</span>
+                <p>Ask the group admin for the invite code. It's usually found in the group settings.</p>
+              </div>
+
+              <button
+                type="submit"
+                disabled={!inviteCode}
+                className="w-full py-4 rounded-xl bg-[#6f9c16] text-white font-bold text-lg shadow-lg hover:bg-[#5a8012] disabled:opacity-50 disabled:cursor-not-allowed transition-all mt-8"
+              >
+                Join Group
+              </button>
+
+            </form>
+
           </div>
         </main>
+      </div>
 
-        {/* Bottom Navigation */}
+      {/* Bottom Navigation (Mobile Only) */}
+      <div className="md:hidden">
         <BottomNav />
       </div>
     </div>

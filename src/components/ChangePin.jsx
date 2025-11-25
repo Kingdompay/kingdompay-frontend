@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import BottomNav from './BottomNav';
 
 const ChangePin = () => {
@@ -44,137 +44,93 @@ const ChangePin = () => {
   };
 
   return (
-    <div style={{ color: '#1A3F22' }}>
-      <div style={{
-        maxWidth: '384px',
-        margin: '0 auto',
-        backgroundColor: 'white',
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
-        {/* Header */}
-        <header style={{
-          backgroundColor: 'white',
-          position: 'sticky',
-          top: 0,
-          zIndex: 100,
-          padding: '16px 24px',
-          borderBottom: '1px solid #e5e7eb',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}>
-          <button
-            onClick={() => navigate('/profile')}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              backgroundColor: '#f3f4f6'
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ color: '#1A3F22', fontSize: '20px' }}>
-              arrow_back
-            </span>
-          </button>
-          <h1 style={{
-            fontSize: '18px',
-            fontWeight: 'bold',
-            color: '#1A3F22',
-            margin: 0
-          }}>
-            Change PIN
-          </h1>
-          <div style={{ width: '40px' }}></div>
-        </header>
+    <div className="min-h-screen bg-white font-sans flex justify-center">
+      <style>
+        {`
+          @keyframes fadeInUp {
+            from {
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+          }
+        `}
+      </style>
 
-        {/* Main Content */}
-        <main style={{
-          flex: 1,
-          padding: '24px',
-          overflowY: 'auto',
-          paddingBottom: '100px'
-        }}>
-          
-          {/* Security Notice */}
-          <div style={{
-            backgroundColor: '#fef3c7',
-            borderRadius: '16px',
-            padding: '16px',
-            border: '1px solid #fbbf24',
-            marginBottom: '24px'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
-              <span className="material-symbols-outlined" style={{ color: '#d97706', fontSize: '20px', marginRight: '8px' }}>
-                security
-              </span>
-              <h3 style={{ fontSize: '14px', fontWeight: '600', color: '#d97706', margin: 0 }}>
-                Security Notice
-              </h3>
+      <div className="w-full max-w-md md:max-w-6xl bg-white md:my-8 md:rounded-3xl md:shadow-2xl min-h-screen md:min-h-[800px] flex flex-col md:flex-row overflow-hidden relative">
+
+        {/* Sidebar / Mobile Header */}
+        <div className="md:w-1/3 lg:w-1/4 bg-white md:border-r md:border-gray-100 flex flex-col">
+          <header className="sticky top-0 z-10 p-4 bg-white md:bg-transparent">
+            <div className="flex justify-between items-center">
+              <button
+                onClick={() => navigate('/profile')}
+                className="bg-gray-100 border-none cursor-pointer flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-200 transition-colors"
+              >
+                <span className="material-symbols-outlined text-[#1A3F22] text-xl">arrow_back</span>
+              </button>
+              <h1 className="text-lg font-bold text-[#1A3F22] m-0">Change PIN</h1>
+              <div className="w-10"></div>
             </div>
-            <p style={{ fontSize: '12px', color: '#92400e', margin: 0, lineHeight: '1.4' }}>
-              Your PIN is used to authenticate transactions and access your account. Keep it secure and don't share it with anyone.
-            </p>
-          </div>
+          </header>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              
+          <div className="hidden md:block p-4 mt-auto">
+            <nav className="space-y-2">
+              <Link to="/home" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">home</span> Home
+              </Link>
+              <Link to="/profile" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">person</span> Profile
+              </Link>
+              <Link to="/security" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">shield</span> Security
+              </Link>
+            </nav>
+          </div>
+        </div>
+
+        {/* Main Content Area */}
+        <main className="flex-grow p-4 pb-28 md:pb-8 overflow-y-auto bg-gray-50 md:bg-white">
+          <div className="max-w-2xl mx-auto animate-fade-in-up">
+
+            {/* Security Notice */}
+            <div className="bg-amber-50 rounded-2xl p-4 border border-amber-200 mb-6">
+              <div className="flex items-center mb-2">
+                <span className="material-symbols-outlined text-amber-600 text-xl mr-2">security</span>
+                <h3 className="text-sm font-semibold text-amber-600 m-0">Security Notice</h3>
+              </div>
+              <p className="text-xs text-amber-900 m-0 leading-relaxed">
+                Your PIN is used to authenticate transactions and access your account. Keep it secure and don't share it with anyone.
+              </p>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-5">
+
               {/* Current PIN */}
               <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  color: '#1A3F22',
-                  marginBottom: '8px'
-                }}>
-                  Current PIN
-                </label>
-                <div style={{ position: 'relative' }}>
+                <label className="block text-sm font-medium text-[#1A3F22] mb-2">Current PIN</label>
+                <div className="relative">
                   <input
                     type={showPasswords.current ? 'text' : 'password'}
                     name="currentPin"
                     value={formData.currentPin}
                     onChange={handleChange}
                     placeholder="Enter current PIN"
-                    style={{
-                      width: '100%',
-                      padding: '12px 48px 12px 16px',
-                      border: '2px solid #e5e7eb',
-                      borderRadius: '12px',
-                      fontSize: '16px',
-                      backgroundColor: '#f9fafb',
-                      outline: 'none',
-                      transition: 'border-color 0.3s ease'
-                    }}
-                    onFocus={(e) => e.target.style.borderColor = '#6f9c16'}
-                    onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                    className="w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-xl text-base bg-gray-50 outline-none focus:border-[#6f9c16] transition-colors"
                   />
                   <button
                     type="button"
                     onClick={() => togglePasswordVisibility('current')}
-                    style={{
-                      position: 'absolute',
-                      right: '12px',
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      color: '#6b7280'
-                    }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-gray-500"
                   >
-                    <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+                    <span className="material-symbols-outlined text-xl">
                       {showPasswords.current ? 'visibility_off' : 'visibility'}
                     </span>
                   </button>
@@ -183,50 +139,22 @@ const ChangePin = () => {
 
               {/* New PIN */}
               <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  color: '#1A3F22',
-                  marginBottom: '8px'
-                }}>
-                  New PIN
-                </label>
-                <div style={{ position: 'relative' }}>
+                <label className="block text-sm font-medium text-[#1A3F22] mb-2">New PIN</label>
+                <div className="relative">
                   <input
                     type={showPasswords.new ? 'text' : 'password'}
                     name="newPin"
                     value={formData.newPin}
                     onChange={handleChange}
                     placeholder="Enter new PIN"
-                    style={{
-                      width: '100%',
-                      padding: '12px 48px 12px 16px',
-                      border: '2px solid #e5e7eb',
-                      borderRadius: '12px',
-                      fontSize: '16px',
-                      backgroundColor: '#f9fafb',
-                      outline: 'none',
-                      transition: 'border-color 0.3s ease'
-                    }}
-                    onFocus={(e) => e.target.style.borderColor = '#6f9c16'}
-                    onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                    className="w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-xl text-base bg-gray-50 outline-none focus:border-[#6f9c16] transition-colors"
                   />
                   <button
                     type="button"
                     onClick={() => togglePasswordVisibility('new')}
-                    style={{
-                      position: 'absolute',
-                      right: '12px',
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      color: '#6b7280'
-                    }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-gray-500"
                   >
-                    <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+                    <span className="material-symbols-outlined text-xl">
                       {showPasswords.new ? 'visibility_off' : 'visibility'}
                     </span>
                   </button>
@@ -235,50 +163,22 @@ const ChangePin = () => {
 
               {/* Confirm PIN */}
               <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  color: '#1A3F22',
-                  marginBottom: '8px'
-                }}>
-                  Confirm New PIN
-                </label>
-                <div style={{ position: 'relative' }}>
+                <label className="block text-sm font-medium text-[#1A3F22] mb-2">Confirm New PIN</label>
+                <div className="relative">
                   <input
                     type={showPasswords.confirm ? 'text' : 'password'}
                     name="confirmPin"
                     value={formData.confirmPin}
                     onChange={handleChange}
                     placeholder="Confirm new PIN"
-                    style={{
-                      width: '100%',
-                      padding: '12px 48px 12px 16px',
-                      border: '2px solid #e5e7eb',
-                      borderRadius: '12px',
-                      fontSize: '16px',
-                      backgroundColor: '#f9fafb',
-                      outline: 'none',
-                      transition: 'border-color 0.3s ease'
-                    }}
-                    onFocus={(e) => e.target.style.borderColor = '#6f9c16'}
-                    onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                    className="w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-xl text-base bg-gray-50 outline-none focus:border-[#6f9c16] transition-colors"
                   />
                   <button
                     type="button"
                     onClick={() => togglePasswordVisibility('confirm')}
-                    style={{
-                      position: 'absolute',
-                      right: '12px',
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      color: '#6b7280'
-                    }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-gray-500"
                   >
-                    <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+                    <span className="material-symbols-outlined text-xl">
                       {showPasswords.confirm ? 'visibility_off' : 'visibility'}
                     </span>
                   </button>
@@ -286,15 +186,9 @@ const ChangePin = () => {
               </div>
 
               {/* PIN Requirements */}
-              <div style={{
-                backgroundColor: '#f3f4f6',
-                borderRadius: '12px',
-                padding: '16px'
-              }}>
-                <h4 style={{ fontSize: '14px', fontWeight: '600', color: '#1A3F22', margin: '0 0 8px 0' }}>
-                  PIN Requirements:
-                </h4>
-                <ul style={{ fontSize: '12px', color: '#6b7280', margin: 0, paddingLeft: '16px' }}>
+              <div className="bg-gray-100 rounded-xl p-4">
+                <h4 className="text-sm font-semibold text-[#1A3F22] mb-2 m-0">PIN Requirements:</h4>
+                <ul className="text-xs text-gray-600 m-0 pl-4 space-y-1">
                   <li>Must be at least 4 digits</li>
                   <li>Cannot be the same as your current PIN</li>
                   <li>Should not be easily guessable (e.g., 1234, 0000)</li>
@@ -305,28 +199,17 @@ const ChangePin = () => {
               {/* Submit Button */}
               <button
                 type="submit"
-                style={{
-                  width: '100%',
-                  backgroundColor: '#6f9c16',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '12px',
-                  padding: '16px',
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.3s ease'
-                }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#5a7a12'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = '#6f9c16'}
+                className="w-full bg-[#6f9c16] text-white border-none rounded-xl py-4 text-base font-semibold cursor-pointer hover:bg-[#5a8012] transition-colors shadow-md"
               >
                 Change PIN
               </button>
-            </div>
-          </form>
-        </main>
+            </form>
 
-        {/* Bottom Navigation */}
+          </div>
+        </main>
+      </div>
+
+      <div className="md:hidden">
         <BottomNav />
       </div>
     </div>

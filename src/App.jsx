@@ -15,7 +15,7 @@ import Settings from './components/Settings';
 import HelpSupport from './components/HelpSupport';
 import Payments from './components/Payments';
 import Notifications from './components/Notifications';
-import Privacy from './components/Privacy';
+
 import PersonalDetails from './components/PersonalDetails';
 import LinkedAccounts from './components/LinkedAccounts';
 import LimitsPlans from './components/LimitsPlans';
@@ -182,14 +182,7 @@ const AppContent = () => {
                   </ProtectedRoute>
                 }
               />
-              <Route
-                path="/privacy"
-                element={
-                  <ProtectedRoute>
-                    <Privacy />
-                  </ProtectedRoute>
-                }
-              />
+
               <Route
                 path="/personal-details"
                 element={

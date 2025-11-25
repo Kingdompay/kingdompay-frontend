@@ -1,327 +1,133 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import BottomNav from './BottomNav';
 
 const TwoFactorAuth = () => {
   const navigate = useNavigate();
   const [isEnabled, setIsEnabled] = useState(false);
-  const [qrCode, setQrCode] = useState('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==');
-  const [backupCodes] = useState([
+  const [qrCode] = useState('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==');
+  const backupCodes = [
     '1234-5678-9012',
     '2345-6789-0123',
     '3456-7890-1234',
     '4567-8901-2345',
-    '5678-9012-3456'
-  ]);
+    '5678-9012-3456',
+  ];
 
-  const toggle2FA = () => {
-    setIsEnabled(!isEnabled);
-  };
+  const toggle2FA = () => setIsEnabled(!isEnabled);
 
   return (
-    <div style={{ color: '#1A3F22' }}>
-      <div style={{
-        maxWidth: '384px',
-        margin: '0 auto',
-        backgroundColor: 'white',
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
-        {/* Header */}
-        <header style={{
-          backgroundColor: 'white',
-          position: 'sticky',
-          top: 0,
-          zIndex: 100,
-          padding: '16px 24px',
-          borderBottom: '1px solid #e5e7eb',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}>
-          <button
-            onClick={() => navigate('/profile')}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              backgroundColor: '#f3f4f6'
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ color: '#1A3F22', fontSize: '20px' }}>
-              arrow_back
-            </span>
-          </button>
-          <h1 style={{
-            fontSize: '18px',
-            fontWeight: 'bold',
-            color: '#1A3F22',
-            margin: 0
-          }}>
-            Two-Factor Authentication
-          </h1>
-          <div style={{ width: '40px' }}></div>
-        </header>
-
-        {/* Main Content */}
-        <main style={{
-          flex: 1,
-          padding: '24px',
-          overflowY: 'auto',
-          paddingBottom: '100px'
-        }}>
-          
-          {/* 2FA Status */}
-          <div style={{
-            backgroundColor: isEnabled ? '#f0fdf4' : '#fef2f2',
-            borderRadius: '16px',
-            padding: '20px',
-            border: `1px solid ${isEnabled ? '#bbf7d0' : '#fecaca'}`,
-            marginBottom: '24px'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <span className="material-symbols-outlined" style={{ 
-                  color: isEnabled ? '#059669' : '#dc2626', 
-                  fontSize: '24px', 
-                  marginRight: '12px' 
-                }}>
-                  {isEnabled ? 'security' : 'security_update_warning'}
-                </span>
-                <div>
-                  <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: 0 }}>
-                    {isEnabled ? '2FA Enabled' : '2FA Disabled'}
-                  </h3>
-                  <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
-                    {isEnabled ? 'Your account is protected' : 'Add an extra layer of security'}
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={toggle2FA}
-                style={{
-                  width: '48px',
-                  height: '24px',
-                  borderRadius: '12px',
-                  border: 'none',
-                  backgroundColor: isEnabled ? '#6f9c16' : '#d1d5db',
-                  cursor: 'pointer',
-                  position: 'relative',
-                  transition: 'background-color 0.3s ease'
-                }}
-              >
-                <div style={{
-                  width: '20px',
-                  height: '20px',
-                  borderRadius: '50%',
-                  backgroundColor: 'white',
-                  position: 'absolute',
-                  top: '2px',
-                  left: isEnabled ? '26px' : '2px',
-                  transition: 'left 0.3s ease',
-                  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
-                }}></div>
+    <div className="min-h-screen bg-white font-sans flex justify-center">
+      <style>{`@keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}} .animate-fade-in-up{animation:fadeInUp .6s ease-out forwards}`}</style>
+      <div className="w-full max-w-md md:max-w-6xl bg-white md:my-8 md:rounded-3xl md:shadow-2xl min-h-screen md:min-h-[800px] flex flex-col md:flex-row overflow-hidden relative">
+        {/* Sidebar */}
+        <div className="md:w-1/3 lg:w-1/4 bg-white md:border-r md:border-gray-100 flex flex-col">
+          <header className="sticky top-0 z-10 p-4 bg-white md:bg-transparent">
+            <div className="flex justify-between items-center">
+              <button onClick={() => navigate('/profile')} className="bg-gray-100 rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-200 transition-colors">
+                <span className="material-symbols-outlined text-[#1A3F22] text-xl">arrow_back</span>
               </button>
+              <h1 className="text-lg font-bold text-[#1A3F22] m-0">Two‑Factor Authentication</h1>
+              <div className="w-10 h-10" />
             </div>
+          </header>
+          <div className="hidden md:block p-4 mt-auto">
+            <nav className="space-y-2">
+              <Link to="/home" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">home</span> Home
+              </Link>
+              <Link to="/profile" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">person</span> Profile
+              </Link>
+            </nav>
           </div>
-
-          {/* Setup Instructions */}
-          {!isEnabled && (
-            <div style={{ marginBottom: '24px' }}>
-              <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: '0 0 16px 0' }}>
-                Setup Instructions
-              </h2>
-              <div style={{
-                backgroundColor: '#f9fafb',
-                borderRadius: '16px',
-                padding: '20px',
-                border: '1px solid #e5e7eb'
-              }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <div style={{
-                      width: '24px',
-                      height: '24px',
-                      borderRadius: '50%',
-                      backgroundColor: '#6f9c16',
-                      color: 'white',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '12px',
-                      fontWeight: 'bold',
-                      marginRight: '12px'
-                    }}>
-                      1
-                    </div>
-                    <p style={{ fontSize: '14px', color: '#1A3F22', margin: 0 }}>
-                      Download an authenticator app (Google Authenticator, Authy, etc.)
-                    </p>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <div style={{
-                      width: '24px',
-                      height: '24px',
-                      borderRadius: '50%',
-                      backgroundColor: '#6f9c16',
-                      color: 'white',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '12px',
-                      fontWeight: 'bold',
-                      marginRight: '12px'
-                    }}>
-                      2
-                    </div>
-                    <p style={{ fontSize: '14px', color: '#1A3F22', margin: 0 }}>
-                      Scan the QR code with your authenticator app
-                    </p>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <div style={{
-                      width: '24px',
-                      height: '24px',
-                      borderRadius: '50%',
-                      backgroundColor: '#6f9c16',
-                      color: 'white',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '12px',
-                      fontWeight: 'bold',
-                      marginRight: '12px'
-                    }}>
-                      3
-                    </div>
-                    <p style={{ fontSize: '14px', color: '#1A3F22', margin: 0 }}>
-                      Enter the 6-digit code from your app
-                    </p>
+        </div>
+        {/* Main */}
+        <main className="flex-grow p-4 pb-28 md:pb-8 overflow-y-auto bg-gray-50 md:bg-white">
+          <div className="max-w-3xl mx-auto animate-fade-in-up space-y-8">
+            {/* 2FA Status */}
+            <section>
+              <div className={`bg-white border ${isEnabled ? 'border-[#bbf7d0]' : 'border-[#fecaca]'} rounded-2xl p-4 flex justify-between items-center`}>
+                <div className="flex items-center">
+                  <span className="material-symbols-outlined mr-3" style={{ color: isEnabled ? '#059669' : '#dc2626', fontSize: '24px' }}>
+                    {isEnabled ? 'security' : 'security_update_warning'}
+                  </span>
+                  <div>
+                    <h3 className="text-lg font-semibold text-[#1A3F22]">{isEnabled ? '2FA Enabled' : '2FA Disabled'}</h3>
+                    <p className="text-sm text-[#6b7280]">{isEnabled ? 'Your account is protected' : 'Add an extra layer of security'}</p>
                   </div>
                 </div>
+                <button onClick={toggle2FA} className={`w-12 h-6 rounded-full ${isEnabled ? 'bg-[#6f9c16]' : 'bg-[#d1d5db]'} relative transition-colors`}>
+                  <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 left-${isEnabled ? '6' : '1'} transition-all shadow`} />
+                </button>
               </div>
-            </div>
-          )}
+            </section>
 
-          {/* QR Code */}
-          <div style={{ marginBottom: '24px' }}>
-            <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: '0 0 16px 0' }}>
-              QR Code
-            </h2>
-            <div style={{
-              backgroundColor: 'white',
-              borderRadius: '16px',
-              padding: '20px',
-              border: '1px solid #e5e7eb',
-              textAlign: 'center'
-            }}>
-              <div style={{
-                width: '200px',
-                height: '200px',
-                border: '2px solid #e5e7eb',
-                borderRadius: '12px',
-                margin: '0 auto 16px auto',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: '#f9fafb'
-              }}>
-                <span className="material-symbols-outlined" style={{ color: '#6b7280', fontSize: '48px' }}>
-                  qr_code
-                </span>
-              </div>
-              <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
-                Scan this code with your authenticator app
-              </p>
-            </div>
-          </div>
-
-          {/* Backup Codes */}
-          <div style={{ marginBottom: '24px' }}>
-            <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: '0 0 16px 0' }}>
-              Backup Codes
-            </h2>
-            <div style={{
-              backgroundColor: '#fef3c7',
-              borderRadius: '16px',
-              padding: '20px',
-              border: '1px solid #fbbf24'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
-                <span className="material-symbols-outlined" style={{ color: '#d97706', fontSize: '20px', marginRight: '8px' }}>
-                  warning
-                </span>
-                <h3 style={{ fontSize: '14px', fontWeight: '600', color: '#d97706', margin: 0 }}>
-                  Important
-                </h3>
-              </div>
-              <p style={{ fontSize: '12px', color: '#92400e', margin: '0 0 16px 0', lineHeight: '1.4' }}>
-                Save these backup codes in a safe place. You can use them to access your account if you lose your authenticator device.
-              </p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {backupCodes.map((code, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      backgroundColor: 'white',
-                      borderRadius: '8px',
-                      padding: '8px 12px',
-                      fontSize: '14px',
-                      fontFamily: 'monospace',
-                      color: '#1A3F22',
-                      border: '1px solid #e5e7eb'
-                    }}
-                  >
-                    {code}
+            {/* Setup Instructions */}
+            {!isEnabled && (
+              <section className="space-y-4">
+                <h2 className="text-base font-semibold text-[#1A3F22]">Setup Instructions</h2>
+                <div className="bg-[#f9fafb] rounded-2xl p-4 border border-[#e5e7eb] space-y-3">
+                  <div className="flex items-center">
+                    <div className="w-6 h-6 rounded-full bg-[#6f9c16] text-white flex items-center justify-center mr-3 text-xs font-bold">1</div>
+                    <p className="text-sm text-[#1A3F22]">Download an authenticator app (Google Authenticator, Authy, etc.)</p>
                   </div>
-                ))}
-              </div>
-              <button style={{
-                marginTop: '16px',
-                backgroundColor: '#d97706',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                padding: '8px 16px',
-                fontSize: '12px',
-                fontWeight: '500',
-                cursor: 'pointer'
-              }}>
-                Generate New Codes
-              </button>
-            </div>
-          </div>
+                  <div className="flex items-center">
+                    <div className="w-6 h-6 rounded-full bg-[#6f9c16] text-white flex items-center justify-center mr-3 text-xs font-bold">2</div>
+                    <p className="text-sm text-[#1A3F22]">Scan the QR code with your authenticator app</p>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="w-6 h-6 rounded-full bg-[#6f9c16] text-white flex items-center justify-center mr-3 text-xs font-bold">3</div>
+                    <p className="text-sm text-[#1A3F22]">Enter the 6‑digit code from your app</p>
+                  </div>
+                </div>
+              </section>
+            )}
 
-          {/* Security Tips */}
-          <div>
-            <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: '0 0 16px 0' }}>
-              Security Tips
-            </h2>
-            <div style={{
-              backgroundColor: '#f3f4f6',
-              borderRadius: '16px',
-              padding: '20px',
-              border: '1px solid #e5e7eb'
-            }}>
-              <ul style={{ fontSize: '14px', color: '#6b7280', margin: 0, paddingLeft: '16px', lineHeight: '1.5' }}>
-                <li>Never share your backup codes with anyone</li>
-                <li>Store backup codes in a secure location</li>
-                <li>Use a reliable authenticator app</li>
-                <li>Keep your phone secure and updated</li>
-                <li>Contact support if you lose access to your device</li>
-              </ul>
-            </div>
+            {/* QR Code */}
+            <section className="space-y-2">
+              <h2 className="text-base font-semibold text-[#1A3F22]">QR Code</h2>
+              <div className="bg-white rounded-2xl p-4 border border-[#e5e7eb] text-center">
+                <div className="w-48 h-48 bg-[#f9fafb] border border-[#e5e7eb] rounded-lg mx-auto flex items-center justify-center mb-2">
+                  <span className="material-symbols-outlined text-[#6b7280] text-5xl">qr_code</span>
+                </div>
+                <p className="text-sm text-[#6b7280]">Scan this code with your authenticator app</p>
+              </div>
+            </section>
+
+            {/* Backup Codes */}
+            <section className="space-y-2">
+              <h2 className="text-base font-semibold text-[#1A3F22]">Backup Codes</h2>
+              <div className="bg-[#fef3c7] rounded-2xl p-4 border border-[#fbbf24]">
+                <div className="flex items-center mb-2">
+                  <span className="material-symbols-outlined text-[#d97706] mr-2">warning</span>
+                  <h3 className="text-sm font-semibold text-[#d97706]">Important</h3>
+                </div>
+                <p className="text-xs text-[#92400e] mb-3">Save these backup codes in a safe place. You can use them to access your account if you lose your authenticator device.</p>
+                <div className="flex flex-col gap-2">
+                  {backupCodes.map((code, idx) => (
+                    <div key={idx} className="bg-white border border-[#e5e7eb] rounded-md p-2 text-sm font-mono text-[#1A3F22]">{code}</div>
+                  ))}
+                </div>
+                <button className="mt-3 w-full bg-[#d97706] text-white rounded-md py-2 text-sm font-medium hover:bg-[#b05c04] transition-colors">Generate New Codes</button>
+              </div>
+            </section>
+
+            {/* Security Tips */}
+            <section className="space-y-2">
+              <h2 className="text-base font-semibold text-[#1A3F22]">Security Tips</h2>
+              <div className="bg-[#f3f4f6] rounded-2xl p-4 border border-[#e5e7eb]">
+                <ul className="list-disc list-inside text-sm text-[#6b7280] space-y-1">
+                  <li>Never share your backup codes with anyone</li>
+                  <li>Store backup codes in a secure location</li>
+                  <li>Use a reliable authenticator app</li>
+                  <li>Keep your phone secure and updated</li>
+                  <li>Contact support if you lose access to your device</li>
+                </ul>
+              </div>
+            </section>
           </div>
         </main>
-
         {/* Bottom Navigation */}
         <BottomNav />
       </div>
