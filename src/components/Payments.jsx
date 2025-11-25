@@ -1,34 +1,17 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import BottomNav from './BottomNav';
+import { useAuth } from '../contexts/AuthContext';
 
 const Payments = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [paymentMethod, setPaymentMethod] = useState('wallet');
 
-  const recentPayments = [
-    {
-      id: 1,
-      name: 'Coffee Shop',
-      amount: 4.50,
-      time: '2 hours ago',
-      status: 'completed'
-    },
-    {
-      id: 2,
-      name: 'Grocery Store',
-      amount: 23.75,
-      time: '1 day ago',
-      status: 'completed'
-    },
-    {
-      id: 3,
-      name: 'Gas Station',
-      amount: 45.00,
-      time: '2 days ago',
-      status: 'completed'
-    }
-  ];
+  // Use transactions from context
+  const recentPayments = (user?.transactions || [])
+    .filter(t => t.type === 'debit' || t.type === 'payment' || t.type === 'transfer')
+    .slice(0, 5);
 
   const quickActions = [
     {
@@ -208,7 +191,7 @@ const Payments = () => {
                     </div>
                     <div>
                       <h3 className="text-base font-semibold text-[#1A3F22] m-0">KingdomPay Wallet</h3>
-                      <p className="text-sm text-gray-500 m-0">Balance: $1,234.56</p>
+                      <p className="text-sm text-gray-500 m-0">Balance: ${(user?.balance || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                     </div>
                   </div>
                   <div className={`w-5 h-5 rounded-full border-2 border-[#6f9c16] flex items-center justify-center ${paymentMethod === 'wallet' ? 'bg-[#6f9c16]' : 'bg-transparent'}`}>
@@ -247,26 +230,30 @@ const Payments = () => {
             <section>
               <h2 className="text-base font-semibold text-[#1A3F22] mb-4 m-0">Recent Payments</h2>
               <div className="space-y-3">
-                {recentPayments.map((payment) => (
-                  <div
-                    key={payment.id}
-                    className="bg-white border border-gray-200 rounded-xl p-4 flex items-center justify-between hover:shadow-sm transition-shadow"
-                  >
-                    <div className="flex items-center">
-                      <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
-                        <span className="material-symbols-outlined text-gray-500 text-xl">store</span>
+                {recentPayments.length > 0 ? (
+                  recentPayments.map((payment, index) => (
+                    <div
+                      key={index}
+                      className="bg-white border border-gray-200 rounded-xl p-4 flex items-center justify-between hover:shadow-sm transition-shadow"
+                    >
+                      <div className="flex items-center">
+                        <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
+                          <span className="material-symbols-outlined text-gray-500 text-xl">store</span>
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-semibold text-[#1A3F22] m-0">{payment.description}</h3>
+                          <p className="text-xs text-gray-500 m-0">{new Date(payment.date).toLocaleDateString()}</p>
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="text-sm font-semibold text-[#1A3F22] m-0">{payment.name}</h3>
-                        <p className="text-xs text-gray-500 m-0">{payment.time}</p>
+                      <div className="text-right">
+                        <p className="text-base font-semibold text-[#1A3F22] m-0">-${payment.amount.toFixed(2)}</p>
+                        <p className="text-xs text-green-600 m-0 capitalize">{payment.status}</p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-base font-semibold text-[#1A3F22] m-0">-${payment.amount.toFixed(2)}</p>
-                      <p className="text-xs text-green-600 m-0 capitalize">{payment.status}</p>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <p className="text-center text-gray-500">No recent payments</p>
+                )}
               </div>
             </section>
           </div>
