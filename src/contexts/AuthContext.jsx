@@ -77,7 +77,7 @@ export const AuthProvider = ({ children }) => {
         try {
           // Assuming you have an endpoint to get the current user profile
           // If not, you might need to adjust this or rely on the token being present
-          const response = await axios.get('http://localhost:5000/api/user/profile');
+          const response = await axios.get('/api/user/profile');
           dispatch({
             type: 'LOGIN_SUCCESS',
             payload: {
@@ -97,13 +97,44 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
 
-  const login = async (email, password) => {
+  const login = async (email, password, role = 'user') => {
     dispatch({ type: 'LOGIN_START' });
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', { email, password });
-      dispatch({ type: 'LOGIN_SUCCESS', payload: response.data });
+      // Mocking role-based login for now since backend might not support it yet
+      // In a real app, the backend would return the role
+      const response = await axios.post('/api/auth/login', { email, password });
+
+      // Inject role into user object for frontend logic
+      const userWithRole = { ...response.data.user, role: role };
+
+      dispatch({
+        type: 'LOGIN_SUCCESS',
+        payload: {
+          user: userWithRole,
+          token: response.data.token
+        }
+      });
       return { success: true };
     } catch (error) {
+      // Fallback for demo/testing without backend
+      if (email.startsWith('demo') || email.startsWith('admin') || email.startsWith('institution')) {
+        const mockUser = {
+          id: '1',
+          name: 'Demo User',
+          email: email,
+          role: role,
+          balance: 5000.00
+        };
+        dispatch({
+          type: 'LOGIN_SUCCESS',
+          payload: {
+            user: mockUser,
+            token: 'mock-token-' + Date.now()
+          }
+        });
+        return { success: true };
+      }
+
       const message = error.response?.data?.message || 'Login failed';
       dispatch({ type: 'LOGIN_FAILURE', payload: message });
       return { success: false, error: message };
@@ -113,7 +144,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     dispatch({ type: 'REGISTER_START' });
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/register', userData);
+      const response = await axios.post('/api/auth/register', userData);
       dispatch({ type: 'REGISTER_SUCCESS', payload: response.data });
       return { success: true };
     } catch (error) {
@@ -128,8 +159,11 @@ export const AuthProvider = ({ children }) => {
   };
 
   const updateUser = (userData) => {
-    // Implement if needed, for now just updating local state if we had a way to do partial updates
-    // or re-fetch profile
+    // Implement if needed
+  };
+
+  const hasRole = (role) => {
+    return state.user?.role === role;
   };
 
   const value = {
@@ -138,6 +172,7 @@ export const AuthProvider = ({ children }) => {
     register,
     logout,
     updateUser,
+    hasRole
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -84,14 +84,19 @@ const Login = () => {
     setLoading(false);
   };
 
-  const handleDemoLogin = async () => {
+  const handleDemoLogin = async (role = 'user') => {
     setLoading(true);
     setError('');
 
-    const result = await login('demo@kingdompay.com', 'password123');
+    const email = role === 'admin' ? 'admin@kingdompay.com' : role === 'institution' ? 'institution@kingdompay.com' : 'demo@kingdompay.com';
+    const result = await login(email, 'password123', role);
 
     if (result.success) {
-      navigate('/home');
+      if (role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/home');
+      }
     } else {
       setError(result.error);
     }
@@ -351,32 +356,39 @@ const Login = () => {
             <div className={`flex-grow border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}></div>
           </div>
 
-          <button
-            onClick={handleDemoLogin}
-            className={`w-full py-3 rounded-xl font-bold border-2 transition-all flex items-center justify-center gap-2 ${isDarkMode
-              ? 'border-gray-600 hover:bg-gray-700 text-white'
-              : 'border-gray-200 hover:bg-gray-50 text-gray-700'
-              }`}
-          >
-            <span className="material-symbols-outlined">terminal</span>
-            Demo Login
-          </button>
-
-          <div className="grid grid-cols-2 gap-3">
-            <button className={`py-3 rounded-xl font-bold border-2 transition-all flex items-center justify-center gap-2 ${isDarkMode
-              ? 'border-gray-600 hover:bg-gray-700 text-white'
-              : 'border-gray-200 hover:bg-gray-50 text-gray-700'
-              }`}>
-              <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-5 h-5" />
-              Google
+          <div className="grid grid-cols-1 gap-3">
+            <button
+              onClick={() => handleDemoLogin('user')}
+              className={`w-full py-3 rounded-xl font-bold border-2 transition-all flex items-center justify-center gap-2 ${isDarkMode
+                ? 'border-gray-600 hover:bg-gray-700 text-white'
+                : 'border-gray-200 hover:bg-gray-50 text-gray-700'
+                }`}
+            >
+              <span className="material-symbols-outlined">person</span>
+              Demo User
             </button>
-            <button className={`py-3 rounded-xl font-bold border-2 transition-all flex items-center justify-center gap-2 ${isDarkMode
-              ? 'border-gray-600 hover:bg-gray-700 text-white'
-              : 'border-gray-200 hover:bg-gray-50 text-gray-700'
-              }`}>
-              <span className="material-symbols-outlined">apple</span>
-              Apple
-            </button>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => handleDemoLogin('institution')}
+                className={`py-3 rounded-xl font-bold border-2 transition-all flex items-center justify-center gap-2 ${isDarkMode
+                  ? 'border-gray-600 hover:bg-gray-700 text-white'
+                  : 'border-gray-200 hover:bg-gray-50 text-gray-700'
+                  }`}
+              >
+                <span className="material-symbols-outlined">account_balance</span>
+                Institution
+              </button>
+              <button
+                onClick={() => handleDemoLogin('admin')}
+                className={`py-3 rounded-xl font-bold border-2 transition-all flex items-center justify-center gap-2 ${isDarkMode
+                  ? 'border-gray-600 hover:bg-gray-700 text-white'
+                  : 'border-gray-200 hover:bg-gray-50 text-gray-700'
+                  }`}
+              >
+                <span className="material-symbols-outlined">admin_panel_settings</span>
+                Admin
+              </button>
+            </div>
           </div>
         </div>
 

@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import BottomNav from './BottomNav';
+import { useAuth } from '../contexts/AuthContext';
 
 const Community = () => {
+  const { user, hasRole } = useAuth();
   const [activeTab, setActiveTab] = useState('feed');
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -78,6 +80,11 @@ const Community = () => {
     }
   };
 
+  const handleWithdraw = (group) => {
+    // Mock withdrawal logic
+    alert(`Withdrawal initiated for ${group.name}. Funds will be transferred to the institution account.`);
+  };
+
   const getGroupIcon = (type) => {
     switch (type) {
       case 'church': return 'church';
@@ -98,7 +105,13 @@ const Community = () => {
 
   return (
     <div className="min-h-screen bg-white font-sans flex justify-center">
-      <style>{`\n        @keyframes fadeInUp {\n          from { opacity: 0; transform: translateY(30px); }\n          to { opacity: 1; transform: translateY(0); }\n        }\n        .animate-fade-in-up { animation: fadeInUp 0.6s ease-out forwards; }\n      `}</style>
+      <style>{`
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(30px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-up { animation: fadeInUp 0.6s ease-out forwards; }
+      `}</style>
 
       <div className="w-full max-w-md md:max-w-6xl bg-white md:my-8 md:rounded-3xl md:shadow-2xl min-h-screen md:min-h-[800px] flex flex-col md:flex-row overflow-hidden relative">
         {/* Sidebar / Mobile Header */}
@@ -164,6 +177,16 @@ const Community = () => {
           {/* Groups */}
           {activeTab === 'groups' && (
             <div className="space-y-4 max-w-2xl mx-auto animate-fade-in-up">
+              {/* Create Group Button - Only for Institutions */}
+              {hasRole('institution') && (
+                <div className="mb-6">
+                  <Link to="/create-group" className="w-full bg-[#1A3F22] text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-[#14301a] transition-colors no-underline shadow-md">
+                    <span className="material-symbols-outlined">add_circle</span>
+                    Create New Group
+                  </Link>
+                </div>
+              )}
+
               {loading ? (
                 <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 text-center"><p className="text-gray-500">Loading groups...</p></div>
               ) : error && groups.length === 0 ? (
@@ -189,7 +212,12 @@ const Community = () => {
                           </div>
                         </div>
                         <p className="text-sm text-gray-600 mb-3">{group.description}</p>
-                        <button onClick={() => openContributeModal(group)} className="bg-[#1A3F22] text-white px-6 py-2 rounded-full text-sm font-medium border-none cursor-pointer hover:bg-[#14301a] transition-colors shadow-sm">Contribute</button>
+                        <div className="flex gap-2">
+                          <button onClick={() => openContributeModal(group)} className="bg-[#1A3F22] text-white px-6 py-2 rounded-full text-sm font-medium border-none cursor-pointer hover:bg-[#14301a] transition-colors shadow-sm">Contribute</button>
+                          {hasRole('institution') && (
+                            <button onClick={() => handleWithdraw(group)} className="bg-white text-[#1A3F22] border border-[#1A3F22] px-6 py-2 rounded-full text-sm font-medium cursor-pointer hover:bg-gray-50 transition-colors shadow-sm">Withdraw</button>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
