@@ -51,6 +51,8 @@ import QuickSave from './components/QuickSave';
 import AdminLayout from './components/Admin/AdminLayout';
 import AdminDashboard from './components/Admin/AdminDashboard';
 import IdentityVerification from './components/Admin/IdentityVerification';
+import Users from './components/Admin/Users';
+import AdminSettings from './components/Admin/AdminSettings';
 
 // Test Page
 import TestPage from './components/TestPage';
@@ -120,8 +122,8 @@ const AppContent = () => {
           <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
             <Route index element={<AdminDashboard />} />
             <Route path="verification" element={<IdentityVerification />} />
-            <Route path="users" element={<div className="p-8">Users Management Coming Soon</div>} />
-            <Route path="settings" element={<div className="p-8">Admin Settings Coming Soon</div>} />
+            <Route path="users" element={<Users />} />
+            <Route path="settings" element={<AdminSettings />} />
           </Route>
 
           {/* Catch all */}
