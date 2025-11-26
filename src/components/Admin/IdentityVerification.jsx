@@ -25,13 +25,18 @@ const IdentityVerification = () => {
     }, []);
 
     const handleAction = (id, action) => {
+        const item = verifications.find(v => v.id === id);
+        if (!item) return;
+
         setVerifications(prev => prev.map(v =>
             v.id === id ? { ...v, status: action } : v
         ));
 
-        // Update global auth context if approving
+        // Update global auth context
         if (action === 'approved') {
-            updateUserStatus(id, 'verified');
+            updateUserStatus(item.email, 'verified');
+        } else if (action === 'rejected') {
+            updateUserStatus(item.email, 'rejected');
         }
     };
 

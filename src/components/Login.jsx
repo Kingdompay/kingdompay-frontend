@@ -77,23 +77,14 @@ const Login = () => {
     const result = await login(formData.email, formData.password);
 
     if (result.success) {
-      navigate('/home');
-    } else {
-      setError(result.error);
-    }
+      // Check if user is admin based on email or role returned
+      // Since login returns { success: true }, we might need to check the user in context or return user from login
+      // However, login updates the context state asynchronously. 
+      // A better way is to have login return the user object or role.
 
-    setLoading(false);
-  };
-
-  const handleDemoLogin = async (role = 'user') => {
-    setLoading(true);
-    setError('');
-
-    const email = role === 'admin' ? 'admin@kingdompay.com' : role === 'institution' ? 'institution@kingdompay.com' : 'demo@kingdompay.com';
-    const result = await login(email, 'password123', role);
-
-    if (result.success) {
-      if (role === 'admin') {
+      // Let's assume for now we can check the email entered or modify login to return the user.
+      // Checking email is safe for the hardcoded admin.
+      if (formData.email === 'admin@kingdompay.com') {
         navigate('/admin');
       } else {
         navigate('/home');
@@ -104,6 +95,8 @@ const Login = () => {
 
     setLoading(false);
   };
+
+
 
   const createRippleEffect = (e) => {
     const button = e.currentTarget;
@@ -147,12 +140,9 @@ const Login = () => {
 
           {/* Header */}
           <div className="p-6 text-center border-b border-gray-200 dark:border-gray-700">
-            <div className="flex justify-center mb-4">
-              <div className="w-12 h-12 bg-primary-600 rounded-xl flex items-center justify-center">
-                <span className="material-symbols-outlined text-white text-2xl">account_balance_wallet</span>
-              </div>
+            <div className="flex justify-center mb-6">
+              <img src="/logo.png" alt="KingdomPay Logo" className="h-32 w-auto object-contain max-w-xs" />
             </div>
-            <h2 className="text-2xl font-bold text-primary-600">KingdomPay</h2>
             <p className={`mt-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Welcome back! Please login to continue.</p>
           </div>
         </div>
@@ -349,49 +339,7 @@ const Login = () => {
           </div>
         </form>
 
-        {/* Social Login & Demo */}
-        <div className="px-6 pb-6 space-y-3">
-          <div className="relative flex items-center py-2">
-            <div className={`flex-grow border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}></div>
-            <span className={`flex-shrink-0 mx-4 text-sm ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Or continue with</span>
-            <div className={`flex-grow border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}></div>
-          </div>
 
-          <div className="grid grid-cols-1 gap-3">
-            <button
-              onClick={() => handleDemoLogin('user')}
-              className={`w-full py-3 rounded-xl font-bold border-2 transition-all flex items-center justify-center gap-2 ${isDarkMode
-                ? 'border-gray-600 hover:bg-gray-700 text-white'
-                : 'border-gray-200 hover:bg-gray-50 text-gray-700'
-                }`}
-            >
-              <span className="material-symbols-outlined">person</span>
-              Demo User
-            </button>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                onClick={() => handleDemoLogin('institution')}
-                className={`py-3 rounded-xl font-bold border-2 transition-all flex items-center justify-center gap-2 ${isDarkMode
-                  ? 'border-gray-600 hover:bg-gray-700 text-white'
-                  : 'border-gray-200 hover:bg-gray-50 text-gray-700'
-                  }`}
-              >
-                <span className="material-symbols-outlined">account_balance</span>
-                Institution
-              </button>
-              <button
-                onClick={() => handleDemoLogin('admin')}
-                className={`hidden md:flex py-3 rounded-xl font-bold border-2 transition-all items-center justify-center gap-2 ${isDarkMode
-                  ? 'border-gray-600 hover:bg-gray-700 text-white'
-                  : 'border-gray-200 hover:bg-gray-50 text-gray-700'
-                  }`}
-              >
-                <span className="material-symbols-outlined">admin_panel_settings</span>
-                Admin
-              </button>
-            </div>
-          </div>
-        </div>
 
         {/* Footer Links */}
         <div className={`p-4 text-center text-xs border-t ${isDarkMode ? 'border-gray-700 text-gray-500' : 'border-gray-200 text-gray-400'}`}>

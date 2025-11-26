@@ -20,11 +20,8 @@ const AdminLayout = () => {
         <div className="min-h-screen bg-gray-50 flex font-sans">
             {/* Sidebar */}
             <aside className="w-64 bg-white border-r border-gray-200 flex flex-col fixed h-full z-10">
-                <div className="p-6 border-b border-gray-100">
-                    <h1 className="text-2xl font-bold text-[#1A3F22] m-0 flex items-center gap-2">
-                        <span className="material-symbols-outlined text-3xl">admin_panel_settings</span>
-                        Admin
-                    </h1>
+                <div className="p-6 border-b border-gray-100 flex justify-center items-center h-24">
+                    <img src="/logo.png" alt="KingdomPay Logo" className="w-56 h-auto object-contain" />
                 </div>
 
                 <nav className="flex-grow p-4 space-y-2">

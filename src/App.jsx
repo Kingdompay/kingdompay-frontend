@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { DarkModeProvider, useDarkMode } from './contexts/DarkModeContext';
 import { CurrencyProvider } from './contexts/CurrencyContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import VerifiedRoute from './components/VerifiedRoute';
 
 // Auth Components
 import Login from './components/Login';
@@ -82,17 +83,18 @@ const AppContent = () => {
           <Route path="/forgot-password" element={<ForgotPassword />} />
 
           {/* Protected User Routes */}
-          <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+          {/* Home is restricted until verified as it shows wallet */}
+          <Route path="/home" element={<ProtectedRoute><VerifiedRoute><Home /></VerifiedRoute></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-          <Route path="/savings" element={<ProtectedRoute><Savings /></ProtectedRoute>} />
-          <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
-          <Route path="/payments" element={<ProtectedRoute><Payments /></ProtectedRoute>} />
+          <Route path="/savings" element={<ProtectedRoute><VerifiedRoute><Savings /></VerifiedRoute></ProtectedRoute>} />
+          <Route path="/community" element={<ProtectedRoute><VerifiedRoute><Community /></VerifiedRoute></ProtectedRoute>} />
+          <Route path="/payments" element={<ProtectedRoute><VerifiedRoute><Payments /></VerifiedRoute></ProtectedRoute>} />
           <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
 
           {/* Profile Sub-pages */}
-          <Route path="/linked-accounts" element={<ProtectedRoute><LinkedAccounts /></ProtectedRoute>} />
-          <Route path="/limits-plans" element={<ProtectedRoute><LimitsPlans /></ProtectedRoute>} />
+          <Route path="/linked-accounts" element={<ProtectedRoute><VerifiedRoute><LinkedAccounts /></VerifiedRoute></ProtectedRoute>} />
+          <Route path="/limits-plans" element={<ProtectedRoute><VerifiedRoute><LimitsPlans /></VerifiedRoute></ProtectedRoute>} />
           <Route path="/change-pin" element={<ProtectedRoute><ChangePin /></ProtectedRoute>} />
           <Route path="/two-factor-auth" element={<ProtectedRoute><TwoFactorAuth /></ProtectedRoute>} />
           <Route path="/biometric" element={<ProtectedRoute><Biometric /></ProtectedRoute>} />
@@ -101,25 +103,25 @@ const AppContent = () => {
           <Route path="/faqs" element={<ProtectedRoute><FAQs /></ProtectedRoute>} />
           <Route path="/edit-profile" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
           <Route path="/security" element={<ProtectedRoute><Security /></ProtectedRoute>} />
-          <Route path="/cards" element={<ProtectedRoute><Cards /></ProtectedRoute>} />
+          <Route path="/cards" element={<ProtectedRoute><VerifiedRoute><Cards /></VerifiedRoute></ProtectedRoute>} />
           <Route path="/referrals" element={<ProtectedRoute><Referrals /></ProtectedRoute>} />
           <Route path="/personal-details" element={<ProtectedRoute><PersonalDetails /></ProtectedRoute>} />
           <Route path="/verify-identity" element={<ProtectedRoute><VerificationUpload /></ProtectedRoute>} />
 
           {/* Payment Sub-pages */}
-          <Route path="/send-money" element={<ProtectedRoute><SendMoney /></ProtectedRoute>} />
-          <Route path="/request-money" element={<ProtectedRoute><RequestMoney /></ProtectedRoute>} />
-          <Route path="/add-money" element={<ProtectedRoute><AddMoney /></ProtectedRoute>} />
-          <Route path="/withdraw-money" element={<ProtectedRoute><WithdrawMoney /></ProtectedRoute>} />
-          <Route path="/scan-qr" element={<ProtectedRoute><ScanQR /></ProtectedRoute>} />
+          <Route path="/send-money" element={<ProtectedRoute><VerifiedRoute><SendMoney /></VerifiedRoute></ProtectedRoute>} />
+          <Route path="/request-money" element={<ProtectedRoute><VerifiedRoute><RequestMoney /></VerifiedRoute></ProtectedRoute>} />
+          <Route path="/add-money" element={<ProtectedRoute><VerifiedRoute><AddMoney /></VerifiedRoute></ProtectedRoute>} />
+          <Route path="/withdraw-money" element={<ProtectedRoute><VerifiedRoute><WithdrawMoney /></VerifiedRoute></ProtectedRoute>} />
+          <Route path="/scan-qr" element={<ProtectedRoute><VerifiedRoute><ScanQR /></VerifiedRoute></ProtectedRoute>} />
 
           {/* Community Sub-pages */}
-          <Route path="/create-group" element={<ProtectedRoute><CreateGroup /></ProtectedRoute>} />
-          <Route path="/join-group" element={<ProtectedRoute><JoinGroup /></ProtectedRoute>} />
+          <Route path="/create-group" element={<ProtectedRoute><VerifiedRoute><CreateGroup /></VerifiedRoute></ProtectedRoute>} />
+          <Route path="/join-group" element={<ProtectedRoute><VerifiedRoute><JoinGroup /></VerifiedRoute></ProtectedRoute>} />
 
           {/* Savings Sub-pages */}
-          <Route path="/create-goal" element={<ProtectedRoute><CreateGoal /></ProtectedRoute>} />
-          <Route path="/quick-save" element={<ProtectedRoute><QuickSave /></ProtectedRoute>} />
+          <Route path="/create-goal" element={<ProtectedRoute><VerifiedRoute><CreateGoal /></VerifiedRoute></ProtectedRoute>} />
+          <Route path="/quick-save" element={<ProtectedRoute><VerifiedRoute><QuickSave /></VerifiedRoute></ProtectedRoute>} />
 
           {/* Test Page */}
           <Route path="/test" element={<ProtectedRoute><TestPage /></ProtectedRoute>} />

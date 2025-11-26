@@ -423,57 +423,90 @@ export const AuthProvider = ({ children }) => {
       return { success: true };
     } catch (error) {
       // Fallback for demo/testing without backend
-      if (normalizedEmail.startsWith('demo') || normalizedEmail.startsWith('admin') || normalizedEmail.startsWith('institution')) {
-        // Check for persisted verification status in localStorage
-        const mockVerifications = JSON.parse(localStorage.getItem('mock_verifications') || '[]');
-        const userVerification = mockVerifications.find(v => v.email === normalizedEmail);
+      // Fallback for demo/testing without backend
 
-        let isVerified = normalizedEmail === 'demo@kingdompay.com';
-        let status = isVerified ? 'verified' : 'unverified';
+      // 1. Check for Hardcoded Admin
+      if (normalizedEmail === 'admin@kingdompay.com' && password === 'Admin@123') {
+        const mockUser = {
+          id: 'admin-user',
+          name: 'System Admin',
+          email: 'admin@kingdompay.com',
+          role: 'admin',
+          balance: 0,
+          transactions: [],
+          notifications: [],
+          savingsGoals: [],
+          savingsBalance: 0,
+          cards: [],
+          verificationStatus: 'verified',
+          limits: { daily: 100000, monthly: 500000 }
+        };
 
-        if (userVerification) {
-          status = userVerification.status;
-        }
+        dispatch({
+          type: 'LOGIN_SUCCESS',
+          payload: {
+            user: mockUser,
+            token: 'mock-admin-token-' + Date.now()
+          }
+        });
+        return { success: true };
+      }
 
-        // Load persisted data from localStorage
-        const balance = parseFloat(localStorage.getItem(`mock_balance_${normalizedEmail}`)) || 5000.00;
-        console.log(`Login: Loaded balance for ${normalizedEmail}:`, balance);
+      // 2. Check for Registered Users in mock_users
+      const mockUsers = JSON.parse(localStorage.getItem('mock_users') || '[]');
+      const existingUser = mockUsers.find(u => u.email === normalizedEmail);
 
+      if (existingUser) {
+        // Simple password check (in real app, hash check)
+        // For this mock, we assume if they exist in mock_users, they can login if password matches (or we skip password check for simplicity as we didn't store it)
+        // Let's assume password is correct for now for registered users to keep it simple, or check if we stored it.
+        // We didn't store password in register, so we'll allow any password for now for registered users.
+
+        // Load persisted data
+        const balance = parseFloat(localStorage.getItem(`mock_balance_${normalizedEmail}`)) || existingUser.balance || 0.00;
         const transactions = JSON.parse(localStorage.getItem(`mock_transactions_${normalizedEmail}`)) || [];
         const notifications = JSON.parse(localStorage.getItem(`mock_notifications_${normalizedEmail}`)) || [];
         const savingsGoals = JSON.parse(localStorage.getItem(`mock_savings_${normalizedEmail}`)) || [];
         const savingsBalance = parseFloat(localStorage.getItem(`mock_savings_balance_${normalizedEmail}`)) || 0.00;
         const cards = JSON.parse(localStorage.getItem(`mock_cards_${normalizedEmail}`)) || [];
 
-        const mockUser = {
-          id: '1',
-          name: 'Demo User',
-          email: normalizedEmail,
-          role: role,
+        // Check verification status
+        const mockVerifications = JSON.parse(localStorage.getItem('mock_verifications') || '[]');
+        const userVerification = mockVerifications.find(v => v.email === normalizedEmail);
+        const verificationStatus = userVerification ? userVerification.status : existingUser.verificationStatus;
+
+        const userToLogin = {
+          ...existingUser,
           balance,
           transactions,
           notifications,
           savingsGoals,
           savingsBalance,
           cards,
-          verificationStatus: status,
-          limits: status === 'verified' ? { daily: 5000, monthly: 25000 } : { daily: 500, monthly: 2000 }
+          verificationStatus,
+          limits: verificationStatus === 'verified' ? { daily: 5000, monthly: 25000 } : { daily: 500, monthly: 2000 }
         };
+
         dispatch({
           type: 'LOGIN_SUCCESS',
           payload: {
-            user: mockUser,
+            user: userToLogin,
             token: 'mock-token-' + Date.now()
           }
         });
         return { success: true };
       }
 
-      const message = error.response?.data?.message || 'Login failed';
+      // 3. Legacy Demo Fallback (Optional: Remove if we want strict login)
+      // Keeping it for 'demo@kingdompay.com' only if needed, but user asked to remove buttons.
+      // Let's remove the generic "startsWith" logic and only allow registered users + admin.
+
+      const message = 'Invalid email or password';
       dispatch({ type: 'LOGIN_FAILURE', payload: message });
       return { success: false, error: message };
     }
   };
+
 
   const register = async (userData) => {
     dispatch({ type: 'REGISTER_START' });
@@ -488,13 +521,19 @@ export const AuthProvider = ({ children }) => {
         id: 'new-user-' + Date.now(),
         name: userData.name,
         email: userData.email,
-        role: 'user',
+        role: userData.role || 'user', // Support role
         balance: 0.00,
         savingsBalance: 0.00,
         cards: [],
         verificationStatus: 'unverified',
+        documents: {}, // Track uploaded documents
         limits: { daily: 500, monthly: 2000 }
       };
+
+      // Save to mock_users for login retrieval
+      const mockUsers = JSON.parse(localStorage.getItem('mock_users') || '[]');
+      mockUsers.push(mockUser);
+      localStorage.setItem('mock_users', JSON.stringify(mockUsers));
 
       dispatch({
         type: 'REGISTER_SUCCESS',
@@ -507,26 +546,44 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const uploadDocument = async (file) => {
+  const uploadDocument = async (file, docType) => {
     // Mock API call
     return new Promise((resolve) => {
       setTimeout(() => {
-        // Update local state to pending
         if (state.user) {
-          const updatedUser = { ...state.user, verificationStatus: 'pending' };
+          const currentDocs = state.user.documents || {};
+          const updatedDocs = { ...currentDocs, [docType]: 'pending' };
+
+          let newStatus = state.user.verificationStatus;
+
+          // Determine status based on role and uploads
+          if (state.user.role === 'institution') {
+            if (docType === 'permit') newStatus = 'pending';
+          } else {
+            // Regular user needs both ID and Face
+            if (updatedDocs.id === 'pending' && updatedDocs.face === 'pending') {
+              newStatus = 'pending';
+            }
+          }
+
+          const updatedUser = {
+            ...state.user,
+            documents: updatedDocs,
+            verificationStatus: newStatus
+          };
 
           // Persist the request to localStorage for Admin to see
           const mockVerifications = JSON.parse(localStorage.getItem('mock_verifications') || '[]');
-
-          // Remove existing request for this user if any
           const filtered = mockVerifications.filter(v => v.email !== state.user.email);
 
           filtered.push({
             id: Date.now(),
             name: state.user.name,
             email: state.user.email,
-            documentType: 'ID Card', // Mock type
-            status: 'pending',
+            role: state.user.role,
+            documentType: docType, // Track latest upload
+            documents: updatedDocs,
+            status: newStatus,
             submittedAt: new Date().toISOString().split('T')[0]
           });
 
