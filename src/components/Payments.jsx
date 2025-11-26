@@ -43,6 +43,13 @@ const Payments = () => {
       description: 'Top up wallet',
       color: '#905A01',
       path: '/add-money'
+    },
+    {
+      icon: 'payments',
+      title: 'Withdraw',
+      description: 'Cash out',
+      color: '#D99201',
+      path: '/withdraw-money'
     }
   ];
 

@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BottomNav from './BottomNav';
 import { useAuth } from '../contexts/AuthContext';
+import { useCurrency } from '../contexts/CurrencyContext';
 
 const CreateGoal = () => {
   const navigate = useNavigate();
   const { createSavingsGoal } = useAuth();
+  const { currency, convertToUSD } = useCurrency();
   const [formData, setFormData] = useState({
     name: '',
     targetAmount: '',
@@ -35,7 +37,7 @@ const CreateGoal = () => {
     const newGoal = {
       id: Date.now(),
       name: formData.name,
-      targetAmount: parseFloat(formData.targetAmount),
+      targetAmount: convertToUSD(parseFloat(formData.targetAmount)), // Convert to USD
       currentAmount: 0,
       deadline: formData.deadline,
       icon: formData.icon,
@@ -151,16 +153,16 @@ const CreateGoal = () => {
 
               {/* Target Amount */}
               <div>
-                <label className="block text-sm font-medium text-[#1A3F22] mb-2">Target Amount</label>
+                <label className="block text-sm font-medium text-[#1A3F22] mb-2">Target Amount ({currency})</label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-bold">$</span>
+                  <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-bold">{currency === 'KES' ? 'KSh' : '$'}</span>
                   <input
                     type="number"
                     name="targetAmount"
                     value={formData.targetAmount}
                     onChange={handleChange}
                     placeholder="0.00"
-                    className="w-full p-4 pl-8 rounded-xl bg-gray-50 border border-gray-200 focus:border-[#6f9c16] outline-none transition-colors"
+                    className="w-full p-4 pl-14 rounded-xl bg-gray-50 border border-gray-200 focus:border-[#6f9c16] outline-none transition-colors"
                     required
                   />
                 </div>

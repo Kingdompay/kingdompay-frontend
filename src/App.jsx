@@ -39,6 +39,7 @@ import VerificationUpload from './components/VerificationUpload';
 import SendMoney from './components/SendMoney';
 import RequestMoney from './components/RequestMoney';
 import AddMoney from './components/AddMoney';
+import WithdrawMoney from './components/WithdrawMoney';
 import ScanQR from './components/ScanQR';
 
 // Community Sub-pages
@@ -55,6 +56,7 @@ import AdminDashboard from './components/Admin/AdminDashboard';
 import IdentityVerification from './components/Admin/IdentityVerification';
 import Users from './components/Admin/Users';
 import AdminSettings from './components/Admin/AdminSettings';
+import WithdrawalRequests from './components/Admin/WithdrawalRequests';
 
 // Test Page
 import TestPage from './components/TestPage';
@@ -108,6 +110,7 @@ const AppContent = () => {
           <Route path="/send-money" element={<ProtectedRoute><SendMoney /></ProtectedRoute>} />
           <Route path="/request-money" element={<ProtectedRoute><RequestMoney /></ProtectedRoute>} />
           <Route path="/add-money" element={<ProtectedRoute><AddMoney /></ProtectedRoute>} />
+          <Route path="/withdraw-money" element={<ProtectedRoute><WithdrawMoney /></ProtectedRoute>} />
           <Route path="/scan-qr" element={<ProtectedRoute><ScanQR /></ProtectedRoute>} />
 
           {/* Community Sub-pages */}
@@ -125,6 +128,7 @@ const AppContent = () => {
           <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
             <Route index element={<AdminDashboard />} />
             <Route path="verification" element={<IdentityVerification />} />
+            <Route path="withdrawals" element={<WithdrawalRequests />} />
             <Route path="users" element={<Users />} />
             <Route path="settings" element={<AdminSettings />} />
           </Route>

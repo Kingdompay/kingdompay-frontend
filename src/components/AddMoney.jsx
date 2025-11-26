@@ -9,7 +9,8 @@ const AddMoney = () => {
   const { user, updateBalance, addTransaction, addNotification } = useAuth();
   const { currency, convertToUSD, formatCurrency } = useCurrency();
   const [amount, setAmount] = useState('');
-  const [method, setMethod] = useState('card'); // card, bank, apple
+  const [method, setMethod] = useState('card'); // card, bank, apple, mpesa
+  const [phoneNumber, setPhoneNumber] = useState('');
 
   const formatAmount = (value) => {
     const number = parseFloat(value.replace(/[^0-9.]/g, ''));
@@ -48,7 +49,7 @@ const AddMoney = () => {
     // Add transaction
     addTransaction({
       type: 'credit',
-      description: `Added funds via ${method === 'card' ? 'Card' : method === 'bank' ? 'Bank Transfer' : 'Apple Pay'}`,
+      description: `Added funds via ${method === 'card' ? 'Card' : method === 'bank' ? 'Bank Transfer' : method === 'mpesa' ? 'M-Pesa' : 'Apple Pay'}`,
       amount: amountInUSD, // Store in USD
       date: new Date().toISOString(),
       status: 'completed'
@@ -199,6 +200,35 @@ const AddMoney = () => {
                     {method === 'bank' && <div className="w-2.5 h-2.5 rounded-full bg-[#6f9c16]"></div>}
                   </div>
                 </div>
+
+                <div
+                  onClick={() => setMethod('mpesa')}
+                  className={`flex items-center p-4 rounded-xl border-2 cursor-pointer transition-all ${method === 'mpesa' ? 'border-[#6f9c16] bg-green-50' : 'border-gray-100 hover:border-gray-200'}`}
+                >
+                  <div className="w-10 h-10 rounded-full bg-[#E9F0E1] flex items-center justify-center mr-4">
+                    <span className="material-symbols-outlined text-[#58761B]">smartphone</span>
+                  </div>
+                  <div className="flex-grow">
+                    <p className="font-bold text-[#1A3F22]">M-Pesa</p>
+                    <p className="text-xs text-gray-500">Instant • Fee: 1%</p>
+                  </div>
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${method === 'mpesa' ? 'border-[#6f9c16]' : 'border-gray-300'}`}>
+                    {method === 'mpesa' && <div className="w-2.5 h-2.5 rounded-full bg-[#6f9c16]"></div>}
+                  </div>
+                </div>
+
+                {method === 'mpesa' && (
+                  <div className="mt-4 animate-fade-in-up">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">M-Pesa Phone Number</label>
+                    <input
+                      type="tel"
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      placeholder="e.g. 0712345678"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6f9c16] focus:border-transparent"
+                    />
+                  </div>
+                )}
               </div>
             </div>
 

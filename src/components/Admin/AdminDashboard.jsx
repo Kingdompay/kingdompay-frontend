@@ -1,10 +1,15 @@
 import React from 'react';
 
+import { useAuth } from '../../contexts/AuthContext';
+
 const AdminDashboard = () => {
+    const { withdrawalRequests } = useAuth();
+    const pendingWithdrawalsCount = withdrawalRequests ? withdrawalRequests.filter(req => req.status === 'pending').length : 0;
+
     const stats = [
         { title: 'Total Users', value: '12,345', icon: 'group', color: 'bg-blue-100 text-blue-600' },
         { title: 'Pending Verifications', value: '23', icon: 'pending_actions', color: 'bg-orange-100 text-orange-600' },
-        { title: 'Total Transactions', value: '$1.2M', icon: 'payments', color: 'bg-green-100 text-green-600' },
+        { title: 'Pending Withdrawals', value: pendingWithdrawalsCount.toString(), icon: 'payments', color: 'bg-red-100 text-red-600' },
         { title: 'Active Groups', value: '142', icon: 'diversity_3', color: 'bg-purple-100 text-purple-600' },
     ];
 

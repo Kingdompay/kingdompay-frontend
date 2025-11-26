@@ -54,20 +54,6 @@ const Profile = () => {
             <p className="text-[#58761B] text-sm mt-1 m-0">
               @{user?.email?.split('@')[0]} / {user?.phone || '+1 234 567 890'}
             </p>
-
-            {/* Wallet Balance in Sidebar */}
-            <div className="mt-6 w-full md:max-w-xs">
-              <div className="bg-gradient-to-r from-[#1A3F22] to-[#58761B] rounded-xl p-4 flex justify-between items-center text-white shadow-md">
-                <div>
-                  <p className="font-semibold m-0">
-                    Personal Wallet: ${user?.balance?.toFixed(2) || '0.00'}
-                  </p>
-                </div>
-                <span className="material-symbols-outlined text-[#D99201] text-2xl">
-                  toll
-                </span>
-              </div>
-            </div>
           </div>
 
           {/* Desktop Nav Links */}
@@ -219,7 +205,7 @@ const Profile = () => {
                   <span className="material-symbols-outlined text-gray-400 text-base">chevron_right</span>
                 </button>
 
-                <button onClick={() => navigate('/2fa')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 rounded-lg transition-colors">
+                <button onClick={() => navigate('/two-factor-auth')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 rounded-lg transition-colors">
                   <div className="flex items-center gap-4">
                     <div className="w-8 h-8 rounded-full bg-[#E9F0E1] flex items-center justify-center">
                       <span className="material-symbols-outlined text-[#58761B] text-base">password</span>
@@ -276,26 +262,20 @@ const Profile = () => {
                 </button>
               </div>
             </section>
-          </div>
 
-          {/* Logout */}
-          <section className="mt-8 text-center max-w-xs mx-auto">
-            <div className="bg-gray-100 rounded-xl overflow-hidden">
-              <button
-                className="block w-full py-3 text-red-600 font-semibold bg-transparent border-none cursor-pointer hover:bg-gray-200 transition-colors"
-                onClick={handleLogout}
-              >
+            {/* Logout Button */}
+            <div className="mt-8 mb-8 text-center">
+              <button onClick={handleLogout} className="text-red-600 font-medium hover:bg-red-50 px-6 py-3 rounded-xl transition-colors border-none cursor-pointer bg-transparent">
                 Log Out
               </button>
             </div>
-            <p className="mt-4 text-[#A0A89B] text-xs m-0">Version 1.0.0</p>
-          </section>
-        </main>
-      </div>
 
-      {/* Bottom Navigation (Mobile Only) */}
-      <div className="md:hidden">
-        <BottomNav />
+          </div>
+        </main>
+
+        <div className="md:hidden">
+          <BottomNav />
+        </div>
       </div>
     </div>
   );

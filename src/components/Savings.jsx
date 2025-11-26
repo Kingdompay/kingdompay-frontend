@@ -6,7 +6,7 @@ import { useCurrency } from '../contexts/CurrencyContext';
 
 const Savings = () => {
   const { user, updateBalance, updateSavingsBalance, addTransaction, addNotification, updateSavingsGoal } = useAuth();
-  const { formatCurrency } = useCurrency();
+  const { formatCurrency, convertToUSD, currency } = useCurrency();
   const [loading, setLoading] = useState(false);
 
   // Use data from context
@@ -21,6 +21,7 @@ const Savings = () => {
   const [showContributeModal, setShowContributeModal] = useState(false);
   const [selectedGoal, setSelectedGoal] = useState(null);
   const [contributionAmount, setContributionAmount] = useState('');
+  const [contributionRaw, setContributionRaw] = useState(''); // Store raw number for logic
   const [contributing, setContributing] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -29,17 +30,19 @@ const Savings = () => {
   // Withdrawal state
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [withdrawalAmount, setWithdrawalAmount] = useState('');
+  const [withdrawalRaw, setWithdrawalRaw] = useState(''); // Store raw number for logic
   const [withdrawing, setWithdrawing] = useState(false);
   const [withdrawType, setWithdrawType] = useState(''); // 'savings' or 'goal'
 
   const handleContribute = async () => {
-    if (!contributionAmount || parseFloat(contributionAmount) <= 0) return;
+    if (!contributionRaw || parseFloat(contributionRaw) <= 0) return;
 
-    const amount = parseFloat(contributionAmount);
+    const amount = parseFloat(contributionRaw);
+    const amountInUSD = convertToUSD(amount);
 
     if (contributeType === 'savings') {
       const currentBalance = Number(user?.balance || 0);
-      if (currentBalance < amount) {
+      if (currentBalance < amountInUSD) {
         setError('Insufficient funds in your main wallet');
         return;
       }
@@ -48,8 +51,12 @@ const Savings = () => {
         setError('Please select a goal');
         return;
       }
-      if (savingsBalance < amount) {
+      if (savingsBalance < amountInUSD) {
         setError('Insufficient funds in your savings wallet');
+        return;
+      }
+      if (selectedGoal.currentAmount >= selectedGoal.targetAmount) {
+        setError('This goal has already been reached!');
         return;
       }
     }
@@ -63,13 +70,13 @@ const Savings = () => {
 
       if (contributeType === 'savings') {
         // Main -> Savings Wallet
-        updateBalance(Number(user?.balance || 0) - amount);
-        updateSavingsBalance(savingsBalance + amount);
+        updateBalance(Number(user?.balance || 0) - amountInUSD);
+        updateSavingsBalance(savingsBalance + amountInUSD);
 
         addTransaction({
           type: 'savings_deposit',
           description: 'Deposit to Savings Wallet',
-          amount: amount,
+          amount: amountInUSD,
           date: new Date().toISOString(),
           status: 'completed'
         });
@@ -77,20 +84,20 @@ const Savings = () => {
         addNotification({
           type: 'savings',
           title: 'Savings Deposit',
-          message: `You added ${formatCurrency(amount)} to your Savings Wallet`,
+          message: `You added ${formatCurrency(amountInUSD)} to your Savings Wallet`,
           icon: 'savings',
           color: '#1A3F22'
         });
       } else {
         // Savings Wallet -> Goal
-        updateSavingsBalance(savingsBalance - amount);
-        const updatedGoal = { ...selectedGoal, currentAmount: selectedGoal.currentAmount + amount };
+        updateSavingsBalance(savingsBalance - amountInUSD);
+        const updatedGoal = { ...selectedGoal, currentAmount: selectedGoal.currentAmount + amountInUSD };
         updateSavingsGoal(updatedGoal);
 
         addTransaction({
           type: 'goal_contribution',
           description: `Contribution to ${selectedGoal.name}`,
-          amount: amount,
+          amount: amountInUSD,
           date: new Date().toISOString(),
           status: 'completed'
         });
@@ -98,7 +105,7 @@ const Savings = () => {
         addNotification({
           type: 'savings',
           title: 'Goal Contribution',
-          message: `You allocated ${formatCurrency(amount)} to ${selectedGoal.name}`,
+          message: `You allocated ${formatCurrency(amountInUSD)} to ${selectedGoal.name}`,
           icon: 'savings',
           color: '#1A3F22'
         });
@@ -109,6 +116,7 @@ const Savings = () => {
         setShowContributeModal(false);
         setSelectedGoal(null);
         setContributionAmount('');
+        setContributionRaw('');
         setSuccess('');
         setContributeType('');
       }, 1500);
@@ -120,21 +128,22 @@ const Savings = () => {
   };
 
   const handleWithdraw = async () => {
-    if (!withdrawalAmount || parseFloat(withdrawalAmount) <= 0) return;
+    if (!withdrawalRaw || parseFloat(withdrawalRaw) <= 0) return;
 
-    const amount = parseFloat(withdrawalAmount);
+    const amount = parseFloat(withdrawalRaw);
+    const amountInUSD = convertToUSD(amount);
 
     if (withdrawType === 'goal') {
       if (!selectedGoal) {
         setError('Please select a goal');
         return;
       }
-      if (selectedGoal.currentAmount < amount) {
+      if (selectedGoal.currentAmount < amountInUSD) {
         setError('Insufficient funds in this goal');
         return;
       }
     } else if (withdrawType === 'savings') {
-      if (savingsBalance < amount) {
+      if (savingsBalance < amountInUSD) {
         setError('Insufficient funds in savings wallet');
         return;
       }
@@ -149,14 +158,14 @@ const Savings = () => {
 
       if (withdrawType === 'goal') {
         // Goal -> Savings Wallet
-        const updatedGoal = { ...selectedGoal, currentAmount: selectedGoal.currentAmount - amount };
+        const updatedGoal = { ...selectedGoal, currentAmount: selectedGoal.currentAmount - amountInUSD };
         updateSavingsGoal(updatedGoal);
-        updateSavingsBalance(savingsBalance + amount);
+        updateSavingsBalance(savingsBalance + amountInUSD);
 
         addTransaction({
           type: 'goal_withdrawal',
           description: `Withdrawal from ${selectedGoal.name}`,
-          amount: amount,
+          amount: amountInUSD,
           date: new Date().toISOString(),
           status: 'completed'
         });
@@ -164,19 +173,19 @@ const Savings = () => {
         addNotification({
           type: 'savings',
           title: 'Goal Withdrawal',
-          message: `You moved ${formatCurrency(amount)} from ${selectedGoal.name} to Savings Wallet`,
+          message: `You moved ${formatCurrency(amountInUSD)} from ${selectedGoal.name} to Savings Wallet`,
           icon: 'savings',
           color: '#D99201'
         });
       } else {
         // Savings Wallet -> Main
-        updateSavingsBalance(savingsBalance - amount);
-        updateBalance(Number(user?.balance || 0) + amount);
+        updateSavingsBalance(savingsBalance - amountInUSD);
+        updateBalance(Number(user?.balance || 0) + amountInUSD);
 
         addTransaction({
           type: 'savings_withdrawal',
           description: 'Withdrawal from Savings Wallet',
-          amount: amount,
+          amount: amountInUSD,
           date: new Date().toISOString(),
           status: 'completed'
         });
@@ -184,7 +193,7 @@ const Savings = () => {
         addNotification({
           type: 'savings',
           title: 'Savings Withdrawal',
-          message: `You withdrew ${formatCurrency(amount)} to your Main Wallet`,
+          message: `You withdrew ${formatCurrency(amountInUSD)} to your Main Wallet`,
           icon: 'savings',
           color: '#D99201'
         });
@@ -195,6 +204,7 @@ const Savings = () => {
         setShowWithdrawModal(false);
         setSelectedGoal(null);
         setWithdrawalAmount('');
+        setWithdrawalRaw('');
         setSuccess('');
         setWithdrawType('');
       }, 1500);
@@ -203,6 +213,22 @@ const Savings = () => {
     } finally {
       setWithdrawing(false);
     }
+  };
+
+  const handleFormatAmount = (value, setFormatted, setRaw) => {
+    const number = parseFloat(value.replace(/[^0-9.]/g, ''));
+    if (isNaN(number)) {
+      setFormatted('');
+      setRaw('');
+      return;
+    }
+    setRaw(number.toString());
+    setFormatted(number.toLocaleString('en-US', {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2
+    }));
   };
 
   return (
@@ -334,9 +360,10 @@ const Savings = () => {
                       <div className="flex gap-2">
                         <button
                           onClick={() => { setSelectedGoal(goal); setContributeType('goal'); setShowContributeModal(true); }}
-                          className="flex-1 bg-[#E9F0E1] text-[#1A3F22] py-2 rounded-lg text-sm font-medium hover:bg-[#dce8d0] transition-colors border-none cursor-pointer"
+                          className="flex-1 bg-[#E9F0E1] text-[#1A3F22] py-2 rounded-lg text-sm font-medium hover:bg-[#dce8d0] transition-colors border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                          disabled={goal.currentAmount >= goal.targetAmount}
                         >
-                          Add Money
+                          {goal.currentAmount >= goal.targetAmount ? 'Completed' : 'Add Money'}
                         </button>
                         <button
                           onClick={() => { setSelectedGoal(goal); setWithdrawType('goal'); setShowWithdrawModal(true); }}
@@ -394,7 +421,7 @@ const Savings = () => {
               <h2 className="text-xl font-bold text-[#1A3F22] m-0">
                 {contributeType === 'savings' ? 'Deposit to Savings Wallet' : `Add to ${selectedGoal?.name}`}
               </h2>
-              <button onClick={() => { setShowContributeModal(false); setSelectedGoal(null); setContributionAmount(''); setError(''); setSuccess(''); setContributeType(''); }} className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer">
+              <button onClick={() => { setShowContributeModal(false); setSelectedGoal(null); setContributionAmount(''); setContributionRaw(''); setError(''); setSuccess(''); setContributeType(''); }} className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer">
                 <span className="material-symbols-outlined text-2xl">close</span>
               </button>
             </div>
@@ -403,7 +430,14 @@ const Savings = () => {
 
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">Amount</label>
-              <input type="number" value={contributionAmount} onChange={(e) => setContributionAmount(e.target.value)} placeholder="Enter amount" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A3F22] focus:border-transparent" disabled={contributing} />
+              <input
+                type="text"
+                value={contributionAmount}
+                onChange={(e) => handleFormatAmount(e.target.value, setContributionAmount, setContributionRaw)}
+                placeholder={`Enter amount in ${currency}`}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A3F22] focus:border-transparent"
+                disabled={contributing}
+              />
             </div>
 
             <div className="bg-gray-50 p-4 rounded-lg mb-4">
@@ -411,22 +445,22 @@ const Savings = () => {
                 <>
                   <div className="flex justify-between text-sm mb-2"><span className="text-gray-600">Main Wallet Balance:</span><span className="font-medium text-gray-900">{formatCurrency(user?.balance || 0)}</span></div>
                   <div className="flex justify-between text-sm mb-2"><span className="text-gray-600">Savings Wallet Balance:</span><span className="font-medium text-gray-900">{formatCurrency(savingsBalance)}</span></div>
-                  {contributionAmount && parseFloat(contributionAmount) > 0 && (
-                    <div className="flex justify-between text-sm pt-2 border-t border-gray-200"><span className="text-gray-600">New Savings Balance:</span><span className="font-bold text-[#1A3F22]">{formatCurrency(savingsBalance + parseFloat(contributionAmount))}</span></div>
+                  {contributionRaw && parseFloat(contributionRaw) > 0 && (
+                    <div className="flex justify-between text-sm pt-2 border-t border-gray-200"><span className="text-gray-600">New Savings Balance:</span><span className="font-bold text-[#1A3F22]">{formatCurrency(savingsBalance + convertToUSD(parseFloat(contributionRaw)))}</span></div>
                   )}
                 </>
               ) : (
                 <>
                   <div className="flex justify-between text-sm mb-2"><span className="text-gray-600">Savings Wallet Balance:</span><span className="font-medium text-gray-900">{formatCurrency(savingsBalance)}</span></div>
                   <div className="flex justify-between text-sm mb-2"><span className="text-gray-600">Goal Current:</span><span className="font-medium text-gray-900">{formatCurrency(selectedGoal?.currentAmount || 0)}</span></div>
-                  {contributionAmount && parseFloat(contributionAmount) > 0 && (
-                    <div className="flex justify-between text-sm pt-2 border-t border-gray-200"><span className="text-gray-600">New Goal Total:</span><span className="font-bold text-[#1A3F22]">{formatCurrency((selectedGoal?.currentAmount || 0) + parseFloat(contributionAmount))}</span></div>
+                  {contributionRaw && parseFloat(contributionRaw) > 0 && (
+                    <div className="flex justify-between text-sm pt-2 border-t border-gray-200"><span className="text-gray-600">New Goal Total:</span><span className="font-bold text-[#1A3F22]">{formatCurrency((selectedGoal?.currentAmount || 0) + convertToUSD(parseFloat(contributionRaw)))}</span></div>
                   )}
                 </>
               )}
             </div>
 
-            <button onClick={handleContribute} disabled={contributing || !contributionAmount || parseFloat(contributionAmount) <= 0} className="w-full bg-[#1A3F22] text-white px-6 py-3 rounded-full font-medium border-none cursor-pointer hover:bg-[#14301a] transition-colors shadow-md disabled:bg-gray-300 disabled:cursor-not-allowed">
+            <button onClick={handleContribute} disabled={contributing || !contributionRaw || parseFloat(contributionRaw) <= 0} className="w-full bg-[#1A3F22] text-white px-6 py-3 rounded-full font-medium border-none cursor-pointer hover:bg-[#14301a] transition-colors shadow-md disabled:bg-gray-300 disabled:cursor-not-allowed">
               {contributing ? 'Processing...' : 'Confirm'}
             </button>
           </div>
@@ -441,7 +475,7 @@ const Savings = () => {
               <h2 className="text-xl font-bold text-[#1A3F22] m-0">
                 {withdrawType === 'savings' ? 'Withdraw to Main Wallet' : `Withdraw from ${selectedGoal?.name}`}
               </h2>
-              <button onClick={() => { setShowWithdrawModal(false); setSelectedGoal(null); setWithdrawalAmount(''); setError(''); setSuccess(''); setWithdrawType(''); }} className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer">
+              <button onClick={() => { setShowWithdrawModal(false); setSelectedGoal(null); setWithdrawalAmount(''); setWithdrawalRaw(''); setError(''); setSuccess(''); setWithdrawType(''); }} className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer">
                 <span className="material-symbols-outlined text-2xl">close</span>
               </button>
             </div>
@@ -449,26 +483,33 @@ const Savings = () => {
             {error && (<div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">{error}</div>)}
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">Amount</label>
-              <input type="number" value={withdrawalAmount} onChange={(e) => setWithdrawalAmount(e.target.value)} placeholder="Enter amount" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A3F22] focus:border-transparent" disabled={withdrawing} />
+              <input
+                type="text"
+                value={withdrawalAmount}
+                onChange={(e) => handleFormatAmount(e.target.value, setWithdrawalAmount, setWithdrawalRaw)}
+                placeholder={`Enter amount in ${currency}`}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A3F22] focus:border-transparent"
+                disabled={withdrawing}
+              />
             </div>
             <div className="bg-gray-50 p-4 rounded-lg mb-4">
               {withdrawType === 'goal' && selectedGoal ? (
                 <>
                   <div className="flex justify-between text-sm mb-2"><span className="text-gray-600">Available in Goal:</span><span className="font-medium text-gray-900">{formatCurrency(selectedGoal.currentAmount)}</span></div>
-                  {withdrawalAmount && parseFloat(withdrawalAmount) > 0 && (
-                    <div className="flex justify-between text-sm pt-2 border-t border-gray-200"><span className="text-gray-600">Remaining in Goal:</span><span className="font-bold text-[#1A3F22]">{formatCurrency(selectedGoal.currentAmount - parseFloat(withdrawalAmount))}</span></div>
+                  {withdrawalRaw && parseFloat(withdrawalRaw) > 0 && (
+                    <div className="flex justify-between text-sm pt-2 border-t border-gray-200"><span className="text-gray-600">Remaining in Goal:</span><span className="font-bold text-[#1A3F22]">{formatCurrency(selectedGoal.currentAmount - convertToUSD(parseFloat(withdrawalRaw)))}</span></div>
                   )}
                 </>
               ) : (
                 <>
                   <div className="flex justify-between text-sm mb-2"><span className="text-gray-600">Savings Wallet Balance:</span><span className="font-medium text-gray-900">{formatCurrency(savingsBalance)}</span></div>
-                  {withdrawalAmount && parseFloat(withdrawalAmount) > 0 && (
-                    <div className="flex justify-between text-sm pt-2 border-t border-gray-200"><span className="text-gray-600">Remaining in Savings:</span><span className="font-bold text-[#1A3F22]">{formatCurrency(savingsBalance - parseFloat(withdrawalAmount))}</span></div>
+                  {withdrawalRaw && parseFloat(withdrawalRaw) > 0 && (
+                    <div className="flex justify-between text-sm pt-2 border-t border-gray-200"><span className="text-gray-600">Remaining in Savings:</span><span className="font-bold text-[#1A3F22]">{formatCurrency(savingsBalance - convertToUSD(parseFloat(withdrawalRaw)))}</span></div>
                   )}
                 </>
               )}
             </div>
-            <button onClick={handleWithdraw} disabled={withdrawing || !withdrawalAmount || parseFloat(withdrawalAmount) <= 0} className="w-full bg-[#1A3F22] text-white px-6 py-3 rounded-full font-medium border-none cursor-pointer hover:bg-[#14301a] transition-colors shadow-md disabled:bg-gray-300 disabled:cursor-not-allowed">
+            <button onClick={handleWithdraw} disabled={withdrawing || !withdrawalRaw || parseFloat(withdrawalRaw) <= 0} className="w-full bg-[#1A3F22] text-white px-6 py-3 rounded-full font-medium border-none cursor-pointer hover:bg-[#14301a] transition-colors shadow-md disabled:bg-gray-300 disabled:cursor-not-allowed">
               {withdrawing ? 'Processing...' : 'Withdraw Money'}
             </button>
           </div>

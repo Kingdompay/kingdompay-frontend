@@ -36,6 +36,10 @@ const AdminLayout = () => {
                         <span className="material-symbols-outlined mr-3">verified_user</span>
                         Verification
                     </Link>
+                    <Link to="/admin/withdrawals" className={`flex items-center p-3 rounded-xl transition-colors no-underline font-medium ${isActive('/admin/withdrawals')}`}>
+                        <span className="material-symbols-outlined mr-3">payments</span>
+                        Withdrawals
+                    </Link>
                     <Link to="/admin/users" className={`flex items-center p-3 rounded-xl transition-colors no-underline font-medium ${isActive('/admin/users')}`}>
                         <span className="material-symbols-outlined mr-3">group</span>
                         Users
