@@ -130,6 +130,24 @@ const Home = () => {
                         {showBalance ? 'visibility' : 'visibility_off'}
                       </span>
                     </button>
+                    {/* Profile Picture */}
+                    <Link to="/profile" className="no-underline">
+                      {user?.profilePicture ? (
+                        <img
+                          src={user.profilePicture}
+                          alt="Profile"
+                          className="w-10 h-10 rounded-full border-2 border-white/30 object-cover hover:border-white/60 transition-all cursor-pointer"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full border-2 border-white/30 bg-white/20 flex items-center justify-center hover:border-white/60 transition-all cursor-pointer">
+                          <span className="text-white text-sm font-bold">
+                            {(user?.firstName?.charAt(0) || '') + (user?.lastName?.charAt(0) || '')}
+                          </span>
+                        </div>
+                      )}
+                    </Link>
+
+                    {/* Notification Bell */}
                     <button
                       onClick={() => navigate('/notifications')}
                       className="bg-white/20 p-2 rounded-full border-none cursor-pointer hover:bg-white/30 transition-colors flex items-center justify-center relative"
@@ -277,7 +295,27 @@ const Home = () => {
                   </div>
                 ))
               ) : (
-                <p className="text-gray-500 dark:text-[#A8C4A8] text-center">No transactions yet</p>
+                <div className="bg-white/60 dark:bg-[#1A2E1D]/80 backdrop-blur-md p-12 rounded-2xl text-center border border-white/20">
+                  <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gray-100 dark:bg-[#243B28] flex items-center justify-center">
+                    <span className="material-symbols-outlined text-gray-400 dark:text-gray-500 text-4xl">receipt_long</span>
+                  </div>
+                  <h3 className="text-lg font-bold text-[#1A3F22] dark:text-[#E8F5E8] mb-2">No Transactions Yet</h3>
+                  <p className="text-sm text-gray-500 dark:text-[#A8C4A8] mb-6">Start by adding money to your wallet or sending to friends</p>
+                  <div className="flex gap-3 justify-center">
+                    <button
+                      onClick={() => navigate('/add-money')}
+                      className="px-4 py-2 bg-[#6f9c16] text-white rounded-lg text-sm font-medium hover:bg-[#5a8012] transition-colors border-none cursor-pointer"
+                    >
+                      Add Money
+                    </button>
+                    <button
+                      onClick={() => navigate('/send-money')}
+                      className="px-4 py-2 bg-gray-200 dark:bg-[#243B28] text-[#1A3F22] dark:text-[#E8F5E8] rounded-lg text-sm font-medium hover:bg-gray-300 dark:hover:bg-[#2D4A32] transition-colors border-none cursor-pointer"
+                    >
+                      Send Money
+                    </button>
+                  </div>
+                </div>
               )}
             </div>
           </div>

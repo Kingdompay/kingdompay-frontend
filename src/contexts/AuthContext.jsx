@@ -566,6 +566,13 @@ export const AuthProvider = ({ children }) => {
 
       return { success: true };
     } catch (error) {
+      // Check if it's an API error with a message
+      if (error.response && error.response.data && error.response.data.message) {
+        const message = error.response.data.message;
+        dispatch({ type: 'LOGIN_FAILURE', payload: message });
+        return { success: false, error: message };
+      }
+
       // Fallback for demo/testing without backend
 
       // 1. Check for Hardcoded Admin

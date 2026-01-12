@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BottomNav from './BottomNav';
+import ModernDatePicker from './ModernDatePicker';
 import { useAuth } from '../contexts/AuthContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 
 const CreateGoal = () => {
   const navigate = useNavigate();
-  const { createSavingsGoal } = useAuth();
-  const { currency, convertToUSD } = useCurrency();
+  const { addSavingsGoal } = useAuth();
+  const { currency } = useCurrency();
   const [formData, setFormData] = useState({
     name: '',
     targetAmount: '',
@@ -34,19 +35,43 @@ const CreateGoal = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    console.log('Form submitted with data:', formData);
+
+    // Validate required fields
+    if (!formData.name || !formData.targetAmount) {
+      console.error('Missing required fields');
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    const targetAmountNum = parseFloat(formData.targetAmount);
+    if (isNaN(targetAmountNum) || targetAmountNum <= 0) {
+      console.error('Invalid target amount');
+      alert('Please enter a valid target amount');
+      return;
+    }
+
     const newGoal = {
       id: Date.now(),
       name: formData.name,
-      targetAmount: convertToUSD(parseFloat(formData.targetAmount)), // Convert to USD
+      targetAmount: targetAmountNum, // Keep in user's selected currency (KES)
       currentAmount: 0,
-      deadline: formData.deadline,
+      deadline: formData.deadline || null,
       icon: formData.icon,
       status: 'active',
       createdAt: new Date().toISOString()
     };
 
-    createSavingsGoal(newGoal);
-    navigate('/savings');
+    console.log('Creating goal:', newGoal);
+
+    try {
+      addSavingsGoal(newGoal);
+      console.log('Goal created successfully');
+      navigate('/savings');
+    } catch (error) {
+      console.error('Error creating goal:', error);
+      alert('Failed to create goal. Please try again.');
+    }
   };
 
   return (
@@ -169,20 +194,17 @@ const CreateGoal = () => {
               </div>
 
               {/* Deadline */}
-              <div>
-                <label className="block text-sm font-medium text-[#1A3F22] dark:text-[#E8F5E8] mb-2">Target Date (Optional)</label>
-                <input
-                  type="date"
-                  name="deadline"
-                  value={formData.deadline}
-                  onChange={handleChange}
-                  className="w-full p-4 rounded-xl bg-gray-50 dark:bg-[#1A2E1D] border border-gray-200 dark:border-[#2D4A32] focus:border-[#6f9c16] outline-none transition-colors text-gray-900 dark:text-[#E8F5E8]"
-                />
-              </div>
+              <ModernDatePicker
+                label="Target Date (Optional)"
+                value={formData.deadline}
+                onChange={handleChange}
+                placeholder="Select target date"
+                minDate={new Date().toISOString().split('T')[0]}
+              />
 
               <button
                 type="submit"
-                className="w-full py-4 rounded-xl bg-[#6f9c16] text-white font-bold text-lg shadow-lg hover:bg-[#5a8012] transition-all mt-8"
+                className="w-full py-4 rounded-xl bg-[#6f9c16] text-white font-bold text-lg shadow-lg hover:bg-[#5a8012] transition-all mt-8 border-none cursor-pointer"
               >
                 Create Goal
               </button>

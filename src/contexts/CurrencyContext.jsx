@@ -6,7 +6,7 @@ export const useCurrency = () => useContext(CurrencyContext);
 
 export const CurrencyProvider = ({ children }) => {
     const [currency, setCurrencyState] = useState(() => {
-        return localStorage.getItem('currency') || 'USD';
+        return localStorage.getItem('currency') || 'KES';
     });
     const [exchangeRate, setExchangeRate] = useState(1);
     const [loading, setLoading] = useState(true);

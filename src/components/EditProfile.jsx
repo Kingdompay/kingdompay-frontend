@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import BottomNav from './BottomNav';
+import ModernDatePicker from './ModernDatePicker';
 import { useAuth } from '../contexts/AuthContext';
 
 const EditProfile = () => {
@@ -224,16 +225,12 @@ const EditProfile = () => {
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-[#1A3F22] dark:text-[#E8F5E8] mb-2">Date of Birth</label>
-                <input
-                  type="date"
-                  name="dateOfBirth"
-                  value={formData.dateOfBirth}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 bg-gray-50 dark:bg-[#1A2E1D] border border-gray-200 dark:border-[#2D4A32] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6f9c16] focus:border-transparent transition-all text-gray-900 dark:text-[#E8F5E8]"
-                />
-              </div>
+              <ModernDatePicker
+                label="Date of Birth"
+                value={formData.dateOfBirth}
+                onChange={(e) => handleChange({ target: { name: 'dateOfBirth', value: e.target.value } })}
+                placeholder="Select your date of birth"
+              />
 
               {/* Action Buttons */}
               <div className="flex gap-4 pt-4">
