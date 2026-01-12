@@ -858,6 +858,37 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const updateProfile = (profileData) => {
+    if (!state.user) return { success: false, error: 'No user logged in' };
+
+    const updatedUser = {
+      ...state.user,
+      firstName: profileData.firstName || state.user.firstName,
+      lastName: profileData.lastName || state.user.lastName,
+      phone: profileData.phone || state.user.phone,
+      dateOfBirth: profileData.dateOfBirth || state.user.dateOfBirth,
+    };
+
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    dispatch({ type: 'UPDATE_USER', payload: updatedUser });
+
+    return { success: true };
+  };
+
+  const updateProfilePicture = (base64Image) => {
+    if (!state.user) return { success: false, error: 'No user logged in' };
+
+    const updatedUser = {
+      ...state.user,
+      profilePicture: base64Image,
+    };
+
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    dispatch({ type: 'UPDATE_USER', payload: updatedUser });
+
+    return { success: true };
+  };
+
   const logout = () => {
     dispatch({ type: 'LOGOUT' });
   };
@@ -998,6 +1029,8 @@ export const AuthProvider = ({ children }) => {
         login,
         register,
         logout,
+        updateProfile,
+        updateProfilePicture,
         updateBalance,
         updateSavingsBalance,
         addTransaction,

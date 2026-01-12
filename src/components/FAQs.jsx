@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import BottomNav from './BottomNav';
 
 const FAQs = () => {
@@ -57,7 +57,7 @@ const FAQs = () => {
       id: 4,
       category: 'payments',
       question: 'What are the transaction fees?',
-      answer: 'Most transactions are free. Small fees may apply for international transfers or expedited processing. Check the transaction details before confirming any payment to see applicable fees.'
+      answer: 'Transaction fees vary depending on the type of transaction. Standard fees apply for most transfers. Check the transaction details before confirming any payment to see applicable fees.'
     },
     {
       id: 5,
@@ -69,7 +69,7 @@ const FAQs = () => {
       id: 6,
       category: 'security',
       question: 'Is my money safe?',
-      answer: 'Yes, your money is protected by bank-level security. We use encryption and fraud monitoring to keep your account safe. Your funds are also insured up to $250,000.'
+      answer: 'Yes, we use bank-level encryption and fraud monitoring to keep your account secure. We implement multiple layers of security to protect your information and transactions.'
     },
     {
       id: 7,

@@ -42,11 +42,19 @@ const Profile = () => {
           {/* Header */}
           <div className="p-4 text-center md:text-left md:flex md:flex-col md:items-center md:justify-center md:flex-grow">
             <div className="relative inline-block">
-              <img
-                alt="User profile picture"
-                className="w-24 h-24 rounded-full border-4 border-[#58761B] object-cover shadow-lg"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTUDwO_1yM452W0B6j691kPeEKdplxoY0YQKiIJQ70sBWUiQhS2Cb9vM7Uuyo2E4KQ-CyRyzW2V3qPqHs1Cu0S-zlxtywlUNIZAtXKHRR4zKCajsvOyC9Yo6hIeW0yDbn0N5xbqRe1tADPI5Qrk8IhtiCSFcpoo8T1iT0oQyGu70uKd7VNydVjQRNDdCFsjtbph_DPIP9__u7J7sJAGLCNNoiXmhJrWNTxdkRksSwNwlzwldTKfBrBDIumjXhXN2eBhdzaTLdKWo3R"
-              />
+              {user?.profilePicture ? (
+                <img
+                  alt="User profile picture"
+                  className="w-24 h-24 rounded-full border-4 border-[#58761B] object-cover shadow-lg"
+                  src={user.profilePicture}
+                />
+              ) : (
+                <div className="w-24 h-24 rounded-full border-4 border-[#58761B] bg-gradient-to-br from-[#1A3F22] to-[#58761B] flex items-center justify-center shadow-lg">
+                  <span className="text-white text-3xl font-bold">
+                    {(user?.firstName?.charAt(0) || '') + (user?.lastName?.charAt(0) || '')}
+                  </span>
+                </div>
+              )}
             </div>
             <h2 className="mt-4 text-2xl font-bold text-[#1A3F22] dark:text-[#E8F5E8] m-0 transition-colors">
               {user?.firstName} {user?.lastName}

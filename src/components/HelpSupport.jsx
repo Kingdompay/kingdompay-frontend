@@ -9,9 +9,9 @@ const HelpSupport = () => {
   const faqs = [
     { id: 1, question: 'How do I add money to my wallet?', answer: 'You can add money to your wallet by linking your bank account, using a debit/credit card, or visiting any of our partner locations. Go to the Home page and tap the "Add" button to get started.' },
     { id: 2, question: 'How do I send money to friends?', answer: 'To send money, go to the Home page and tap the "Send" button. Enter the recipient\'s phone number or email, amount, and confirm the transaction. The money will be sent instantly.' },
-    { id: 3, question: 'What are the transaction fees?', answer: 'Most transactions are free. Small fees may apply for international transfers or expedited processing. Check the transaction details before confirming any payment.' },
+    { id: 3, question: 'What are the transaction fees?', answer: 'Transaction fees vary depending on the type of transaction. Standard fees apply for most transfers. Check the transaction details before confirming any payment.' },
     { id: 4, question: 'How do I set up savings goals?', answer: 'Go to the Savings page and tap "Add New Goal". Set your target amount, choose an icon, and start saving. You can track your progress and make contributions anytime.' },
-    { id: 5, question: 'Is my money safe?', answer: 'Yes, your money is protected by bank-level security. We use encryption and fraud monitoring to keep your account safe. Your funds are also insured up to $250,000.' },
+    { id: 5, question: 'Is my money safe?', answer: 'Yes, we use bank-level encryption and fraud monitoring to keep your account secure. We implement multiple layers of security to protect your information and transactions.' },
   ];
 
   const contactMethods = [

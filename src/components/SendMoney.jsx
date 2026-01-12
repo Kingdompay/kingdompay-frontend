@@ -365,7 +365,7 @@ const SendMoney = () => {
                   </div>
                   <div className="flex justify-between items-center mb-4">
                     <span className="text-gray-500 dark:text-[#A8C4A8]">Fee</span>
-                    <span className="font-semibold text-green-600 dark:text-green-400">Free</span>
+                    <span className="font-semibold text-gray-600 dark:text-gray-400">Standard Fees Apply</span>
                   </div>
                   {formData.message && (
                     <div className="pt-4 border-t border-gray-200 dark:border-[#2D4A32]">

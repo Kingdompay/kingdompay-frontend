@@ -194,7 +194,7 @@ const AddMoney = () => {
                   </div>
                   <div className="flex-grow">
                     <p className="font-bold text-[#1A3F22] dark:text-[#E8F5E8]">Bank Transfer</p>
-                    <p className="text-xs text-gray-500 dark:text-[#A8C4A8]">1-3 Days • Free</p>
+                    <p className="text-xs text-gray-500 dark:text-[#A8C4A8]">1-3 Days</p>
                   </div>
                   <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${method === 'bank' ? 'border-[#6f9c16]' : 'border-gray-300 dark:border-gray-600'}`}>
                     {method === 'bank' && <div className="w-2.5 h-2.5 rounded-full bg-[#6f9c16]"></div>}

@@ -85,8 +85,8 @@ const Register = () => {
                                     <span className="material-symbols-outlined text-[#64B5F6]">account_balance_wallet</span>
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-lg">Zero Fees</h3>
-                                    <p className="text-gray-400 text-sm">Enjoy free transfers within the Kingdom network.</p>
+                                    <h3 className="font-bold text-lg">Easy Transactions</h3>
+                                    <p className="text-gray-400 text-sm">Send and receive money quickly and securely.</p>
                                 </div>
                             </div>
                         </div>
