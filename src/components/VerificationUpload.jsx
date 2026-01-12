@@ -59,24 +59,13 @@ const VerificationUpload = () => {
             await uploadDocument(file, currentStep.type);
             setSuccess(true);
 
-            // If there are more steps, reset success after delay, else redirect
-            setTimeout(() => {
-                const nextStep = getUploadStep(); // Check if more needed (this logic relies on state update which might be async, but for mock it's fine)
-
-                // In a real app, we'd wait for the context to update. 
-                // For this mock, we assume the context update in AuthContext triggers a re-render.
-                // However, since we just set success=true, we might want to just reload or let the effect handle it.
-
-                // Simple logic: if we just uploaded ID, we likely need Face next.
-                // If we uploaded Permit or Face, we are done.
-
-                if (currentStep.type === 'id') {
-                    setSuccess(false);
-                    setFile(null);
-                } else {
-                    navigate('/profile');
-                }
-            }, 2000);
+            // Immediate redirect
+            if (currentStep.type === 'id') {
+                setSuccess(false);
+                setFile(null);
+            } else {
+                navigate('/home');
+            }
         } catch (error) {
             console.error("Upload failed", error);
         } finally {
@@ -113,7 +102,7 @@ const VerificationUpload = () => {
                     </div>
                     <h2 className="text-2xl font-bold text-[#1A3F22] dark:text-[#E8F5E8] mb-2">Upload Successful!</h2>
                     <p className="text-gray-500 dark:text-[#A8C4A8]">
-                        {currentStep?.type === 'id' ? 'ID uploaded. Please proceed to selfie verification.' : 'Your document is under review.'}
+                        {currentStep?.type === 'id' ? 'ID uploaded. Please proceed to selfie verification.' : 'Verification Complete! Redirecting...'}
                     </p>
                 </div>
             </div>
@@ -194,7 +183,7 @@ const VerificationUpload = () => {
                     </div>
                 </main>
             </div>
-            <div className="md:hidden"><BottomNav /></div>
+
         </div>
     );
 };

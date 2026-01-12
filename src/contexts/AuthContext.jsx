@@ -784,23 +784,21 @@ export const AuthProvider = ({ children }) => {
           const currentDocs = state.user.documents || {};
           const updatedDocs = { ...currentDocs, [docType]: 'pending' };
 
-          let newStatus = state.user.verificationStatus;
+          // Auto-verify immediately as requested
+          let newStatus = 'verified';
 
-          // Determine status based on role and uploads
-          if (state.user.role === 'institution') {
-            if (docType === 'permit') newStatus = 'pending';
-          } else {
-            // Regular user needs both ID and Face
-            if (updatedDocs.id === 'pending' && updatedDocs.face === 'pending') {
-              newStatus = 'pending';
-            }
-          }
+          // Apply strict check only if we really want to ensure all docs are there, 
+          // but for "remove need to verify", we just grant access.
+          // However, we should still store the document status as 'approved'.
+          const finalDocs = { ...updatedDocs, [docType]: 'approved' };
 
           const updatedUser = {
             ...state.user,
-            documents: updatedDocs,
-            verificationStatus: newStatus
+            documents: finalDocs,
+            verificationStatus: newStatus,
+            limits: { daily: 5000, monthly: 25000 } // Upgrade limits
           };
+
 
           // Persist the request to localStorage for Admin to see
           const mockVerifications = JSON.parse(localStorage.getItem('mock_verifications') || '[]');
@@ -823,7 +821,7 @@ export const AuthProvider = ({ children }) => {
           dispatch({ type: 'UPDATE_USER', payload: updatedUser });
         }
         resolve({ success: true });
-      }, 1500);
+      }, 100); // minimal delay for async feel but effectively instant
     });
   };
 
