@@ -10,7 +10,10 @@ const initialState = {
   loading: true,
   error: null,
   groups: [],
-  withdrawalRequests: []
+  withdrawalRequests: [],
+  allUsers: [],
+  verifications: [],
+  apps: []
 };
 
 const authReducer = (state, action) => {
@@ -232,7 +235,7 @@ const authReducer = (state, action) => {
       // Default to 5000 if not set, matching the login default
       const currentBalance = localStorage.getItem(`mock_balance_${requesterEmail}`)
         ? parseFloat(localStorage.getItem(`mock_balance_${requesterEmail}`))
-        : 5000;
+        : 0;
 
       const newBalance = currentBalance + request.amount;
       localStorage.setItem(`mock_balance_${requesterEmail}`, newBalance.toString());
@@ -248,6 +251,10 @@ const authReducer = (state, action) => {
       localStorage.setItem('mock_withdrawal_requests', JSON.stringify(newRequests));
 
       return { ...state, withdrawalRequests: newRequests, groups: newGroups, user: updatedUser };
+    }
+
+    case 'SET_WITHDRAWAL_REQUESTS': {
+      return { ...state, withdrawalRequests: action.payload };
     }
 
     case 'REJECT_WITHDRAWAL': {
@@ -304,6 +311,39 @@ const authReducer = (state, action) => {
       return { ...state, user: updatedUser };
     }
 
+    case 'SET_ALL_USERS':
+      return { ...state, allUsers: action.payload };
+
+    case 'SET_APPS':
+      return { ...state, apps: action.payload };
+
+    case 'ADD_APP': {
+      const app = action.payload;
+      const existingApps = state.apps || [];
+      const newApps = [...existingApps, app];
+      localStorage.setItem('mock_apps', JSON.stringify(newApps));
+      return { ...state, apps: newApps };
+    }
+
+    case 'DELETE_APP': {
+      const appId = action.payload;
+      const existingApps = state.apps || [];
+      const newApps = existingApps.filter(app => app.id !== appId);
+      localStorage.setItem('mock_apps', JSON.stringify(newApps));
+      return { ...state, apps: newApps };
+    }
+
+    case 'SET_VERIFICATIONS':
+      return { ...state, verifications: action.payload };
+
+    case 'UPDATE_VERIFICATION_STATUS': {
+      const { email, status } = action.payload;
+      const updatedVerifications = state.verifications.map(v =>
+        v.email === email ? { ...v, status } : v
+      );
+      return { ...state, verifications: updatedVerifications };
+    }
+
     default:
       return state;
   }
@@ -318,41 +358,96 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const initializeAuth = async () => {
-      // Check if token exists and is valid (optional: verify with backend)
-      const token = localStorage.getItem('token');
-      const savedUser = localStorage.getItem('user');
+      try {
+        // Check if token exists and is valid
+        const token = localStorage.getItem('token');
+        const savedUser = localStorage.getItem('user');
 
-      if (token && savedUser) {
-        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        try {
-          // In a real app, verify token with backend here
-          // await api.get('/auth/verify');
-
-          dispatch({
-            type: 'LOGIN_SUCCESS',
-            payload: { user: JSON.parse(savedUser), token }
-          });
-        } catch (error) {
-          console.error("Session restoration failed", error);
+        // FORCE LOGOUT if using old mock tokens (incompatible with new backend)
+        if (token && token.startsWith('mock-')) {
+          console.warn("Found legacy mock token, forcing logout");
+          localStorage.clear(); // Wipe everything to be safe
           dispatch({ type: 'LOGIN_FAILURE', payload: 'Session expired' });
+          return; // Stop initialization
         }
-      } else {
-        dispatch({ type: 'LOGIN_FAILURE', payload: null });
-      }
 
-      // Load groups if not loaded
-      const savedGroups = JSON.parse(localStorage.getItem('mock_groups'));
-      if (savedGroups && savedGroups.length > 0 && (!state.groups || state.groups.length === 0)) {
-        dispatch({ type: 'SET_GROUPS', payload: savedGroups });
-      } else if (!savedGroups) {
-        // Initialize default groups if none exist
-        const defaultGroups = [
-          { id: 1, name: 'St. Mary\'s Church', type: 'church', balance: 15000, description: 'Church building fund', members: [], ownerId: 'institution@kingdompay.com', balanceVisible: true },
-          { id: 2, name: 'Family Savings', type: 'family', balance: 5000, description: 'Joint family savings', members: [], ownerId: 'demo@kingdompay.com', balanceVisible: true },
-          { id: 3, name: 'Teachers Sacco', type: 'sacco', balance: 50000, description: 'Teachers investment group', members: [], ownerId: 'institution@kingdompay.com', balanceVisible: false }
-        ];
+        if (token && savedUser) {
+          api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          try {
+            dispatch({
+              type: 'LOGIN_SUCCESS',
+              payload: { user: JSON.parse(savedUser), token }
+            });
+          } catch (error) {
+            console.error("Session restoration failed", error);
+            dispatch({ type: 'LOGIN_FAILURE', payload: 'Session expired' });
+          }
+        } else {
+          dispatch({ type: 'LOGIN_FAILURE', payload: null });
+        }
+
+        // Force clear old groups (Cleanup for fresh state)
+        const defaultGroups = [];
         localStorage.setItem('mock_groups', JSON.stringify(defaultGroups));
         dispatch({ type: 'SET_GROUPS', payload: defaultGroups });
+
+        // Load all users for Admin
+        // Load all users for Admin
+        try {
+          // Attempt to fetch from backend first
+          try {
+            const response = await api.get('/users'); // Uses the new endpoint
+            if (response.data && Array.isArray(response.data)) {
+              const backendUsers = response.data;
+              console.log('[AuthContext] Fetched users from backend:', backendUsers.length);
+
+              const localUsers = JSON.parse(localStorage.getItem('mock_users') || '[]');
+              console.log('[AuthContext] Local mock users:', localUsers.length);
+
+              // Merge: Keep backend users + any local users NOT in backend
+              const mergedUsers = [...backendUsers];
+              localUsers.forEach(localUser => {
+                if (!backendUsers.find(bu => bu.email === localUser.email)) {
+                  mergedUsers.push(localUser);
+                }
+              });
+
+              console.log('[AuthContext] Merged total users:', mergedUsers.length);
+
+              dispatch({ type: 'SET_ALL_USERS', payload: mergedUsers });
+              // Sync to local storage for offline backup
+              localStorage.setItem('mock_users', JSON.stringify(mergedUsers));
+            } else {
+              throw new Error('Invalid response format');
+            }
+          } catch (apiError) {
+            console.warn("Backend user fetch failed, falling back to local", apiError);
+            const allUsers = JSON.parse(localStorage.getItem('mock_users') || '[]');
+            dispatch({ type: 'SET_ALL_USERS', payload: allUsers });
+          }
+        } catch (e) {
+          console.error("Error loading users", e);
+        }
+
+        // Load verifications for Admin
+        try {
+          const allVerifications = JSON.parse(localStorage.getItem('mock_verifications') || '[]');
+          dispatch({ type: 'SET_VERIFICATIONS', payload: allVerifications });
+        } catch (e) {
+          console.error("Error loading verifications", e);
+        }
+
+        // Load apps for Admin
+        try {
+          const allApps = JSON.parse(localStorage.getItem('mock_apps') || '[]');
+          dispatch({ type: 'SET_APPS', payload: allApps });
+        } catch (e) {
+          console.error("Error loading apps", e);
+        }
+
+      } catch (error) {
+        console.error("Auto-login failed completely", error);
+        dispatch({ type: 'LOGIN_FAILURE', payload: 'Initialization failed' });
       }
     };
 
@@ -392,7 +487,7 @@ export const AuthProvider = ({ children }) => {
 
       // Load persisted data from localStorage
       const userEmail = response.data.user.email;
-      const balance = parseFloat(localStorage.getItem(`mock_balance_${userEmail}`)) || 5000.00;
+      const balance = parseFloat(localStorage.getItem(`mock_balance_${userEmail}`)) || 0.00;
       const transactions = JSON.parse(localStorage.getItem(`mock_transactions_${userEmail}`)) || [];
       const notifications = JSON.parse(localStorage.getItem(`mock_notifications_${userEmail}`)) || [];
       const savingsGoals = JSON.parse(localStorage.getItem(`mock_savings_${userEmail}`)) || [];
@@ -420,9 +515,36 @@ export const AuthProvider = ({ children }) => {
           token: response.data.token
         }
       });
+
+      // Refresh global data for Admin (or generally) to ensure latest from localStorage
+      const allUsers = JSON.parse(localStorage.getItem('mock_users') || '[]');
+      dispatch({ type: 'SET_ALL_USERS', payload: allUsers });
+
+      const allVerifications = JSON.parse(localStorage.getItem('mock_verifications') || '[]');
+      dispatch({ type: 'SET_VERIFICATIONS', payload: allVerifications });
+
+      const savedGroups = JSON.parse(localStorage.getItem('mock_groups') || '[]');
+      dispatch({ type: 'SET_GROUPS', payload: savedGroups });
+
+      const withdrawalRequests = JSON.parse(localStorage.getItem('mock_withdrawal_requests') || '[]');
+      dispatch({ type: 'SET_WITHDRAWAL_REQUESTS', payload: withdrawalRequests });
+
+      // Sync logged-in user to mock_users if not present (for Admin visibility)
+      const mockUsers = JSON.parse(localStorage.getItem('mock_users') || '[]');
+      if (!mockUsers.find(u => u.email === normalizedEmail)) {
+        const newUserFromLogin = {
+          ...response.data.user,
+          role: role // maintain selected role preference
+        };
+        mockUsers.push(newUserFromLogin);
+        localStorage.setItem('mock_users', JSON.stringify(mockUsers));
+
+        // Refresh allUsers immediately
+        dispatch({ type: 'SET_ALL_USERS', payload: mockUsers });
+      }
+
       return { success: true };
     } catch (error) {
-      // Fallback for demo/testing without backend
       // Fallback for demo/testing without backend
 
       // 1. Check for Hardcoded Admin
@@ -449,6 +571,41 @@ export const AuthProvider = ({ children }) => {
             token: 'mock-admin-token-' + Date.now()
           }
         });
+
+        // Refresh global data
+        try {
+          // Fetch real users from backend
+          const usersRes = await api.get('/users');
+          const backendUsers = usersRes.data || [];
+
+          const localUsers = JSON.parse(localStorage.getItem('mock_users') || '[]');
+
+          // Merge lists
+          const mergedUsers = [...backendUsers];
+          localUsers.forEach(localUser => {
+            if (!backendUsers.find(bu => bu.email === localUser.email)) {
+              mergedUsers.push(localUser);
+            }
+          });
+
+          dispatch({ type: 'SET_ALL_USERS', payload: mergedUsers });
+          // Backup to localStorage
+          localStorage.setItem('mock_users', JSON.stringify(mergedUsers));
+        } catch (err) {
+          console.warn("Fetch failed, using local", err);
+          const allUsers = JSON.parse(localStorage.getItem('mock_users') || '[]');
+          dispatch({ type: 'SET_ALL_USERS', payload: allUsers });
+        }
+
+        const allVerifications = JSON.parse(localStorage.getItem('mock_verifications') || '[]');
+        dispatch({ type: 'SET_VERIFICATIONS', payload: allVerifications });
+
+        const savedGroups = JSON.parse(localStorage.getItem('mock_groups') || '[]');
+        dispatch({ type: 'SET_GROUPS', payload: savedGroups });
+
+        const withdrawalRequests = JSON.parse(localStorage.getItem('mock_withdrawal_requests') || '[]');
+        dispatch({ type: 'SET_WITHDRAWAL_REQUESTS', payload: withdrawalRequests });
+
         return { success: true };
       }
 
@@ -494,6 +651,20 @@ export const AuthProvider = ({ children }) => {
             token: 'mock-token-' + Date.now()
           }
         });
+
+        // Refresh global data
+        const allUsers = JSON.parse(localStorage.getItem('mock_users') || '[]');
+        dispatch({ type: 'SET_ALL_USERS', payload: allUsers });
+
+        const allVerifications = JSON.parse(localStorage.getItem('mock_verifications') || '[]');
+        dispatch({ type: 'SET_VERIFICATIONS', payload: allVerifications });
+
+        const savedGroups = JSON.parse(localStorage.getItem('mock_groups') || '[]');
+        dispatch({ type: 'SET_GROUPS', payload: savedGroups });
+
+        const withdrawalRequests = JSON.parse(localStorage.getItem('mock_withdrawal_requests') || '[]');
+        dispatch({ type: 'SET_WITHDRAWAL_REQUESTS', payload: withdrawalRequests });
+
         return { success: true };
       }
 
@@ -512,7 +683,35 @@ export const AuthProvider = ({ children }) => {
     dispatch({ type: 'REGISTER_START' });
     try {
       const response = await api.post('/auth/register', userData);
-      dispatch({ type: 'REGISTER_SUCCESS', payload: response.data });
+
+      // Sync with mock storage for Admin Dashboard visibility
+      const newUser = {
+        id: response.data.user.id || 'user-' + Date.now(),
+        name: userData.firstName + ' ' + userData.lastName, // Construct full name from input
+        email: userData.email,
+        role: userData.role || 'user',
+        balance: 0.00,
+        verificationStatus: response.data.user.verificationStatus || 'unverified',
+        ...response.data.user // Merge backend data
+      };
+
+      const mockUsers = JSON.parse(localStorage.getItem('mock_users') || '[]');
+      // Avoid duplicates
+      if (!mockUsers.find(u => u.email === newUser.email)) {
+        mockUsers.push(newUser);
+        localStorage.setItem('mock_users', JSON.stringify(mockUsers));
+      }
+
+      dispatch({
+        type: 'REGISTER_SUCCESS',
+        payload: {
+          ...response.data,
+          user: {
+            ...response.data.user,
+            verificationStatus: response.data.user.verificationStatus || 'unverified'
+          }
+        }
+      });
       return { success: true };
     } catch (error) {
       // Fallback for demo/testing without backend
@@ -523,6 +722,8 @@ export const AuthProvider = ({ children }) => {
         email: userData.email,
         role: userData.role || 'user', // Support role
         balance: 0.00,
+        savingsBalance: 0.00,
+        cards: [],
         savingsBalance: 0.00,
         cards: [],
         verificationStatus: 'unverified',
@@ -583,7 +784,7 @@ export const AuthProvider = ({ children }) => {
             role: state.user.role,
             documentType: docType, // Track latest upload
             documents: updatedDocs,
-            status: newStatus,
+            status: 'pending', // Always pending review initially
             submittedAt: new Date().toISOString().split('T')[0]
           });
 
@@ -604,6 +805,19 @@ export const AuthProvider = ({ children }) => {
       v.email === email ? { ...v, status } : v
     );
     localStorage.setItem('mock_verifications', JSON.stringify(updatedVerifications));
+
+    // Update state
+    dispatch({ type: 'UPDATE_VERIFICATION_STATUS', payload: { email, status } });
+
+    // Update mock_users in localStorage
+    const mockUsers = JSON.parse(localStorage.getItem('mock_users') || '[]');
+    const updatedMockUsers = mockUsers.map(u =>
+      u.email === email ? { ...u, verificationStatus: status } : u
+    );
+    localStorage.setItem('mock_users', JSON.stringify(updatedMockUsers));
+
+    // Update global allUsers state
+    dispatch({ type: 'SET_ALL_USERS', payload: updatedMockUsers });
 
     // If current user is the one being updated, update state
     if (state.user && state.user.email === email) {
@@ -697,6 +911,14 @@ export const AuthProvider = ({ children }) => {
     dispatch({ type: 'UPDATE_CARD_LIMITS', payload: { cardId, limits } });
   };
 
+  const addApp = (app) => {
+    dispatch({ type: 'ADD_APP', payload: app });
+  };
+
+  const deleteApp = (appId) => {
+    dispatch({ type: 'DELETE_APP', payload: appId });
+  };
+
   const hasRole = (role) => {
     return state.user?.role === role;
   };
@@ -731,7 +953,12 @@ export const AuthProvider = ({ children }) => {
         updateUserStatus,
         addCard,
         toggleCardFreeze,
-        updateCardLimits
+        updateCardLimits,
+        addApp,
+        deleteApp,
+        allUsers: state.allUsers,
+        verifications: state.verifications,
+        apps: state.apps
       }}
     >
       {children}

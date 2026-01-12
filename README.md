@@ -14,7 +14,49 @@ A modern, responsive digital wallet application built with React and Express.js,
 - **Smooth Animations**: Professional-grade animations and micro-interactions
 - **Social Login**: Google, Apple, and Mobile Money integration options
 
-## 🎨 Design Features
+## � Getting Started
+
+### Installation
+
+1.  Clone the repository:
+    ```bash
+    git clone https://github.com/your-repo/kingdompay-frontend.git
+    cd kingdompay-frontend
+    ```
+
+2.  Install dependencies:
+    ```bash
+    npm install
+    # or
+    yarn install
+    ```
+
+3.  Start the development server:
+    ```bash
+    npm run dev
+    # or
+    yarn dev
+    ```
+
+4.  Start the backend server (optional for full features):
+    ```bash
+    cd backend
+    npm install
+    node server.js
+    ```
+
+### 🔑 Login Credentials
+
+Use the following credentials to access different parts of the application:
+
+| Role | Email | Password | Access |
+|------|-------|----------|--------|
+| **Admin** | `admin@kingdompay.com` | `Admin@123` | Full Dashboard Access, User Management, verification approvals |
+| **Demo User** | `demo@kingdompay.com` | `password123` | Mobile Wallet Interface, Savings, Groups |
+
+> **Note**: You can also register a new account to test the onboarding and verification flow.
+
+## �🎨 Design Features
 
 - **Color Scheme**: Green and gold gradient theme
 - **Typography**: Google Sans, Inter, and Manrope fonts

@@ -3,14 +3,15 @@ import React from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 
 const AdminDashboard = () => {
-    const { withdrawalRequests } = useAuth();
+    const { withdrawalRequests, allUsers, verifications, groups } = useAuth();
     const pendingWithdrawalsCount = withdrawalRequests ? withdrawalRequests.filter(req => req.status === 'pending').length : 0;
+    const pendingVerificationsCount = verifications ? verifications.filter(v => v.status === 'pending').length : 0;
 
     const stats = [
-        { title: 'Total Users', value: '12,345', icon: 'group', color: 'bg-blue-100 text-blue-600' },
-        { title: 'Pending Verifications', value: '23', icon: 'pending_actions', color: 'bg-orange-100 text-orange-600' },
+        { title: 'Total Users', value: allUsers?.length || 0, icon: 'group', color: 'bg-blue-100 text-blue-600' },
+        { title: 'Pending Verifications', value: pendingVerificationsCount, icon: 'pending_actions', color: 'bg-orange-100 text-orange-600' },
         { title: 'Pending Withdrawals', value: pendingWithdrawalsCount.toString(), icon: 'payments', color: 'bg-red-100 text-red-600' },
-        { title: 'Active Groups', value: '142', icon: 'diversity_3', color: 'bg-purple-100 text-purple-600' },
+        { title: 'Active Groups', value: groups?.length || 0, icon: 'diversity_3', color: 'bg-purple-100 text-purple-600' },
     ];
 
     return (
@@ -40,20 +41,28 @@ const AdminDashboard = () => {
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                     <h3 className="text-xl font-bold text-gray-800 mb-4">Recent Verifications</h3>
                     <div className="space-y-4">
-                        {[1, 2, 3].map((i) => (
-                            <div key={i} className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                        {verifications?.slice(0, 5).map((v) => (
+                            <div key={v.id} className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors">
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
                                         <span className="material-symbols-outlined text-gray-500">person</span>
                                     </div>
                                     <div>
-                                        <p className="font-medium text-gray-800 m-0">User #{1000 + i}</p>
-                                        <p className="text-xs text-gray-500 m-0">Submitted ID Document</p>
+                                        <p className="font-medium text-gray-800 m-0">{v.name || v.email}</p>
+                                        <p className="text-xs text-gray-500 m-0">Submitted {v.documentType}</p>
                                     </div>
                                 </div>
-                                <span className="px-3 py-1 bg-orange-100 text-orange-600 rounded-full text-xs font-medium">Pending</span>
+                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${v.status === 'approved' ? 'bg-green-100 text-green-600' :
+                                        v.status === 'rejected' ? 'bg-red-100 text-red-600' :
+                                            'bg-orange-100 text-orange-600'
+                                    }`}>
+                                    {v.status}
+                                </span>
                             </div>
                         ))}
+                        {(!verifications || verifications.length === 0) && (
+                            <p className="text-gray-500 text-center py-4">No recent verifications</p>
+                        )}
                     </div>
                 </div>
 

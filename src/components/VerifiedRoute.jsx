@@ -17,7 +17,8 @@ const VerifiedRoute = ({ children }) => {
     }
 
     // If user is not verified, redirect to verification page
-    if (user && user.verificationStatus !== 'verified') {
+    // Admins are exempt from this check
+    if (user && user.role !== 'admin' && user.verificationStatus !== 'verified') {
         return <Navigate to="/verify-identity" replace />;
     }
 

@@ -31,9 +31,16 @@ const DEMO_USER_ID = 'demo-user-id';
 
 // Auth middleware – bypassed for demo purposes
 const authenticateToken = (req, res, next) => {
-  const demoUser = users.find(u => u.email === 'demo@kingdompay.com');
-  req.user = { userId: demoUser?.id || DEMO_USER_ID, email: 'demo@kingdompay.com' };
-  next();
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (token == null) return res.sendStatus(401);
+
+  jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key', (err, user) => {
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    next();
+  });
 };
 
 // ---------- Auth routes ----------
@@ -42,7 +49,17 @@ app.post('/api/auth/register', async (req, res) => {
     const { email, password, firstName, lastName, phone } = req.body;
     if (findUserByEmail(email)) return res.status(400).json({ message: 'User already exists' });
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = { id: generateId(), email, password: hashedPassword, firstName, lastName, phone, balance: 1234.56, savingsBalance: 16000.00, createdAt: new Date() };
+    const user = {
+      id: generateId(),
+      email,
+      password: hashedPassword,
+      firstName,
+      lastName,
+      phone,
+      balance: 0.00,
+      savingsBalance: 0.00,
+      createdAt: new Date()
+    };
     users.push(user);
     const token = jwt.sign({ userId: user.id, email: user.email }, process.env.JWT_SECRET || 'your-secret-key', { expiresIn: '24h' });
     res.status(201).json({ message: 'User created successfully', token, user: { id: user.id, email: user.email, firstName, lastName, balance: user.balance, savingsBalance: user.savingsBalance } });
@@ -324,13 +341,57 @@ app.post('/api/community/groups/:id/contribute', authenticateToken, async (req, 
   }
 });
 
+// ---------- Admin routes ----------
+app.get('/api/users', async (req, res) => {
+  try {
+    console.log(`[API] GET /users called. Returning ${users.length} users.`);
+    // Return all users with sensitive data removed
+    const safeUsers = users.map(u => {
+      const { password, ...rest } = u;
+      return rest;
+    });
+    res.json(safeUsers);
+  } catch (e) {
+    console.error('[API] GET /users error:', e);
+    res.status(500).json({ message: 'Server error', error: e.message });
+  }
+});
+
 // ---------- Demo data seeding ----------
 const seedDemoData = async () => {
   // Ensure demo user exists
   if (!findUserByEmail('demo@kingdompay.com')) {
     const hashed = await bcrypt.hash('password123', 10);
-    users.push({ id: DEMO_USER_ID, email: 'demo@kingdompay.com', password: hashed, firstName: 'Demo', lastName: 'User', phone: '123-456-7890', balance: 1234.56, savingsBalance: 16000.00, createdAt: new Date() });
+    users.push({
+      id: DEMO_USER_ID,
+      email: 'demo@kingdompay.com',
+      password: hashed,
+      firstName: 'Demo',
+      lastName: 'User',
+      phone: '123-456-7890',
+      balance: 1234.56,
+      savingsBalance: 16000.00,
+      verificationStatus: 'verified', // Ensure demo user is verified
+      createdAt: new Date()
+    });
   }
+
+  // Ensure Admin user exists (for backend consistency)
+  if (!findUserByEmail('admin@kingdompay.com')) {
+    const hashed = await bcrypt.hash('Admin@123', 10);
+    users.push({
+      id: 'admin-user',
+      email: 'admin@kingdompay.com',
+      password: hashed,
+      firstName: 'System',
+      lastName: 'Admin',
+      role: 'admin',
+      balance: 0,
+      verificationStatus: 'verified', // Critical: prevent admin from being redirect loop
+      createdAt: new Date()
+    });
+  }
+
   // Seed transactions
   if (transactions.length === 0) {
     transactions.push(
