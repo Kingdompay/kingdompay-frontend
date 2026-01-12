@@ -16,7 +16,7 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white font-sans flex justify-center">
+    <div className="min-h-screen bg-[#E5EBE3] dark:bg-dark-bg font-sans flex justify-center transition-colors duration-300">
       <style>
         {`
           @keyframes fadeInUp {
@@ -35,10 +35,10 @@ const Profile = () => {
         `}
       </style>
 
-      <div className="w-full max-w-md md:max-w-6xl bg-white md:my-8 md:rounded-3xl md:shadow-2xl min-h-screen md:min-h-[800px] flex flex-col md:flex-row overflow-hidden relative">
+      <div className="w-full max-w-md md:max-w-6xl bg-[#E5EBE3] dark:bg-dark-bg md:bg-[#E5EBE3] md:dark:bg-dark-bg md:my-8 md:rounded-3xl md:shadow-2xl min-h-screen md:min-h-[800px] flex flex-col md:flex-row overflow-hidden relative transition-colors duration-300">
 
         {/* Sidebar / Mobile Header */}
-        <div className="md:w-1/3 lg:w-1/4 bg-white md:border-r md:border-gray-100 flex flex-col">
+        <div className="md:w-1/3 lg:w-1/4 bg-white dark:bg-dark-bg md:border-r md:border-gray-100 dark:md:border-[#2D4A32] flex flex-col transition-colors duration-300">
           {/* Header */}
           <div className="p-4 text-center md:text-left md:flex md:flex-col md:items-center md:justify-center md:flex-grow">
             <div className="relative inline-block">
@@ -48,10 +48,10 @@ const Profile = () => {
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTUDwO_1yM452W0B6j691kPeEKdplxoY0YQKiIJQ70sBWUiQhS2Cb9vM7Uuyo2E4KQ-CyRyzW2V3qPqHs1Cu0S-zlxtywlUNIZAtXKHRR4zKCajsvOyC9Yo6hIeW0yDbn0N5xbqRe1tADPI5Qrk8IhtiCSFcpoo8T1iT0oQyGu70uKd7VNydVjQRNDdCFsjtbph_DPIP9__u7J7sJAGLCNNoiXmhJrWNTxdkRksSwNwlzwldTKfBrBDIumjXhXN2eBhdzaTLdKWo3R"
               />
             </div>
-            <h2 className="mt-4 text-2xl font-bold text-[#1A3F22] m-0">
+            <h2 className="mt-4 text-2xl font-bold text-[#1A3F22] dark:text-[#E8F5E8] m-0 transition-colors">
               {user?.firstName} {user?.lastName}
             </h2>
-            <p className="text-[#58761B] text-sm mt-1 m-0">
+            <p className="text-[#58761B] dark:text-[#81C784] text-sm mt-1 m-0 transition-colors">
               @{user?.email?.split('@')[0]} / {user?.phone || '+1 234 567 890'}
             </p>
           </div>
@@ -59,19 +59,19 @@ const Profile = () => {
           {/* Desktop Nav Links */}
           <div className="hidden md:block p-4 mt-auto">
             <nav className="space-y-2">
-              <Link to="/home" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+              <Link to="/home" className="flex items-center text-[#1A3F22] dark:text-[#E8F5E8] hover:bg-gray-50 dark:hover:bg-[#1A2E1D] p-3 rounded-xl transition-colors no-underline">
                 <span className="material-symbols-outlined mr-3">home</span> Home
               </Link>
-              <Link to="/community" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+              <Link to="/community" className="flex items-center text-[#1A3F22] dark:text-[#E8F5E8] hover:bg-gray-50 dark:hover:bg-[#1A2E1D] p-3 rounded-xl transition-colors no-underline">
                 <span className="material-symbols-outlined mr-3">groups</span> Community
               </Link>
-              <Link to="/payments" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+              <Link to="/payments" className="flex items-center text-[#1A3F22] dark:text-[#E8F5E8] hover:bg-gray-50 dark:hover:bg-[#1A2E1D] p-3 rounded-xl transition-colors no-underline">
                 <span className="material-symbols-outlined mr-3">qr_code_scanner</span> Payments
               </Link>
-              <Link to="/savings" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+              <Link to="/savings" className="flex items-center text-[#1A3F22] dark:text-[#E8F5E8] hover:bg-gray-50 dark:hover:bg-[#1A2E1D] p-3 rounded-xl transition-colors no-underline">
                 <span className="material-symbols-outlined mr-3">savings</span> Savings
               </Link>
-              <Link to="/profile" className="flex items-center text-[#1A3F22] bg-gray-50 font-medium p-3 rounded-xl transition-colors no-underline">
+              <Link to="/profile" className="flex items-center text-[#1A3F22] dark:text-[#E8F5E8] bg-gray-50 dark:bg-[#1A2E1D] font-medium p-3 rounded-xl transition-colors no-underline">
                 <span className="material-symbols-outlined mr-3">person</span> Profile
               </Link>
             </nav>
@@ -79,7 +79,7 @@ const Profile = () => {
         </div>
 
         {/* Main Content Area */}
-        <main className="flex-grow p-4 pb-28 md:pb-8 overflow-y-auto bg-gray-50 md:bg-white">
+        <main className="flex-grow p-4 pb-28 md:pb-8 overflow-y-auto bg-[#E5EBE3] dark:bg-[#0a150c] md:bg-[#E5EBE3] md:dark:bg-dark-bg transition-colors duration-300">
 
           {/* Action Buttons Grid - Removed Referrals */}
           <section className="mt-4 md:mt-0">
@@ -87,13 +87,13 @@ const Profile = () => {
               <div className="text-center flex flex-col items-center">
                 <button
                   onClick={() => navigate('/edit-profile')}
-                  className={`w-16 h-16 rounded-2xl border-2 border-[#905A01] flex items-center justify-center bg-white cursor-pointer transition-all duration-300 ${hoveredButton === 'edit' ? 'shadow-lg scale-105 -translate-y-1' : 'shadow-sm'}`}
+                  className={`w-16 h-16 rounded-2xl border-2 border-[#905A01] flex items-center justify-center bg-white dark:bg-[#0A150C] cursor-pointer transition-all duration-300 ${hoveredButton === 'edit' ? 'shadow-lg scale-105 -translate-y-1' : 'shadow-sm'}`}
                   onMouseEnter={() => setHoveredButton('edit')}
                   onMouseLeave={() => setHoveredButton('')}
                 >
                   <span className="material-symbols-outlined text-[#905A01] text-xl">edit</span>
                 </button>
-                <p className="text-xs mt-2 text-[#1A3F22] font-medium m-0">
+                <p className="text-xs mt-2 text-[#1A3F22] dark:text-[#E8F5E8] font-medium m-0 transition-colors">
                   Edit Profile
                 </p>
               </div>
@@ -107,7 +107,7 @@ const Profile = () => {
                 >
                   <span className="material-symbols-outlined text-white text-xl">shield</span>
                 </button>
-                <p className="text-xs mt-2 text-[#1A3F22] font-medium m-0">
+                <p className="text-xs mt-2 text-[#1A3F22] dark:text-[#E8F5E8] font-medium m-0 transition-colors">
                   Security
                 </p>
               </div>
@@ -115,11 +115,11 @@ const Profile = () => {
               <div className="text-center flex flex-col items-center">
                 <button
                   onClick={() => navigate('/cards')}
-                  className="w-16 h-16 rounded-2xl bg-[#E9F0E1] flex items-center justify-center shadow-sm border-none cursor-pointer hover:bg-[#dce8d0] transition-colors"
+                  className="w-16 h-16 rounded-2xl bg-[#E9F0E1] dark:bg-[#1A2E1D] flex items-center justify-center shadow-sm border-none cursor-pointer hover:bg-[#dce8d0] dark:hover:bg-[#243B28] transition-colors"
                 >
-                  <span className="material-symbols-outlined text-[#58761B] text-xl">credit_card</span>
+                  <span className="material-symbols-outlined text-[#58761B] dark:text-[#81C784] text-xl">credit_card</span>
                 </button>
-                <p className="text-xs mt-2 text-[#1A3F22] font-medium m-0">
+                <p className="text-xs mt-2 text-[#1A3F22] dark:text-[#E8F5E8] font-medium m-0 transition-colors">
                   Cards
                 </p>
               </div>
@@ -130,142 +130,142 @@ const Profile = () => {
           <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
 
             {/* Account Section */}
-            <section className="bg-white rounded-xl shadow-sm p-2 border border-gray-100">
-              <h3 className="font-bold text-lg mb-2 px-3 pt-2 text-[#1A3F22] m-0">Account</h3>
-              <div className="border-t border-gray-100">
-                <button onClick={() => navigate('/personal-details')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 rounded-lg transition-colors">
+            <section className="bg-white dark:bg-[#1A2E1D] rounded-xl shadow-sm p-2 border border-gray-100 dark:border-[#2D4A32] transition-colors duration-300">
+              <h3 className="font-bold text-lg mb-2 px-3 pt-2 text-[#1A3F22] dark:text-[#E8F5E8] m-0">Account</h3>
+              <div className="border-t border-gray-100 dark:border-[#2D4A32]">
+                <button onClick={() => navigate('/personal-details')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 dark:hover:bg-[#243B28] rounded-lg transition-colors">
                   <div className="flex items-center gap-4">
-                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] flex items-center justify-center">
-                      <span className="material-symbols-outlined text-[#58761B] text-base">person</span>
+                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] dark:bg-[#243B28] flex items-center justify-center">
+                      <span className="material-symbols-outlined text-[#58761B] dark:text-[#81C784] text-base">person</span>
                     </div>
-                    <span className="text-[#1A3F22] font-medium">Personal Details</span>
+                    <span className="text-[#1A3F22] dark:text-[#E8F5E8] font-medium">Personal Details</span>
                   </div>
-                  <span className="material-symbols-outlined text-gray-400 text-base">chevron_right</span>
+                  <span className="material-symbols-outlined text-gray-400 dark:text-[#A8C4A8] text-base">chevron_right</span>
                 </button>
 
-                <button onClick={() => navigate('/linked-accounts')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 rounded-lg transition-colors">
+                <button onClick={() => navigate('/linked-accounts')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 dark:hover:bg-[#243B28] rounded-lg transition-colors">
                   <div className="flex items-center gap-4">
-                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] flex items-center justify-center">
-                      <span className="material-symbols-outlined text-[#58761B] text-base">account_balance</span>
+                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] dark:bg-[#243B28] flex items-center justify-center">
+                      <span className="material-symbols-outlined text-[#58761B] dark:text-[#81C784] text-base">account_balance</span>
                     </div>
-                    <span className="text-[#1A3F22] font-medium">Linked Bank Accounts & Cards</span>
+                    <span className="text-[#1A3F22] dark:text-[#E8F5E8] font-medium">Linked Bank Accounts & Cards</span>
                   </div>
-                  <span className="material-symbols-outlined text-gray-400 text-base">chevron_right</span>
+                  <span className="material-symbols-outlined text-gray-400 dark:text-[#A8C4A8] text-base">chevron_right</span>
                 </button>
 
-                <button onClick={() => navigate('/limits-plans')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 rounded-lg transition-colors">
+                <button onClick={() => navigate('/limits-plans')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 dark:hover:bg-[#243B28] rounded-lg transition-colors">
                   <div className="flex items-center gap-4">
-                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] flex items-center justify-center">
-                      <span className="material-symbols-outlined text-[#58761B] text-base">speed</span>
+                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] dark:bg-[#243B28] flex items-center justify-center">
+                      <span className="material-symbols-outlined text-[#58761B] dark:text-[#81C784] text-base">speed</span>
                     </div>
-                    <span className="text-[#1A3F22] font-medium">Limits & Plans</span>
+                    <span className="text-[#1A3F22] dark:text-[#E8F5E8] font-medium">Limits & Plans</span>
                   </div>
-                  <span className="material-symbols-outlined text-gray-400 text-base">chevron_right</span>
+                  <span className="material-symbols-outlined text-gray-400 dark:text-[#A8C4A8] text-base">chevron_right</span>
                 </button>
               </div>
             </section>
 
             {/* Preferences Section */}
-            <section className="bg-white rounded-xl shadow-sm p-2 border border-gray-100">
-              <h3 className="font-bold text-lg mb-2 px-3 pt-2 text-[#1A3F22] m-0">Preferences</h3>
-              <div className="border-t border-gray-100">
-                <button onClick={() => navigate('/notifications')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 rounded-lg transition-colors">
+            <section className="bg-white dark:bg-[#1A2E1D] rounded-xl shadow-sm p-2 border border-gray-100 dark:border-[#2D4A32] transition-colors duration-300">
+              <h3 className="font-bold text-lg mb-2 px-3 pt-2 text-[#1A3F22] dark:text-[#E8F5E8] m-0">Preferences</h3>
+              <div className="border-t border-gray-100 dark:border-[#2D4A32]">
+                <button onClick={() => navigate('/notifications')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 dark:hover:bg-[#243B28] rounded-lg transition-colors">
                   <div className="flex items-center gap-4">
-                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] flex items-center justify-center">
-                      <span className="material-symbols-outlined text-[#58761B] text-base">notifications</span>
+                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] dark:bg-[#243B28] flex items-center justify-center">
+                      <span className="material-symbols-outlined text-[#58761B] dark:text-[#81C784] text-base">notifications</span>
                     </div>
-                    <span className="text-[#1A3F22] font-medium">Notifications & Alerts</span>
+                    <span className="text-[#1A3F22] dark:text-[#E8F5E8] font-medium">Notifications & Alerts</span>
                   </div>
-                  <span className="material-symbols-outlined text-gray-400 text-base">chevron_right</span>
+                  <span className="material-symbols-outlined text-gray-400 dark:text-[#A8C4A8] text-base">chevron_right</span>
                 </button>
 
-                <button onClick={() => navigate('/settings')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 rounded-lg transition-colors">
+                <button onClick={() => navigate('/settings')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 dark:hover:bg-[#243B28] rounded-lg transition-colors">
                   <div className="flex items-center gap-4">
-                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] flex items-center justify-center">
-                      <span className="material-symbols-outlined text-[#58761B] text-base">settings</span>
+                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] dark:bg-[#243B28] flex items-center justify-center">
+                      <span className="material-symbols-outlined text-[#58761B] dark:text-[#81C784] text-base">settings</span>
                     </div>
-                    <span className="text-[#1A3F22] font-medium">Settings</span>
+                    <span className="text-[#1A3F22] dark:text-[#E8F5E8] font-medium">Settings</span>
                   </div>
-                  <span className="material-symbols-outlined text-gray-400 text-base">chevron_right</span>
+                  <span className="material-symbols-outlined text-gray-400 dark:text-[#A8C4A8] text-base">chevron_right</span>
                 </button>
               </div>
             </section>
 
             {/* Security Section */}
-            <section className="bg-white rounded-xl shadow-sm p-2 border border-gray-100">
-              <h3 className="font-bold text-lg mb-2 px-3 pt-2 text-[#1A3F22] m-0">Security</h3>
-              <div className="border-t border-gray-100">
-                <button onClick={() => navigate('/change-pin')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 rounded-lg transition-colors">
+            <section className="bg-white dark:bg-[#1A2E1D] rounded-xl shadow-sm p-2 border border-gray-100 dark:border-[#2D4A32] transition-colors duration-300">
+              <h3 className="font-bold text-lg mb-2 px-3 pt-2 text-[#1A3F22] dark:text-[#E8F5E8] m-0">Security</h3>
+              <div className="border-t border-gray-100 dark:border-[#2D4A32]">
+                <button onClick={() => navigate('/change-pin')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 dark:hover:bg-[#243B28] rounded-lg transition-colors">
                   <div className="flex items-center gap-4">
-                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] flex items-center justify-center">
-                      <span className="material-symbols-outlined text-[#58761B] text-base">pin</span>
+                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] dark:bg-[#243B28] flex items-center justify-center">
+                      <span className="material-symbols-outlined text-[#58761B] dark:text-[#81C784] text-base">pin</span>
                     </div>
-                    <span className="text-[#1A3F22] font-medium">Change PIN / Password</span>
+                    <span className="text-[#1A3F22] dark:text-[#E8F5E8] font-medium">Change PIN / Password</span>
                   </div>
-                  <span className="material-symbols-outlined text-gray-400 text-base">chevron_right</span>
+                  <span className="material-symbols-outlined text-gray-400 dark:text-[#A8C4A8] text-base">chevron_right</span>
                 </button>
 
-                <button onClick={() => navigate('/two-factor-auth')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 rounded-lg transition-colors">
+                <button onClick={() => navigate('/two-factor-auth')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 dark:hover:bg-[#243B28] rounded-lg transition-colors">
                   <div className="flex items-center gap-4">
-                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] flex items-center justify-center">
-                      <span className="material-symbols-outlined text-[#58761B] text-base">password</span>
+                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] dark:bg-[#243B28] flex items-center justify-center">
+                      <span className="material-symbols-outlined text-[#58761B] dark:text-[#81C784] text-base">password</span>
                     </div>
-                    <span className="text-[#1A3F22] font-medium">2FA</span>
+                    <span className="text-[#1A3F22] dark:text-[#E8F5E8] font-medium">2FA</span>
                   </div>
-                  <span className="material-symbols-outlined text-gray-400 text-base">chevron_right</span>
+                  <span className="material-symbols-outlined text-gray-400 dark:text-[#A8C4A8] text-base">chevron_right</span>
                 </button>
 
-                <button onClick={() => navigate('/biometric')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 rounded-lg transition-colors">
+                <button onClick={() => navigate('/biometric')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 dark:hover:bg-[#243B28] rounded-lg transition-colors">
                   <div className="flex items-center gap-4">
-                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] flex items-center justify-center">
-                      <span className="material-symbols-outlined text-[#58761B] text-base">fingerprint</span>
+                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] dark:bg-[#243B28] flex items-center justify-center">
+                      <span className="material-symbols-outlined text-[#58761B] dark:text-[#81C784] text-base">fingerprint</span>
                     </div>
-                    <span className="text-[#1A3F22] font-medium">Biometric Login</span>
+                    <span className="text-[#1A3F22] dark:text-[#E8F5E8] font-medium">Biometric Login</span>
                   </div>
-                  <span className="material-symbols-outlined text-gray-400 text-base">chevron_right</span>
+                  <span className="material-symbols-outlined text-gray-400 dark:text-[#A8C4A8] text-base">chevron_right</span>
                 </button>
               </div>
             </section>
 
             {/* Support Section */}
-            <section className="bg-white rounded-xl shadow-sm p-2 border border-gray-100">
-              <h3 className="font-bold text-lg mb-2 px-3 pt-2 text-[#1A3F22] m-0">Support</h3>
-              <div className="border-t border-gray-100">
-                <button onClick={() => navigate('/help-support')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 rounded-lg transition-colors">
+            <section className="bg-white dark:bg-[#1A2E1D] rounded-xl shadow-sm p-2 border border-gray-100 dark:border-[#2D4A32] transition-colors duration-300">
+              <h3 className="font-bold text-lg mb-2 px-3 pt-2 text-[#1A3F22] dark:text-[#E8F5E8] m-0">Support</h3>
+              <div className="border-t border-gray-100 dark:border-[#2D4A32]">
+                <button onClick={() => navigate('/help-support')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 dark:hover:bg-[#243B28] rounded-lg transition-colors">
                   <div className="flex items-center gap-4">
-                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] flex items-center justify-center">
-                      <span className="material-symbols-outlined text-[#58761B] text-base">help</span>
+                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] dark:bg-[#243B28] flex items-center justify-center">
+                      <span className="material-symbols-outlined text-[#58761B] dark:text-[#81C784] text-base">help</span>
                     </div>
-                    <span className="text-[#1A3F22] font-medium">Help Center</span>
+                    <span className="text-[#1A3F22] dark:text-[#E8F5E8] font-medium">Help Center</span>
                   </div>
-                  <span className="material-symbols-outlined text-gray-400 text-base">chevron_right</span>
+                  <span className="material-symbols-outlined text-gray-400 dark:text-[#A8C4A8] text-base">chevron_right</span>
                 </button>
 
-                <button onClick={() => navigate('/chat-support')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 rounded-lg transition-colors">
+                <button onClick={() => navigate('/chat-support')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 dark:hover:bg-[#243B28] rounded-lg transition-colors">
                   <div className="flex items-center gap-4">
-                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] flex items-center justify-center">
-                      <span className="material-symbols-outlined text-[#58761B] text-base">chat</span>
+                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] dark:bg-[#243B28] flex items-center justify-center">
+                      <span className="material-symbols-outlined text-[#58761B] dark:text-[#81C784] text-base">chat</span>
                     </div>
-                    <span className="text-[#1A3F22] font-medium">Chat with Support</span>
+                    <span className="text-[#1A3F22] dark:text-[#E8F5E8] font-medium">Chat with Support</span>
                   </div>
-                  <span className="material-symbols-outlined text-gray-400 text-base">chevron_right</span>
+                  <span className="material-symbols-outlined text-gray-400 dark:text-[#A8C4A8] text-base">chevron_right</span>
                 </button>
 
-                <button onClick={() => navigate('/faqs')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 rounded-lg transition-colors">
+                <button onClick={() => navigate('/faqs')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 dark:hover:bg-[#243B28] rounded-lg transition-colors">
                   <div className="flex items-center gap-4">
-                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] flex items-center justify-center">
-                      <span className="material-symbols-outlined text-[#58761B] text-base">quiz</span>
+                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] dark:bg-[#243B28] flex items-center justify-center">
+                      <span className="material-symbols-outlined text-[#58761B] dark:text-[#81C784] text-base">quiz</span>
                     </div>
-                    <span className="text-[#1A3F22] font-medium">FAQs</span>
+                    <span className="text-[#1A3F22] dark:text-[#E8F5E8] font-medium">FAQs</span>
                   </div>
-                  <span className="material-symbols-outlined text-gray-400 text-base">chevron_right</span>
+                  <span className="material-symbols-outlined text-gray-400 dark:text-[#A8C4A8] text-base">chevron_right</span>
                 </button>
               </div>
             </section>
 
             {/* Logout Button */}
             <div className="mt-8 mb-8 text-center">
-              <button onClick={handleLogout} className="text-red-600 font-medium hover:bg-red-50 px-6 py-3 rounded-xl transition-colors border-none cursor-pointer bg-transparent">
+              <button onClick={handleLogout} className="text-red-600 dark:text-red-400 font-medium hover:bg-red-50 dark:hover:bg-red-900/20 px-6 py-3 rounded-xl transition-colors border-none cursor-pointer bg-transparent">
                 Log Out
               </button>
             </div>
@@ -282,3 +282,4 @@ const Profile = () => {
 };
 
 export default Profile;
+

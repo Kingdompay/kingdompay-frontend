@@ -12,42 +12,42 @@ const WithdrawalRequests = () => {
     return (
         <div className="animate-fade-in-up">
             <header className="mb-8">
-                <h2 className="text-3xl font-bold text-gray-800 m-0">Withdrawal Requests</h2>
-                <p className="text-gray-500 mt-1">Manage institutional withdrawal requests</p>
+                <h2 className="text-3xl font-bold text-gray-800 dark:text-[#E8F5E8] m-0">Withdrawal Requests</h2>
+                <p className="text-gray-500 dark:text-[#A8C4A8] mt-1">Manage institutional withdrawal requests</p>
             </header>
 
             <div className="space-y-8">
                 {/* Pending Requests */}
                 <section>
-                    <h3 className="text-lg font-bold text-[#1A3F22] mb-4 flex items-center gap-2">
+                    <h3 className="text-lg font-bold text-[#1A3F22] dark:text-[#E8F5E8] mb-4 flex items-center gap-2">
                         <span className="material-symbols-outlined text-orange-500">pending</span>
                         Pending Requests
                     </h3>
 
                     {pendingRequests.length === 0 ? (
-                        <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 text-center">
-                            <p className="text-gray-500">No pending requests.</p>
+                        <div className="bg-[#E5EBE3] dark:bg-[#0D1B0F] p-8 rounded-xl shadow-sm border border-gray-100 dark:border-[#2D4A32] text-center transition-colors duration-300">
+                            <p className="text-gray-500 dark:text-[#A8C4A8]">No pending requests.</p>
                         </div>
                     ) : (
                         <div className="grid gap-4">
                             {pendingRequests.map(request => (
-                                <div key={request.id} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                                <div key={request.id} className="bg-[#E5EBE3] dark:bg-[#0D1B0F] p-6 rounded-xl shadow-sm border border-gray-100 dark:border-[#2D4A32] flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-colors duration-300">
                                     <div>
-                                        <h4 className="font-bold text-[#1A3F22] text-lg m-0">{request.groupName}</h4>
-                                        <p className="text-sm text-gray-500 m-0">Requested by: {request.requesterId}</p>
-                                        <p className="text-xs text-gray-400 mt-1">{new Date(request.date).toLocaleString()}</p>
+                                        <h4 className="font-bold text-[#1A3F22] dark:text-[#E8F5E8] text-lg m-0">{request.groupName}</h4>
+                                        <p className="text-sm text-gray-500 dark:text-[#A8C4A8] m-0">Requested by: {request.requesterId}</p>
+                                        <p className="text-xs text-gray-400 dark:text-[#6b7280] mt-1">{new Date(request.date).toLocaleString()}</p>
                                     </div>
 
                                     <div className="flex flex-col md:flex-row items-end md:items-center gap-4 w-full md:w-auto">
                                         <div className="text-right md:text-left">
-                                            <p className="text-xs text-gray-500 m-0">Amount</p>
-                                            <p className="text-xl font-bold text-[#1A3F22] m-0">{formatCurrency(request.amount)}</p>
+                                            <p className="text-xs text-gray-500 dark:text-[#A8C4A8] m-0">Amount</p>
+                                            <p className="text-xl font-bold text-[#1A3F22] dark:text-[#E8F5E8] m-0">{formatCurrency(request.amount)}</p>
                                         </div>
 
                                         <div className="flex gap-2 w-full md:w-auto">
                                             <button
                                                 onClick={() => rejectWithdrawal(request.id)}
-                                                className="flex-1 md:flex-none bg-red-50 text-red-600 px-4 py-2 rounded-lg font-medium border border-red-100 hover:bg-red-100 transition-colors cursor-pointer"
+                                                className="flex-1 md:flex-none bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 px-4 py-2 rounded-lg font-medium border border-red-100 dark:border-red-900/50 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors cursor-pointer"
                                             >
                                                 Reject
                                             </button>
@@ -67,20 +67,20 @@ const WithdrawalRequests = () => {
 
                 {/* Request History */}
                 <section>
-                    <h3 className="text-lg font-bold text-[#1A3F22] mb-4 flex items-center gap-2">
-                        <span className="material-symbols-outlined text-gray-500">history</span>
+                    <h3 className="text-lg font-bold text-[#1A3F22] dark:text-[#E8F5E8] mb-4 flex items-center gap-2">
+                        <span className="material-symbols-outlined text-gray-500 dark:text-[#A8C4A8]">history</span>
                         Request History
                     </h3>
 
                     {historyRequests.length === 0 ? (
-                        <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 text-center">
-                            <p className="text-gray-500">No history available.</p>
+                        <div className="bg-[#E5EBE3] dark:bg-[#0D1B0F] p-8 rounded-xl shadow-sm border border-gray-100 dark:border-[#2D4A32] text-center transition-colors duration-300">
+                            <p className="text-gray-500 dark:text-[#A8C4A8]">No history available.</p>
                         </div>
                     ) : (
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div className="bg-[#E5EBE3] dark:bg-[#0D1B0F] rounded-xl shadow-sm border border-gray-100 dark:border-[#2D4A32] overflow-hidden transition-colors duration-300">
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left border-collapse">
-                                    <thead className="bg-gray-50 text-gray-600 text-xs uppercase">
+                                    <thead className="bg-gray-50 dark:bg-[#1A2E1D] text-gray-600 dark:text-[#A8C4A8] text-xs uppercase transition-colors duration-300">
                                         <tr>
                                             <th className="p-4 font-medium">Group</th>
                                             <th className="p-4 font-medium">Requester</th>
@@ -89,15 +89,15 @@ const WithdrawalRequests = () => {
                                             <th className="p-4 font-medium">Status</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-gray-100 text-sm">
+                                    <tbody className="divide-y divide-gray-100 dark:divide-[#2D4A32] text-sm">
                                         {historyRequests.map(request => (
-                                            <tr key={request.id} className="hover:bg-gray-50">
-                                                <td className="p-4 font-medium text-[#1A3F22]">{request.groupName}</td>
-                                                <td className="p-4 text-gray-600">{request.requesterId}</td>
-                                                <td className="p-4 font-bold text-[#1A3F22]">{formatCurrency(request.amount)}</td>
-                                                <td className="p-4 text-gray-500">{new Date(request.date).toLocaleDateString()}</td>
+                                            <tr key={request.id} className="hover:bg-gray-50 dark:hover:bg-[#243B28] transition-colors">
+                                                <td className="p-4 font-medium text-[#1A3F22] dark:text-[#E8F5E8]">{request.groupName}</td>
+                                                <td className="p-4 text-gray-600 dark:text-[#A8C4A8]">{request.requesterId}</td>
+                                                <td className="p-4 font-bold text-[#1A3F22] dark:text-[#E8F5E8]">{formatCurrency(request.amount)}</td>
+                                                <td className="p-4 text-gray-500 dark:text-[#A8C4A8]">{new Date(request.date).toLocaleDateString()}</td>
                                                 <td className="p-4">
-                                                    <span className={`px-2 py-1 rounded-full text-xs font-bold ${request.status === 'approved' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                                                    <span className={`px-2 py-1 rounded-full text-xs font-bold ${request.status === 'approved' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
                                                         }`}>
                                                         {request.status.toUpperCase()}
                                                     </span>
@@ -116,3 +116,4 @@ const WithdrawalRequests = () => {
 };
 
 export default WithdrawalRequests;
+

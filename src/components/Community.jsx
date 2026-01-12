@@ -197,7 +197,7 @@ const Community = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white font-sans flex justify-center">
+    <div className="min-h-screen bg-[#E5EBE3] dark:bg-[#0D1B0F] font-sans flex justify-center transition-colors duration-300">
       <style>{`
         @keyframes fadeInUp {
           from { opacity: 0; transform: translateY(30px); }
@@ -206,28 +206,28 @@ const Community = () => {
         .animate-fade-in-up { animation: fadeInUp 0.6s ease-out forwards; }
       `}</style>
 
-      <div className="w-full max-w-md md:max-w-6xl bg-white md:my-8 md:rounded-3xl md:shadow-2xl min-h-screen md:min-h-[800px] flex flex-col md:flex-row overflow-hidden relative">
+      <div className="w-full max-w-md md:max-w-6xl bg-[#E5EBE3] dark:bg-[#0D1B0F] md:my-8 md:rounded-3xl md:shadow-2xl min-h-screen md:min-h-[800px] flex flex-col md:flex-row overflow-hidden relative transition-colors duration-300">
         {/* Sidebar / Mobile Header */}
-        <div className="md:w-1/3 lg:w-1/4 bg-white md:border-r md:border-gray-100 flex flex-col">
-          <header className="sticky top-0 z-10 p-4 bg-white md:bg-transparent">
+        <div className="md:w-1/3 lg:w-1/4 bg-[#E5EBE3] dark:bg-[#0D1B0F] md:border-r md:border-gray-100 dark:md:border-[#2D4A32] flex flex-col transition-colors duration-300">
+          <header className="sticky top-0 z-10 p-4 bg-[#E5EBE3] dark:bg-[#0D1B0F] md:bg-transparent transition-colors duration-300">
             <div className="flex justify-between items-center">
-              <Link to="/home" className="text-[#1A3F22] opacity-80 hover:opacity-100 transition-opacity no-underline">
+              <Link to="/home" className="text-[#1A3F22] dark:text-[#E8F5E8] opacity-80 hover:opacity-100 transition-opacity no-underline">
                 <span className="material-symbols-outlined text-2xl">arrow_back_ios</span>
               </Link>
-              <h1 className="text-xl font-bold text-[#1A3F22] m-0">Community</h1>
-              <div className="w-10 h-10 bg-[#E9F0E1] rounded-full flex items-center justify-center cursor-pointer hover:bg-[#dce8d0] transition-colors">
-                <span className="material-symbols-outlined text-[#1A3F22] text-xl">search</span>
+              <h1 className="text-xl font-bold text-[#1A3F22] dark:text-[#E8F5E8] m-0">Community</h1>
+              <div className="w-10 h-10 bg-[#E9F0E1] dark:bg-[#243B28] rounded-full flex items-center justify-center cursor-pointer hover:bg-[#dce8d0] dark:hover:bg-[#1A2E1D] transition-colors">
+                <span className="material-symbols-outlined text-[#1A3F22] dark:text-[#E8F5E8] text-xl">search</span>
               </div>
             </div>
           </header>
 
           <div className="p-4">
-            <div className="flex md:flex-col bg-gray-100 p-1 rounded-xl">
+            <div className="flex md:flex-col bg-gray-100 dark:bg-[#1A2E1D] p-1 rounded-xl transition-colors duration-300">
               {['groups', 'feed', 'events'].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all duration-300 capitalize border-none cursor-pointer ${activeTab === tab ? 'bg-white text-[#1A3F22] shadow-sm' : 'text-gray-500 hover:text-[#1A3F22]'}`}
+                  className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all duration-300 capitalize border-none cursor-pointer ${activeTab === tab ? 'bg-white dark:bg-[#243B28] text-[#1A3F22] dark:text-[#E8F5E8] shadow-sm' : 'text-gray-500 dark:text-[#A8C4A8] hover:text-[#1A3F22] dark:hover:text-[#E8F5E8]'}`}
                 >
                   {tab}
                 </button>
@@ -237,19 +237,19 @@ const Community = () => {
 
           <div className="hidden md:block p-4 mt-auto">
             <nav className="space-y-2">
-              <Link to="/home" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+              <Link to="/home" className="flex items-center text-[#1A3F22] dark:text-[#E8F5E8] hover:bg-gray-50 dark:hover:bg-[#1A2E1D] p-3 rounded-xl transition-colors no-underline">
                 <span className="material-symbols-outlined mr-3">home</span> Home
               </Link>
-              <Link to="/community" className="flex items-center text-[#1A3F22] bg-gray-50 font-medium p-3 rounded-xl transition-colors no-underline">
+              <Link to="/community" className="flex items-center text-[#1A3F22] dark:text-[#E8F5E8] bg-gray-50 dark:bg-[#1A2E1D] font-medium p-3 rounded-xl transition-colors no-underline">
                 <span className="material-symbols-outlined mr-3">groups</span> Community
               </Link>
-              <Link to="/payments" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+              <Link to="/payments" className="flex items-center text-[#1A3F22] dark:text-[#E8F5E8] hover:bg-gray-50 dark:hover:bg-[#1A2E1D] p-3 rounded-xl transition-colors no-underline">
                 <span className="material-symbols-outlined mr-3">qr_code_scanner</span> Payments
               </Link>
-              <Link to="/savings" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+              <Link to="/savings" className="flex items-center text-[#1A3F22] dark:text-[#E8F5E8] hover:bg-gray-50 dark:hover:bg-[#1A2E1D] p-3 rounded-xl transition-colors no-underline">
                 <span className="material-symbols-outlined mr-3">savings</span> Savings
               </Link>
-              <Link to="/profile" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+              <Link to="/profile" className="flex items-center text-[#1A3F22] dark:text-[#E8F5E8] hover:bg-gray-50 dark:hover:bg-[#1A2E1D] p-3 rounded-xl transition-colors no-underline">
                 <span className="material-symbols-outlined mr-3">person</span> Profile
               </Link>
             </nav>
@@ -257,12 +257,12 @@ const Community = () => {
         </div>
 
         {/* Main Content Area */}
-        <main className="flex-grow p-4 pb-28 md:pb-8 overflow-y-auto bg-gray-50 md:bg-white">
+        <main className="flex-grow p-4 pb-28 md:pb-8 overflow-y-auto bg-[#E5EBE3] dark:bg-[#0a150c] md:bg-[#E5EBE3] dark:md:bg-[#0D1B0F] transition-colors duration-300">
           {/* Feed */}
           {activeTab === 'feed' && (
             <div className="space-y-6 max-w-2xl mx-auto animate-fade-in-up">
-              <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-                <p className="text-gray-500 text-center">Community feed coming soon...</p>
+              <div className="bg-white dark:bg-[#1A2E1D] p-4 rounded-xl shadow-sm border border-gray-100 dark:border-[#2D4A32] transition-colors duration-300">
+                <p className="text-gray-500 dark:text-[#A8C4A8] text-center">Community feed coming soon...</p>
               </div>
             </div>
           )}
@@ -279,7 +279,7 @@ const Community = () => {
                   placeholder="Search for groups..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 rounded-xl bg-white border border-gray-100 focus:outline-none focus:ring-2 focus:ring-[#1A3F22] focus:border-transparent shadow-sm"
+                  className="w-full pl-12 pr-4 py-3 rounded-xl bg-white dark:bg-[#1A2E1D] border border-gray-100 dark:border-[#2D4A32] focus:outline-none focus:ring-2 focus:ring-[#1A3F22] dark:focus:ring-[#58761B] focus:border-transparent shadow-sm text-gray-900 dark:text-[#E8F5E8] transition-colors duration-300"
                 />
               </div>
 
@@ -294,16 +294,16 @@ const Community = () => {
               )}
 
               {loading ? (
-                <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 text-center"><p className="text-gray-500">Loading groups...</p></div>
+                <div className="bg-white dark:bg-[#1A2E1D] p-8 rounded-xl shadow-sm border border-gray-100 dark:border-[#2D4A32] text-center transition-colors duration-300"><p className="text-gray-500 dark:text-[#A8C4A8]">Loading groups...</p></div>
               ) : error && (!groups || groups.length === 0) ? (
-                <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 text-center"><p className="text-red-500">{error}</p></div>
+                <div className="bg-white dark:bg-[#1A2E1D] p-8 rounded-xl shadow-sm border border-gray-100 dark:border-[#2D4A32] text-center transition-colors duration-300"><p className="text-red-500">{error}</p></div>
               ) : (!groups || groups.length === 0) ? (
-                <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 text-center"><p className="text-gray-500">No groups found</p></div>
+                <div className="bg-white dark:bg-[#1A2E1D] p-8 rounded-xl shadow-sm border border-gray-100 dark:border-[#2D4A32] text-center transition-colors duration-300"><p className="text-gray-500 dark:text-[#A8C4A8]">No groups found</p></div>
               ) : (
                 groups
                   .filter(group => group.name.toLowerCase().includes(searchQuery.toLowerCase()))
                   .map((group) => (
-                    <div key={group.id} onClick={() => openGroupDetails(group)} className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 cursor-pointer hover:shadow-md transition-shadow">
+                    <div key={group.id} onClick={() => openGroupDetails(group)} className="bg-white dark:bg-[#1A2E1D] p-5 rounded-xl shadow-sm border border-gray-100 dark:border-[#2D4A32] cursor-pointer hover:shadow-md transition-all duration-300 hover:bg-gray-50 dark:hover:bg-[#243B28]">
                       <div className="flex items-start gap-4">
                         <div className={`w-14 h-14 rounded-xl flex items-center justify-center ${getGroupColor(group.type)}`}>
                           <span className="material-symbols-outlined text-2xl">{getGroupIcon(group.type)}</span>
@@ -311,25 +311,25 @@ const Community = () => {
                         <div className="flex-grow">
                           <div className="flex items-start justify-between mb-2">
                             <div>
-                              <h3 className="font-bold text-[#1A3F22] text-lg m-0">{group.name}</h3>
-                              <p className="text-xs text-gray-500 m-0 capitalize">{group.type} • {group.members?.length || 0} members</p>
+                              <h3 className="font-bold text-[#1A3F22] dark:text-[#E8F5E8] text-lg m-0">{group.name}</h3>
+                              <p className="text-xs text-gray-500 dark:text-[#A8C4A8] m-0 capitalize">{group.type} • {group.members?.length || 0} members</p>
                             </div>
                             {/* Institution sees balance, User sees status */}
                             <div className="text-right">
                               {user?.email === group.ownerId ? (
                                 <>
-                                  <p className="text-xs text-gray-500 m-0">Balance</p>
-                                  <p className="text-xl font-bold text-[#1A3F22] m-0">{formatCurrency(group.balance)}</p>
+                                  <p className="text-xs text-gray-500 dark:text-[#A8C4A8] m-0">Balance</p>
+                                  <p className="text-xl font-bold text-[#1A3F22] dark:text-[#E8F5E8] m-0">{formatCurrency(group.balance)}</p>
                                 </>
                               ) : (
                                 <>
                                   {group.balanceVisible ? (
                                     <>
-                                      <p className="text-xs text-gray-500 m-0">Balance</p>
-                                      <p className="text-xl font-bold text-[#1A3F22] m-0">{formatCurrency(group.balance)}</p>
+                                      <p className="text-xs text-gray-500 dark:text-[#A8C4A8] m-0">Balance</p>
+                                      <p className="text-xl font-bold text-[#1A3F22] dark:text-[#E8F5E8] m-0">{formatCurrency(group.balance)}</p>
                                     </>
                                   ) : (
-                                    <span className={`text-xs font-bold px-2 py-1 rounded ${group.members?.includes(user?.email) ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
+                                    <span className={`text-xs font-bold px-2 py-1 rounded ${group.members?.includes(user?.email) ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300'}`}>
                                       {group.members?.includes(user?.email) ? 'Member' : 'Not Joined'}
                                     </span>
                                   )}
@@ -337,7 +337,7 @@ const Community = () => {
                               )}
                             </div>
                           </div>
-                          <p className="text-sm text-gray-600 mb-3 line-clamp-2">{group.description}</p>
+                          <p className="text-sm text-gray-600 dark:text-[#A8C4A8] mb-3 line-clamp-2">{group.description}</p>
                         </div>
                       </div>
                     </div>
@@ -349,7 +349,9 @@ const Community = () => {
           {/* Events */}
           {activeTab === 'events' && (
             <div className="space-y-4 max-w-2xl mx-auto animate-fade-in-up">
-              <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100"><p className="text-gray-500 text-center">Events coming soon...</p></div>
+              <div className="bg-white dark:bg-[#1A2E1D] p-4 rounded-xl shadow-sm border border-gray-100 dark:border-[#2D4A32] transition-colors duration-300">
+                <p className="text-gray-500 dark:text-[#A8C4A8] text-center">Events coming soon...</p>
+              </div>
             </div>
           )}
         </main>
@@ -358,10 +360,10 @@ const Community = () => {
       {/* Group Details Modal */}
       {showGroupDetailsModal && selectedGroup && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl animate-fade-in-up">
+          <div className="bg-white dark:bg-[#1A2E1D] rounded-2xl p-6 max-w-md w-full shadow-2xl animate-fade-in-up transition-colors duration-300">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-[#1A3F22] m-0">Group Overview</h2>
-              <button onClick={() => setShowGroupDetailsModal(false)} className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer">
+              <h2 className="text-xl font-bold text-[#1A3F22] dark:text-[#E8F5E8] m-0">Group Overview</h2>
+              <button onClick={() => setShowGroupDetailsModal(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 bg-transparent border-none cursor-pointer">
                 <span className="material-symbols-outlined text-2xl">close</span>
               </button>
             </div>
@@ -370,42 +372,42 @@ const Community = () => {
               <div className={`w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4 ${getGroupColor(selectedGroup.type)}`}>
                 <span className="material-symbols-outlined text-4xl">{getGroupIcon(selectedGroup.type)}</span>
               </div>
-              <h3 className="text-2xl font-bold text-[#1A3F22] mb-1">{selectedGroup.name}</h3>
-              <p className="text-gray-500 capitalize">{selectedGroup.type} • {selectedGroup.members?.length || 0} members</p>
+              <h3 className="text-2xl font-bold text-[#1A3F22] dark:text-[#E8F5E8] mb-1">{selectedGroup.name}</h3>
+              <p className="text-gray-500 dark:text-[#A8C4A8] capitalize">{selectedGroup.type} • {selectedGroup.members?.length || 0} members</p>
             </div>
 
-            <div className="bg-gray-50 p-4 rounded-xl mb-6">
-              <h4 className="font-bold text-[#1A3F22] mb-2 text-sm">About</h4>
-              <p className="text-gray-600 text-sm leading-relaxed m-0">{selectedGroup.description || 'No description provided.'}</p>
+            <div className="bg-[#E5EBE3] dark:bg-[#0a150c] p-4 rounded-xl mb-6 transition-colors duration-300">
+              <h4 className="font-bold text-[#1A3F22] dark:text-[#E8F5E8] mb-2 text-sm">About</h4>
+              <p className="text-gray-600 dark:text-[#A8C4A8] text-sm leading-relaxed m-0">{selectedGroup.description || 'No description provided.'}</p>
             </div>
 
             {user?.email === selectedGroup.ownerId ? (
               <div className="space-y-3">
-                <div className="bg-[#E9F0E1] p-4 rounded-xl mb-4 text-center">
-                  <p className="text-sm text-[#1A3F22] mb-1">Total Contributions</p>
-                  <p className="text-2xl font-bold text-[#1A3F22]">{formatCurrency(selectedGroup.balance)}</p>
+                <div className="bg-[#E9F0E1] dark:bg-[#243B28] p-4 rounded-xl mb-4 text-center transition-colors duration-300">
+                  <p className="text-sm text-[#1A3F22] dark:text-[#E8F5E8] mb-1">Total Contributions</p>
+                  <p className="text-2xl font-bold text-[#1A3F22] dark:text-[#E8F5E8]">{formatCurrency(selectedGroup.balance)}</p>
                 </div>
 
-                <div className="flex items-center justify-between bg-gray-50 p-3 rounded-xl mb-2">
-                  <span className="text-sm font-medium text-gray-700">Show Balance to Members</span>
+                <div className="flex items-center justify-between bg-[#E5EBE3] dark:bg-[#0a150c] p-3 rounded-xl mb-2 transition-colors duration-300">
+                  <span className="text-sm font-medium text-gray-700 dark:text-[#E8F5E8]">Show Balance to Members</span>
                   <button
                     onClick={() => handleToggleBalanceVisibility(selectedGroup)}
-                    className={`w-12 h-6 rounded-full transition-colors relative border-none cursor-pointer ${selectedGroup.balanceVisible ? 'bg-[#1A3F22]' : 'bg-gray-300'}`}
+                    className={`w-12 h-6 rounded-full transition-colors relative border-none cursor-pointer ${selectedGroup.balanceVisible ? 'bg-[#1A3F22] dark:bg-[#58761B]' : 'bg-gray-300'}`}
                   >
                     <span className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${selectedGroup.balanceVisible ? 'left-7' : 'left-1'}`}></span>
                   </button>
                 </div>
 
-                <button onClick={() => handleWithdraw(selectedGroup)} className="w-full bg-white text-[#1A3F22] border border-[#1A3F22] py-3 rounded-xl font-bold cursor-pointer hover:bg-gray-50 transition-colors">
+                <button onClick={() => handleWithdraw(selectedGroup)} className="w-full bg-white dark:bg-[#2A3F2E] text-[#1A3F22] dark:text-[#E8F5E8] border border-[#1A3F22] dark:border-[#58761B] py-3 rounded-xl font-bold cursor-pointer hover:bg-gray-50 dark:hover:bg-[#3A5A3F] transition-colors">
                   Withdraw Funds
                 </button>
               </div>
             ) : (
               <div className="space-y-3">
                 {selectedGroup.balanceVisible && (
-                  <div className="bg-[#E9F0E1] p-4 rounded-xl mb-4 text-center">
-                    <p className="text-sm text-[#1A3F22] mb-1">Group Balance</p>
-                    <p className="text-2xl font-bold text-[#1A3F22]">{formatCurrency(selectedGroup.balance)}</p>
+                  <div className="bg-[#E9F0E1] dark:bg-[#243B28] p-4 rounded-xl mb-4 text-center transition-colors duration-300">
+                    <p className="text-sm text-[#1A3F22] dark:text-[#E8F5E8] mb-1">Group Balance</p>
+                    <p className="text-2xl font-bold text-[#1A3F22] dark:text-[#E8F5E8]">{formatCurrency(selectedGroup.balance)}</p>
                   </div>
                 )}
 
@@ -429,30 +431,30 @@ const Community = () => {
       {/* Contribution Modal */}
       {showContributeModal && selectedGroup && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl">
+          <div className="bg-white dark:bg-[#1A2E1D] rounded-2xl p-6 max-w-md w-full shadow-2xl transition-colors duration-300">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-[#1A3F22] m-0">Contribute to {selectedGroup.name}</h2>
-              <button onClick={() => { setShowContributeModal(false); setSelectedGroup(null); setContributionAmount(''); setError(''); setSuccess(''); }} className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer">
+              <h2 className="text-xl font-bold text-[#1A3F22] dark:text-[#E8F5E8] m-0">Contribute to {selectedGroup.name}</h2>
+              <button onClick={() => { setShowContributeModal(false); setSelectedGroup(null); setContributionAmount(''); setError(''); setSuccess(''); }} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 bg-transparent border-none cursor-pointer">
                 <span className="material-symbols-outlined text-2xl">close</span>
               </button>
             </div>
             {success && (<div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4">{success}</div>)}
             {error && (<div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">{error}</div>)}
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Amount</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-[#E8F5E8] mb-2">Amount</label>
               <input
                 type="text"
                 value={contributionAmount}
                 onChange={(e) => handleFormatAmount(e.target.value)}
                 placeholder={`Enter amount in ${currency}`}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A3F22] focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-[#2D4A32] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1A3F22] dark:focus:ring-[#58761B] focus:border-transparent bg-[#E5EBE3] dark:bg-[#0D1B0F] text-gray-900 dark:text-[#E8F5E8]"
                 disabled={contributing}
               />
             </div>
-            <div className="bg-gray-50 p-4 rounded-lg mb-4">
-              <div className="flex justify-between text-sm mb-2"><span className="text-gray-600">Current Balance:</span><span className="font-medium text-gray-900">{formatCurrency(selectedGroup.balance)}</span></div>
+            <div className="bg-[#E5EBE3] dark:bg-[#0a150c] p-4 rounded-lg mb-4 transition-colors duration-300">
+              <div className="flex justify-between text-sm mb-2"><span className="text-gray-600 dark:text-[#A8C4A8]">Current Balance:</span><span className="font-medium text-gray-900 dark:text-[#E8F5E8]">{formatCurrency(selectedGroup.balance)}</span></div>
               {contributionRaw && parseFloat(contributionRaw) > 0 && (
-                <div className="flex justify-between text-sm"><span className="text-gray-600">New Balance:</span><span className="font-bold text-[#1A3F22]">{formatCurrency(selectedGroup.balance + convertToUSD(parseFloat(contributionRaw)))}</span></div>
+                <div className="flex justify-between text-sm"><span className="text-gray-600 dark:text-[#A8C4A8]">New Balance:</span><span className="font-bold text-[#1A3F22] dark:text-[#E8F5E8]">{formatCurrency(selectedGroup.balance + convertToUSD(parseFloat(contributionRaw)))}</span></div>
               )}
             </div>
             <button onClick={handleContribute} disabled={contributing || !contributionRaw || parseFloat(contributionRaw) <= 0} className="w-full bg-[#1A3F22] text-white px-6 py-3 rounded-full font-medium border-none cursor-pointer hover:bg-[#14301a] transition-colors shadow-md disabled:bg-gray-300 disabled:cursor-not-allowed">
@@ -469,3 +471,4 @@ const Community = () => {
 };
 
 export default Community;
+

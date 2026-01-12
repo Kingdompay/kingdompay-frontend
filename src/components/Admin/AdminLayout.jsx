@@ -13,14 +13,14 @@ const AdminLayout = () => {
     };
 
     const isActive = (path) => {
-        return location.pathname === path ? 'bg-[#1A3F22] text-white' : 'text-gray-600 hover:bg-gray-100';
+        return location.pathname === path ? 'bg-[#1A3F22] text-white' : 'text-gray-600 dark:text-[#A8C4A8] hover:bg-gray-100 dark:hover:bg-[#243B28]';
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 flex font-sans">
+        <div className="min-h-screen bg-[#E5EBE3] dark:bg-[#0a150c] flex font-sans transition-colors duration-300">
             {/* Sidebar */}
-            <aside className="w-64 bg-white border-r border-gray-200 flex flex-col fixed h-full z-10">
-                <div className="p-6 border-b border-gray-100 flex justify-center items-center h-24">
+            <aside className="w-64 bg-[#E5EBE3] dark:bg-[#0D1B0F] border-r border-gray-200 dark:border-[#2D4A32] flex flex-col fixed h-full z-10 transition-colors duration-300">
+                <div className="p-6 border-b border-gray-100 dark:border-[#2D4A32] flex justify-center items-center h-24">
                     <img src="/logo.png" alt="KingdomPay Logo" className="w-56 h-auto object-contain" />
                 </div>
 
@@ -47,8 +47,8 @@ const AdminLayout = () => {
                     </Link>
                 </nav>
 
-                <div className="p-4 border-t border-gray-100">
-                    <button onClick={handleLogout} className="w-full flex items-center p-3 rounded-xl text-red-600 hover:bg-red-50 transition-colors font-medium border-none cursor-pointer bg-transparent">
+                <div className="p-4 border-t border-gray-100 dark:border-[#2D4A32]">
+                    <button onClick={handleLogout} className="w-full flex items-center p-3 rounded-xl text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors font-medium border-none cursor-pointer bg-transparent">
                         <span className="material-symbols-outlined mr-3">logout</span>
                         Logout
                     </button>
@@ -64,3 +64,5 @@ const AdminLayout = () => {
 };
 
 export default AdminLayout;
+
+

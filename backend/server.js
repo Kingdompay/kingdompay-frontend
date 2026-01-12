@@ -17,6 +17,8 @@ let users = [];
 let transactions = [];
 let communityGroups = [];
 let savingsGoals = [];
+let notifications = [];
+let cards = [];
 
 // Helper functions
 const generateId = () => Math.random().toString(36).substr(2, 9);
@@ -25,6 +27,8 @@ const findUserById = (id) => users.find(u => u.id === id);
 const findTransactionsByUserId = (userId) => transactions.filter(t => t.userId === userId);
 const findGoalsByUserId = (userId) => savingsGoals.filter(g => g.userId === userId);
 const findGroupsByUserId = (userId) => communityGroups.filter(g => g.members.includes(userId));
+const findNotificationsByUserId = (userId) => notifications.filter(n => n.userId === userId);
+const findCardsByUserId = (userId) => cards.filter(c => c.userId === userId);
 
 // Demo user ID (consistent across restarts)
 const DEMO_USER_ID = 'demo-user-id';
@@ -341,6 +345,106 @@ app.post('/api/community/groups/:id/contribute', authenticateToken, async (req, 
   }
 });
 
+// ---------- Notification routes ----------
+app.get('/api/notifications', authenticateToken, async (req, res) => {
+  try {
+    const list = findNotificationsByUserId(req.user.userId).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    res.json(list);
+  } catch (e) {
+    res.status(500).json({ message: 'Server error', error: e.message });
+  }
+});
+
+app.post('/api/notifications', authenticateToken, async (req, res) => { // Internal use usually
+  try {
+    const { title, message, type, icon } = req.body;
+    const notification = {
+      id: generateId(),
+      userId: req.user.userId,
+      title,
+      message,
+      type: type || 'info', // payment, security, promo, info
+      icon: icon || 'notifications',
+      read: false,
+      createdAt: new Date()
+    };
+    notifications.push(notification);
+    res.status(201).json(notification);
+  } catch (e) {
+    res.status(500).json({ message: 'Server error', error: e.message });
+  }
+});
+
+app.put('/api/notifications/:id/read', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const notification = notifications.find(n => n.id === id && n.userId === req.user.userId);
+    if (!notification) return res.status(404).json({ message: 'Notification not found' });
+    notification.read = true;
+    res.json(notification);
+  } catch (e) {
+    res.status(500).json({ message: 'Server error', error: e.message });
+  }
+});
+
+// ---------- Card routes ----------
+app.get('/api/cards', authenticateToken, async (req, res) => {
+  try {
+    const list = findCardsByUserId(req.user.userId);
+    res.json(list);
+  } catch (e) {
+    res.status(500).json({ message: 'Server error', error: e.message });
+  }
+});
+
+app.post('/api/cards', authenticateToken, async (req, res) => {
+  try {
+    const { type, number, holder, expiry, color } = req.body;
+    const card = {
+      id: generateId(),
+      userId: req.user.userId,
+      type,
+      number, // In real app, hash this!
+      holder,
+      expiry,
+      balance: 1000, // Default opening balance for demo
+      color: color || 'from-gray-700 to-gray-900',
+      isFrozen: false,
+      limits: { daily: 1000, monthly: 5000 },
+      createdAt: new Date()
+    };
+    cards.push(card);
+    res.status(201).json(card);
+  } catch (e) {
+    res.status(500).json({ message: 'Server error', error: e.message });
+  }
+});
+
+app.put('/api/cards/:id/freeze', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const card = cards.find(c => c.id === id && c.userId === req.user.userId);
+    if (!card) return res.status(404).json({ message: 'Card not found' });
+    card.isFrozen = !card.isFrozen;
+    res.json(card);
+  } catch (e) {
+    res.status(500).json({ message: 'Server error', error: e.message });
+  }
+});
+
+app.put('/api/cards/:id/limits', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { daily, monthly } = req.body;
+    const card = cards.find(c => c.id === id && c.userId === req.user.userId);
+    if (!card) return res.status(404).json({ message: 'Card not found' });
+    card.limits = { ...card.limits, daily, monthly };
+    res.json(card);
+  } catch (e) {
+    res.status(500).json({ message: 'Server error', error: e.message });
+  }
+});
+
 // ---------- Admin routes ----------
 app.get('/api/users', async (req, res) => {
   try {
@@ -414,6 +518,19 @@ const seedDemoData = async () => {
       { id: generateId(), name: 'The Faith Community', type: 'church', description: 'Church Group', balance: 15480.50, members: [DEMO_USER_ID], createdBy: DEMO_USER_ID, createdAt: new Date() },
       { id: generateId(), name: 'The Family Fund', type: 'family', description: 'Family Group', balance: 2750.00, members: [DEMO_USER_ID], createdBy: DEMO_USER_ID, createdAt: new Date() },
       { id: generateId(), name: 'Kingdom Entrepreneurs', type: 'sacco', description: 'SACCO', balance: 58230.75, members: [DEMO_USER_ID], createdBy: DEMO_USER_ID, createdAt: new Date() }
+    );
+  }
+  // Seed cards
+  if (cards.length === 0) {
+    cards.push(
+      { id: generateId(), userId: DEMO_USER_ID, type: 'visa', number: '4532 **** **** 9012', holder: 'Demo User', expiry: '12/28', balance: 5000, color: 'from-blue-600 to-blue-800', isFrozen: false, limits: { daily: 1000, monthly: 5000 } }
+    );
+  }
+  // Seed notifications
+  if (notifications.length === 0) {
+    notifications.push(
+      { id: generateId(), userId: DEMO_USER_ID, title: 'Welcome!', message: 'Welcome to KingdomPay.', type: 'info', read: false, createdAt: new Date() },
+      { id: generateId(), userId: DEMO_USER_ID, title: 'Payment Received', message: 'You received $200.00 from Bank.', type: 'payment', read: true, createdAt: new Date(Date.now() - 86400000) }
     );
   }
   console.log('Demo data seeded successfully');

@@ -25,7 +25,7 @@ const EditProfile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white font-sans flex justify-center">
+    <div className="min-h-screen bg-[#E5EBE3] dark:bg-[#0D1B0F] font-sans flex justify-center transition-colors duration-300">
       <style>
         {`
           @keyframes fadeInUp {
@@ -44,20 +44,20 @@ const EditProfile = () => {
         `}
       </style>
 
-      <div className="w-full max-w-md md:max-w-6xl bg-white md:my-8 md:rounded-3xl md:shadow-2xl min-h-screen md:min-h-[800px] flex flex-col md:flex-row overflow-hidden relative">
+      <div className="w-full max-w-md md:max-w-6xl bg-[#E5EBE3] dark:bg-[#0D1B0F] md:my-8 md:rounded-3xl md:shadow-2xl min-h-screen md:min-h-[800px] flex flex-col md:flex-row overflow-hidden relative transition-colors duration-300">
 
         {/* Sidebar / Mobile Header */}
-        <div className="md:w-1/3 lg:w-1/4 bg-white md:border-r md:border-gray-100 flex flex-col">
+        <div className="md:w-1/3 lg:w-1/4 bg-[#E5EBE3] dark:bg-[#0D1B0F] md:border-r md:border-gray-100 dark:md:border-[#2D4A32] flex flex-col transition-colors duration-300">
           {/* Header */}
-          <header className="sticky top-0 z-10 p-4 bg-white md:bg-transparent">
+          <header className="sticky top-0 z-10 p-4 bg-[#E5EBE3] dark:bg-[#0D1B0F] md:bg-transparent transition-colors duration-300">
             <div className="flex justify-between items-center">
               <button
                 onClick={() => navigate('/profile')}
-                className="bg-gray-100 border-none cursor-pointer flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-200 transition-colors"
+                className="bg-gray-100 dark:bg-[#1A2E1D] border-none cursor-pointer flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-200 dark:hover:bg-[#243B28] transition-colors"
               >
-                <span className="material-symbols-outlined text-[#1A3F22] text-xl">arrow_back</span>
+                <span className="material-symbols-outlined text-[#1A3F22] dark:text-[#E8F5E8] text-xl">arrow_back</span>
               </button>
-              <h1 className="text-lg font-bold text-[#1A3F22] m-0">Edit Profile</h1>
+              <h1 className="text-lg font-bold text-[#1A3F22] dark:text-[#E8F5E8] m-0">Edit Profile</h1>
               <div className="w-10"></div>
             </div>
           </header>
@@ -65,13 +65,13 @@ const EditProfile = () => {
           {/* Desktop Nav Links */}
           <div className="hidden md:block p-4 mt-auto">
             <nav className="space-y-2">
-              <Link to="/home" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+              <Link to="/home" className="flex items-center text-[#1A3F22] dark:text-[#E8F5E8] hover:bg-gray-50 dark:hover:bg-[#1A2E1D] p-3 rounded-xl transition-colors no-underline">
                 <span className="material-symbols-outlined mr-3">home</span> Home
               </Link>
-              <Link to="/profile" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+              <Link to="/profile" className="flex items-center text-[#1A3F22] dark:text-[#E8F5E8] hover:bg-gray-50 dark:hover:bg-[#1A2E1D] p-3 rounded-xl transition-colors no-underline">
                 <span className="material-symbols-outlined mr-3">person</span> Profile
               </Link>
-              <Link to="/settings" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+              <Link to="/settings" className="flex items-center text-[#1A3F22] dark:text-[#E8F5E8] hover:bg-gray-50 dark:hover:bg-[#1A2E1D] p-3 rounded-xl transition-colors no-underline">
                 <span className="material-symbols-outlined mr-3">settings</span> Settings
               </Link>
             </nav>
@@ -79,7 +79,7 @@ const EditProfile = () => {
         </div>
 
         {/* Main Content Area */}
-        <main className="flex-grow p-4 pb-28 md:pb-8 overflow-y-auto bg-gray-50 md:bg-white">
+        <main className="flex-grow p-4 pb-28 md:pb-8 overflow-y-auto bg-[#E5EBE3] dark:bg-[#0a150c] md:bg-[#E5EBE3] dark:md:bg-[#0D1B0F] transition-colors duration-300">
           <div className="max-w-2xl mx-auto animate-fade-in-up">
 
             {/* Profile Photo Section */}
@@ -99,57 +99,57 @@ const EditProfile = () => {
             {/* Form Fields */}
             <form className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-[#1A3F22] mb-2">First Name</label>
+                <label className="block text-sm font-medium text-[#1A3F22] dark:text-[#E8F5E8] mb-2">First Name</label>
                 <input
                   type="text"
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6f9c16] focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-[#1A2E1D] border border-gray-200 dark:border-[#2D4A32] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6f9c16] focus:border-transparent transition-all text-gray-900 dark:text-[#E8F5E8]"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[#1A3F22] mb-2">Last Name</label>
+                <label className="block text-sm font-medium text-[#1A3F22] dark:text-[#E8F5E8] mb-2">Last Name</label>
                 <input
                   type="text"
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6f9c16] focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-[#1A2E1D] border border-gray-200 dark:border-[#2D4A32] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6f9c16] focus:border-transparent transition-all text-gray-900 dark:text-[#E8F5E8]"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[#1A3F22] mb-2">Email Address</label>
+                <label className="block text-sm font-medium text-[#1A3F22] dark:text-[#E8F5E8] mb-2">Email Address</label>
                 <input
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6f9c16] focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-[#1A2E1D] border border-gray-200 dark:border-[#2D4A32] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6f9c16] focus:border-transparent transition-all text-gray-900 dark:text-[#E8F5E8]"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[#1A3F22] mb-2">Phone Number</label>
+                <label className="block text-sm font-medium text-[#1A3F22] dark:text-[#E8F5E8] mb-2">Phone Number</label>
                 <input
                   type="tel"
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6f9c16] focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-[#1A2E1D] border border-gray-200 dark:border-[#2D4A32] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6f9c16] focus:border-transparent transition-all text-gray-900 dark:text-[#E8F5E8]"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[#1A3F22] mb-2">Date of Birth</label>
+                <label className="block text-sm font-medium text-[#1A3F22] dark:text-[#E8F5E8] mb-2">Date of Birth</label>
                 <input
                   type="date"
                   name="dateOfBirth"
                   value={formData.dateOfBirth}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6f9c16] focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-[#1A2E1D] border border-gray-200 dark:border-[#2D4A32] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6f9c16] focus:border-transparent transition-all text-gray-900 dark:text-[#E8F5E8]"
                 />
               </div>
 
@@ -177,3 +177,5 @@ const EditProfile = () => {
 };
 
 export default EditProfile;
+
+

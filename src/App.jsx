@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
+import PageTransition from './components/PageTransition';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { DarkModeProvider, useDarkMode } from './contexts/DarkModeContext';
 import { CurrencyProvider } from './contexts/CurrencyContext';
@@ -63,81 +65,78 @@ import WithdrawalRequests from './components/Admin/WithdrawalRequests';
 import TestPage from './components/TestPage';
 
 const AppContent = () => {
-  const { theme } = useDarkMode();
+  // Dark mode class is handled in DarkModeContext
 
-  useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [theme]);
+
+  const location = useLocation();
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-light-gray dark:bg-dark-bg">
       <div className="w-full h-full">
-        <Routes>
-          <Route path="/" element={<Navigate to="/login" />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
+        <AnimatePresence mode="wait">
+          <Routes location={location} key={location.pathname}>
+            <Route path="/" element={<Navigate to="/login" />} />
+            <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
+            <Route path="/register" element={<PageTransition><Register /></PageTransition>} />
+            <Route path="/forgot-password" element={<PageTransition><ForgotPassword /></PageTransition>} />
 
-          {/* Protected User Routes */}
-          {/* Home is restricted until verified as it shows wallet */}
-          <Route path="/home" element={<ProtectedRoute><VerifiedRoute><Home /></VerifiedRoute></ProtectedRoute>} />
-          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-          <Route path="/savings" element={<ProtectedRoute><VerifiedRoute><Savings /></VerifiedRoute></ProtectedRoute>} />
-          <Route path="/community" element={<ProtectedRoute><VerifiedRoute><Community /></VerifiedRoute></ProtectedRoute>} />
-          <Route path="/payments" element={<ProtectedRoute><VerifiedRoute><Payments /></VerifiedRoute></ProtectedRoute>} />
-          <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
-          <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+            {/* Protected User Routes */}
+            {/* Home is restricted until verified as it shows wallet */}
+            <Route path="/home" element={<PageTransition><ProtectedRoute><VerifiedRoute><Home /></VerifiedRoute></ProtectedRoute></PageTransition>} />
+            <Route path="/profile" element={<PageTransition><ProtectedRoute><Profile /></ProtectedRoute></PageTransition>} />
+            <Route path="/savings" element={<PageTransition><ProtectedRoute><VerifiedRoute><Savings /></VerifiedRoute></ProtectedRoute></PageTransition>} />
+            <Route path="/community" element={<PageTransition><ProtectedRoute><VerifiedRoute><Community /></VerifiedRoute></ProtectedRoute></PageTransition>} />
+            <Route path="/payments" element={<PageTransition><ProtectedRoute><VerifiedRoute><Payments /></VerifiedRoute></ProtectedRoute></PageTransition>} />
+            <Route path="/notifications" element={<PageTransition><ProtectedRoute><Notifications /></ProtectedRoute></PageTransition>} />
+            <Route path="/settings" element={<PageTransition><ProtectedRoute><Settings /></ProtectedRoute></PageTransition>} />
 
-          {/* Profile Sub-pages */}
-          <Route path="/linked-accounts" element={<ProtectedRoute><VerifiedRoute><LinkedAccounts /></VerifiedRoute></ProtectedRoute>} />
-          <Route path="/limits-plans" element={<ProtectedRoute><VerifiedRoute><LimitsPlans /></VerifiedRoute></ProtectedRoute>} />
-          <Route path="/change-pin" element={<ProtectedRoute><ChangePin /></ProtectedRoute>} />
-          <Route path="/two-factor-auth" element={<ProtectedRoute><TwoFactorAuth /></ProtectedRoute>} />
-          <Route path="/biometric" element={<ProtectedRoute><Biometric /></ProtectedRoute>} />
-          <Route path="/help-support" element={<ProtectedRoute><HelpSupport /></ProtectedRoute>} />
-          <Route path="/chat-support" element={<ProtectedRoute><ChatSupport /></ProtectedRoute>} />
-          <Route path="/faqs" element={<ProtectedRoute><FAQs /></ProtectedRoute>} />
-          <Route path="/edit-profile" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
-          <Route path="/security" element={<ProtectedRoute><Security /></ProtectedRoute>} />
-          <Route path="/cards" element={<ProtectedRoute><VerifiedRoute><Cards /></VerifiedRoute></ProtectedRoute>} />
-          <Route path="/referrals" element={<ProtectedRoute><Referrals /></ProtectedRoute>} />
-          <Route path="/personal-details" element={<ProtectedRoute><PersonalDetails /></ProtectedRoute>} />
-          <Route path="/verify-identity" element={<ProtectedRoute><VerificationUpload /></ProtectedRoute>} />
+            {/* Profile Sub-pages */}
+            <Route path="/linked-accounts" element={<PageTransition><ProtectedRoute><VerifiedRoute><LinkedAccounts /></VerifiedRoute></ProtectedRoute></PageTransition>} />
+            <Route path="/limits-plans" element={<PageTransition><ProtectedRoute><VerifiedRoute><LimitsPlans /></VerifiedRoute></ProtectedRoute></PageTransition>} />
+            <Route path="/change-pin" element={<PageTransition><ProtectedRoute><ChangePin /></ProtectedRoute></PageTransition>} />
+            <Route path="/two-factor-auth" element={<PageTransition><ProtectedRoute><TwoFactorAuth /></ProtectedRoute></PageTransition>} />
+            <Route path="/biometric" element={<PageTransition><ProtectedRoute><Biometric /></ProtectedRoute></PageTransition>} />
+            <Route path="/help-support" element={<PageTransition><ProtectedRoute><HelpSupport /></ProtectedRoute></PageTransition>} />
+            <Route path="/chat-support" element={<PageTransition><ProtectedRoute><ChatSupport /></ProtectedRoute></PageTransition>} />
+            <Route path="/faqs" element={<PageTransition><ProtectedRoute><FAQs /></ProtectedRoute></PageTransition>} />
+            <Route path="/edit-profile" element={<PageTransition><ProtectedRoute><EditProfile /></ProtectedRoute></PageTransition>} />
+            <Route path="/security" element={<PageTransition><ProtectedRoute><Security /></ProtectedRoute></PageTransition>} />
+            <Route path="/cards" element={<PageTransition><ProtectedRoute><VerifiedRoute><Cards /></VerifiedRoute></ProtectedRoute></PageTransition>} />
+            <Route path="/referrals" element={<PageTransition><ProtectedRoute><Referrals /></ProtectedRoute></PageTransition>} />
+            <Route path="/personal-details" element={<PageTransition><ProtectedRoute><PersonalDetails /></ProtectedRoute></PageTransition>} />
+            <Route path="/verify-identity" element={<PageTransition><ProtectedRoute><VerificationUpload /></ProtectedRoute></PageTransition>} />
 
-          {/* Payment Sub-pages */}
-          <Route path="/send-money" element={<ProtectedRoute><VerifiedRoute><SendMoney /></VerifiedRoute></ProtectedRoute>} />
-          <Route path="/request-money" element={<ProtectedRoute><VerifiedRoute><RequestMoney /></VerifiedRoute></ProtectedRoute>} />
-          <Route path="/add-money" element={<ProtectedRoute><VerifiedRoute><AddMoney /></VerifiedRoute></ProtectedRoute>} />
-          <Route path="/withdraw-money" element={<ProtectedRoute><VerifiedRoute><WithdrawMoney /></VerifiedRoute></ProtectedRoute>} />
-          <Route path="/scan-qr" element={<ProtectedRoute><VerifiedRoute><ScanQR /></VerifiedRoute></ProtectedRoute>} />
+            {/* Payment Sub-pages */}
+            <Route path="/send-money" element={<PageTransition><ProtectedRoute><VerifiedRoute><SendMoney /></VerifiedRoute></ProtectedRoute></PageTransition>} />
+            <Route path="/request-money" element={<PageTransition><ProtectedRoute><VerifiedRoute><RequestMoney /></VerifiedRoute></ProtectedRoute></PageTransition>} />
+            <Route path="/add-money" element={<PageTransition><ProtectedRoute><VerifiedRoute><AddMoney /></VerifiedRoute></ProtectedRoute></PageTransition>} />
+            <Route path="/withdraw-money" element={<PageTransition><ProtectedRoute><VerifiedRoute><WithdrawMoney /></VerifiedRoute></ProtectedRoute></PageTransition>} />
+            <Route path="/scan-qr" element={<PageTransition><ProtectedRoute><VerifiedRoute><ScanQR /></VerifiedRoute></ProtectedRoute></PageTransition>} />
 
-          {/* Community Sub-pages */}
-          <Route path="/create-group" element={<ProtectedRoute><VerifiedRoute><CreateGroup /></VerifiedRoute></ProtectedRoute>} />
-          <Route path="/join-group" element={<ProtectedRoute><VerifiedRoute><JoinGroup /></VerifiedRoute></ProtectedRoute>} />
+            {/* Community Sub-pages */}
+            <Route path="/create-group" element={<PageTransition><ProtectedRoute><VerifiedRoute><CreateGroup /></VerifiedRoute></ProtectedRoute></PageTransition>} />
+            <Route path="/join-group" element={<PageTransition><ProtectedRoute><VerifiedRoute><JoinGroup /></VerifiedRoute></ProtectedRoute></PageTransition>} />
 
-          {/* Savings Sub-pages */}
-          <Route path="/create-goal" element={<ProtectedRoute><VerifiedRoute><CreateGoal /></VerifiedRoute></ProtectedRoute>} />
-          <Route path="/quick-save" element={<ProtectedRoute><VerifiedRoute><QuickSave /></VerifiedRoute></ProtectedRoute>} />
+            {/* Savings Sub-pages */}
+            <Route path="/create-goal" element={<PageTransition><ProtectedRoute><VerifiedRoute><CreateGoal /></VerifiedRoute></ProtectedRoute></PageTransition>} />
+            <Route path="/quick-save" element={<PageTransition><ProtectedRoute><VerifiedRoute><QuickSave /></VerifiedRoute></ProtectedRoute></PageTransition>} />
 
-          {/* Test Page */}
-          <Route path="/test" element={<ProtectedRoute><TestPage /></ProtectedRoute>} />
+            {/* Test Page */}
+            <Route path="/test" element={<ProtectedRoute><TestPage /></ProtectedRoute>} />
 
-          {/* Admin Routes */}
-          <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
-            <Route index element={<AdminDashboard />} />
-            <Route path="verification" element={<IdentityVerification />} />
-            <Route path="withdrawals" element={<WithdrawalRequests />} />
-            <Route path="users" element={<Users />} />
-            <Route path="settings" element={<AdminSettings />} />
-          </Route>
+            {/* Admin Routes */}
+            <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="verification" element={<IdentityVerification />} />
+              <Route path="withdrawals" element={<WithdrawalRequests />} />
+              <Route path="users" element={<Users />} />
+              <Route path="settings" element={<AdminSettings />} />
+            </Route>
 
-          {/* Catch all */}
-          <Route path="*" element={<Navigate to="/home" replace />} />
-        </Routes>
+            {/* Catch all */}
+            <Route path="*" element={<Navigate to="/home" replace />} />
+          </Routes>
+        </AnimatePresence>
       </div>
     </div>
   );

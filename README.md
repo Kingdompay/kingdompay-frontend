@@ -1,157 +1,73 @@
-# KingdomPay - Digital Wallet Application
+# KingdomPay Frontend `v1.0`
 
-A modern, responsive digital wallet application built with React and Express.js, featuring beautiful UI design with glassmorphism effects and smooth animations.
+## Overview
+**KingdomPay** is a modern, responsive fintech web application designed for seamless digital transactions. It features a premium, nature-inspired UI (Dark/Light mode), secure authentication, QR code payments, savings goals, and a comprehensive admin dashboard.
 
-## 🚀 Features
+## Key Features
 
-- **Modern UI Design**: Beautiful glassmorphism effects with gradient backgrounds
-- **Responsive Design**: Optimized for mobile and desktop devices
-- **Authentication**: Secure login system with demo credentials
-- **Wallet Management**: Personal wallet with balance tracking
-- **Transaction History**: View recent transactions with beautiful cards
-- **Savings Goals**: Track savings goals with progress bars and animations
-- **Community Wallets**: Manage church, family, and SACCO group wallets
-- **Smooth Animations**: Professional-grade animations and micro-interactions
-- **Social Login**: Google, Apple, and Mobile Money integration options
+### 🚀 Core Banking
+-   **Dashboard**: Glassmorphic balance cards, quick actions (Send, Request, Add Money), and transaction history.
+-   **Payments**: Send money via email/phone, scan QR codes, or request funds.
+-   **Savings Goals**: Create visual savings goals (e.g., "New Laptop") and track progress.
+-   **Cards**: Manage virtual/physical cards, freeze/unfreeze, and view details.
 
-## � Getting Started
+### 📱 User Experience
+-   **App-Like Feel**: Global, smooth page transitions using `framer-motion`.
+-   **Theme Engine**: Built-in Dark Mode (OLED friendly) and a custom "Soft Olive" Light Mode (`#E5EBE3`).
+-   **Responsive Design**: Fully optimized for mobile, tablet, and desktop with adaptive layouts.
+-   **Personal QR**: Each user has a unique, generated QR code for receiving funds instantly.
+
+### 🛡️ Security & Admin
+-   **Auth**: JWT-based authentication with protected routes.
+-   **Admin Dashboard**: Dedicated portal for managing users, verifying identities, and processing withdrawals.
+-   **Identity Verification**: Upload and verify ID documents (UI flow).
+
+## Tech Stack
+-   **Framework**: React (Vite)
+-   **Styling**: Tailwind CSS + Custom CSS Variables
+-   **Animations**: Framer Motion
+-   **Icons**: Google Material Symbols
+-   **Fonts**: Outfit (Display), Google Sans (Body)
+-   **QR**: `html5-qrcode` (Scanning), `react-qr-code` (Generation)
+
+## Getting Started
+
+### Prerequisites
+-   Node.js (v14+)
+-   NPM
 
 ### Installation
 
-1.  Clone the repository:
-    ```bash
-    git clone https://github.com/your-repo/kingdompay-frontend.git
-    cd kingdompay-frontend
-    ```
-
-2.  Install dependencies:
+1.  **Install Frontend Dependencies**
     ```bash
     npm install
-    # or
-    yarn install
     ```
 
-3.  Start the development server:
-    ```bash
-    npm run dev
-    # or
-    yarn dev
-    ```
-
-4.  Start the backend server (optional for full features):
+2.  **Start the Backend Server**
     ```bash
     cd backend
-    npm install
     node server.js
     ```
+    *Server runs on port 5000.*
 
-### 🔑 Login Credentials
+3.  **Start the Frontend**
+    ```bash
+    # In the root directory
+    npm run dev
+    ```
+    *App runs on `http://localhost:5173`.*
 
-Use the following credentials to access different parts of the application:
+## Login Credentials (Demo)
 
-| Role | Email | Password | Access |
-|------|-------|----------|--------|
-| **Admin** | `admin@kingdompay.com` | `Admin@123` | Full Dashboard Access, User Management, verification approvals |
-| **Demo User** | `demo@kingdompay.com` | `password123` | Mobile Wallet Interface, Savings, Groups |
+| Role | Email | Password |
+| :--- | :--- | :--- |
+| **User** | `user@example.com` | `password123` |
+| **Admin** | `admin@kingdompay.com` | `admin123` |
 
-> **Note**: You can also register a new account to test the onboarding and verification flow.
-
-## �🎨 Design Features
-
-- **Color Scheme**: Green and gold gradient theme
-- **Typography**: Google Sans, Inter, and Manrope fonts
-- **Icons**: Material Symbols with proper loading
-- **Animations**: Fade-in, slide-in, ripple effects, and hover animations
-- **Glassmorphism**: Backdrop blur effects on cards and navigation
-- **Mobile-First**: Touch-friendly interactions and iOS optimizations
-
-## 🛠️ Tech Stack
-
-### Frontend
-- **React 18** with Vite for fast development
-- **React Router** for navigation
-- **Context API** for state management
-- **Axios** for API calls
-- **Custom CSS** with inline styles for precise control
-- **Material Icons** for consistent iconography
-
-### Backend
-- **Express.js** server
-- **In-memory storage** for demo purposes
-- **CORS** enabled for cross-origin requests
-- **JWT** token-based authentication
-- **bcryptjs** for password hashing
-
-## 📱 Pages
-
-
-### User Data
-- `GET /api/user` - Get user profile
-- `GET /api/transactions` - Get transaction history
-- `GET /api/savings/goals` - Get savings goals
-- `GET /api/community/groups` - Get community groups
-
-## 🎨 Customization
-
-### Colors
-The app uses CSS custom properties for easy theming:
-```css
-:root {
-  --primary-dark-green: #1A3F22;
-  --secondary-olive-green: #58761B;
-  --gold-accent: #D99201;
-  --bronze-support: #905A01;
-}
-```
-
-### Animations
-Custom keyframe animations are defined in each component:
-- `fadeInUp` - Entrance animations
-- `ripple` - Button press effects
-- `shimmer` - Progress bar effects
-- `pulse` - Attention-grabbing elements
-
-## 📱 Mobile Optimization
-
-- **Touch-friendly**: Optimized button sizes and spacing
-- **iOS Support**: Prevents zoom on form inputs
-- **Smooth Scrolling**: Native-like scroll behavior
-- **Safe Areas**: Proper handling of device notches
-
-## 🔒 Security Features
-
-- **JWT Authentication**: Secure token-based auth
-- **Password Hashing**: bcryptjs for password security
-- **CORS Protection**: Configured for production use
-- **Input Validation**: Form validation and error handling
-
-## 🚀 Deployment
-
-### Frontend (Vercel/Netlify)
-1. Build the project: `npm run build`
-2. Deploy the `dist` folder to your hosting platform
-
-### Backend (Railway/Heroku)
-1. Set environment variables for production
-2. Deploy the backend folder to your platform
-3. Update frontend API URLs for production
-
-## 📄 License
-
-This project is for demonstration purposes. Please ensure proper licensing for production use.
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
-
-## 📞 Support
-
-For questions or support, please create an issue in the repository.
+## Project Structure
+-   `/src/components`: All UI components and pages.
+-   `/src/contexts`: Global state (Auth, DarkMode, Currency).
+-   `/backend`: Simple Node.js/Express server with JSON file storage (`data/`).
 
 ---
-
-**KingdomPay** - Modern Digital Wallet Solution 🏦✨
+*Built with ❤️ for the KingdomPay community.*

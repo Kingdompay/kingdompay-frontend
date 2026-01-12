@@ -83,7 +83,7 @@ const Cards = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white font-sans flex justify-center">
+    <div className="min-h-screen bg-[#E5EBE3] dark:bg-[#0D1B0F] font-sans flex justify-center transition-colors duration-300">
       <style>
         {`
           @keyframes fadeInUp {
@@ -102,25 +102,25 @@ const Cards = () => {
         `}
       </style>
 
-      <div className="w-full max-w-md md:max-w-6xl bg-white md:my-8 md:rounded-3xl md:shadow-2xl min-h-screen md:min-h-[800px] flex flex-col md:flex-row overflow-hidden relative">
+      <div className="w-full max-w-md md:max-w-6xl bg-[#E5EBE3] dark:bg-[#0D1B0F] md:my-8 md:rounded-3xl md:shadow-2xl min-h-screen md:min-h-[800px] flex flex-col md:flex-row overflow-hidden relative transition-colors duration-300">
 
         {/* Sidebar / Mobile Header */}
-        <div className="md:w-1/3 lg:w-1/4 bg-white md:border-r md:border-gray-100 flex flex-col">
+        <div className="md:w-1/3 lg:w-1/4 bg-[#E5EBE3] dark:bg-[#0D1B0F] md:border-r md:border-gray-100 dark:md:border-[#2D4A32] flex flex-col transition-colors duration-300">
           {/* Header */}
-          <header className="sticky top-0 z-10 p-4 bg-white md:bg-transparent">
+          <header className="sticky top-0 z-10 p-4 bg-[#E5EBE3] dark:bg-[#0D1B0F] md:bg-transparent transition-colors duration-300">
             <div className="flex justify-between items-center">
               <button
                 onClick={() => navigate('/profile')}
-                className="bg-gray-100 border-none cursor-pointer flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-200 transition-colors"
+                className="bg-gray-100 dark:bg-[#1A2E1D] border-none cursor-pointer flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-200 dark:hover:bg-[#243B28] transition-colors"
               >
-                <span className="material-symbols-outlined text-[#1A3F22] text-xl">arrow_back</span>
+                <span className="material-symbols-outlined text-[#1A3F22] dark:text-[#E8F5E8] text-xl">arrow_back</span>
               </button>
-              <h1 className="text-lg font-bold text-[#1A3F22] m-0">Cards</h1>
+              <h1 className="text-lg font-bold text-[#1A3F22] dark:text-[#E8F5E8] m-0">Cards</h1>
               <button
                 onClick={() => setShowAddModal(true)}
-                className="w-10 h-10 bg-[#E9F0E1] rounded-full flex items-center justify-center cursor-pointer hover:bg-[#dce8d0] transition-colors border-none"
+                className="w-10 h-10 bg-[#E9F0E1] dark:bg-[#243B28] rounded-full flex items-center justify-center cursor-pointer hover:bg-[#dce8d0] dark:hover:bg-[#2F4D33] transition-colors border-none"
               >
-                <span className="material-symbols-outlined text-[#1A3F22] text-xl">add</span>
+                <span className="material-symbols-outlined text-[#1A3F22] dark:text-[#81C784] text-xl">add</span>
               </button>
             </div>
           </header>
@@ -128,13 +128,13 @@ const Cards = () => {
           {/* Desktop Nav Links */}
           <div className="hidden md:block p-4 mt-auto">
             <nav className="space-y-2">
-              <Link to="/home" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+              <Link to="/home" className="flex items-center text-[#1A3F22] dark:text-[#E8F5E8] hover:bg-gray-50 dark:hover:bg-[#1A2E1D] p-3 rounded-xl transition-colors no-underline">
                 <span className="material-symbols-outlined mr-3">home</span> Home
               </Link>
-              <Link to="/profile" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+              <Link to="/profile" className="flex items-center text-[#1A3F22] dark:text-[#E8F5E8] hover:bg-gray-50 dark:hover:bg-[#1A2E1D] p-3 rounded-xl transition-colors no-underline">
                 <span className="material-symbols-outlined mr-3">person</span> Profile
               </Link>
-              <Link to="/settings" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+              <Link to="/settings" className="flex items-center text-[#1A3F22] dark:text-[#E8F5E8] hover:bg-gray-50 dark:hover:bg-[#1A2E1D] p-3 rounded-xl transition-colors no-underline">
                 <span className="material-symbols-outlined mr-3">settings</span> Settings
               </Link>
             </nav>
@@ -142,7 +142,7 @@ const Cards = () => {
         </div>
 
         {/* Main Content Area */}
-        <main className="flex-grow p-4 pb-28 md:pb-8 overflow-y-auto bg-gray-50 md:bg-white">
+        <main className="flex-grow p-4 pb-28 md:pb-8 overflow-y-auto bg-[#E5EBE3] dark:bg-[#0a150c] md:bg-[#E5EBE3] dark:md:bg-[#0D1B0F] transition-colors duration-300">
           <div className="max-w-4xl mx-auto animate-fade-in-up">
 
             {/* Add New Card Button */}
@@ -164,7 +164,7 @@ const Cards = () => {
                     key={card.id}
                     onClick={() => setSelectedCardId(card.id)}
                     style={{ background: card.gradient }}
-                    className={`rounded-2xl p-6 text-white relative overflow-hidden cursor-pointer transform transition-all hover:-translate-y-1 shadow-xl ${selectedCardId === card.id ? 'ring-4 ring-[#6f9c16] ring-offset-2' : ''}`}
+                    className={`rounded-2xl p-6 text-white relative overflow-hidden cursor-pointer transform transition-all hover:-translate-y-1 shadow-xl ${selectedCardId === card.id ? 'ring-4 ring-[#6f9c16] ring-offset-2 dark:ring-offset-[#0D1B0F]' : ''}`}
                   >
                     {/* Frozen Overlay */}
                     {card.isFrozen && (
@@ -207,30 +207,30 @@ const Cards = () => {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12 bg-gray-50 rounded-2xl border border-dashed border-gray-300 mb-8">
-                <span className="material-symbols-outlined text-4xl text-gray-400 mb-2">credit_card_off</span>
-                <p className="text-gray-500 m-0">No cards added yet</p>
+              <div className="text-center py-12 bg-gray-50 dark:bg-[#1A2E1D] rounded-2xl border border-dashed border-gray-300 dark:border-[#2D4A32] mb-8 transition-colors duration-300">
+                <span className="material-symbols-outlined text-4xl text-gray-400 dark:text-[#507e55] mb-2">credit_card_off</span>
+                <p className="text-gray-500 dark:text-[#A8C4A8] m-0">No cards added yet</p>
               </div>
             )}
 
             {/* Card Management Options */}
             {selectedCard && (
               <div className="space-y-4">
-                <h2 className="text-lg font-semibold mb-4 text-[#1A3F22]">
+                <h2 className="text-lg font-semibold mb-4 text-[#1A3F22] dark:text-[#E8F5E8]">
                   Settings for {selectedCard.type} ending in {selectedCard.number.slice(-4)}
                 </h2>
 
                 {/* Freeze Card */}
-                <div className="p-4 rounded-2xl border bg-white border-gray-200 flex items-center justify-between">
+                <div className="p-4 rounded-2xl border bg-white dark:bg-[#1A2E1D] border-gray-200 dark:border-[#2D4A32] flex items-center justify-between transition-colors duration-300">
                   <div className="flex items-center gap-4">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${selectedCard.isFrozen ? 'bg-red-100' : 'bg-[#E9F0E1]'}`}>
-                      <span className={`material-symbols-outlined ${selectedCard.isFrozen ? 'text-red-600' : 'text-[#58761B]'}`}>
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${selectedCard.isFrozen ? 'bg-red-100 dark:bg-red-900/30' : 'bg-[#E9F0E1] dark:bg-[#243B28]'}`}>
+                      <span className={`material-symbols-outlined ${selectedCard.isFrozen ? 'text-red-600 dark:text-red-400' : 'text-[#58761B] dark:text-[#81C784]'}`}>
                         {selectedCard.isFrozen ? 'lock' : 'pause'}
                       </span>
                     </div>
                     <div>
-                      <h3 className="font-semibold text-[#1A3F22] m-0">{selectedCard.isFrozen ? 'Unfreeze Card' : 'Freeze Card'}</h3>
-                      <p className="text-sm text-gray-500 m-0">
+                      <h3 className="font-semibold text-[#1A3F22] dark:text-[#E8F5E8] m-0">{selectedCard.isFrozen ? 'Unfreeze Card' : 'Freeze Card'}</h3>
+                      <p className="text-sm text-gray-500 dark:text-[#A8C4A8] m-0">
                         {selectedCard.isFrozen ? 'Enable card usage' : 'Temporarily disable your card'}
                       </p>
                     </div>
@@ -244,14 +244,14 @@ const Cards = () => {
                 </div>
 
                 {/* Card Limits */}
-                <div className="p-4 rounded-2xl border bg-white border-gray-200 flex items-center justify-between">
+                <div className="p-4 rounded-2xl border bg-white dark:bg-[#1A2E1D] border-gray-200 dark:border-[#2D4A32] flex items-center justify-between transition-colors duration-300">
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[#E9F0E1]">
-                      <span className="material-symbols-outlined text-[#58761B]">account_balance</span>
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[#E9F0E1] dark:bg-[#243B28]">
+                      <span className="material-symbols-outlined text-[#58761B] dark:text-[#81C784]">account_balance</span>
                     </div>
                     <div>
-                      <h3 className="font-semibold text-[#1A3F22] m-0">Set Limits</h3>
-                      <p className="text-sm text-gray-500 m-0">
+                      <h3 className="font-semibold text-[#1A3F22] dark:text-[#E8F5E8] m-0">Set Limits</h3>
+                      <p className="text-sm text-gray-500 dark:text-[#A8C4A8] m-0">
                         Daily: {selectedCard.limits?.daily || 1000} | Monthly: {selectedCard.limits?.monthly || 5000}
                       </p>
                     </div>
@@ -265,14 +265,14 @@ const Cards = () => {
                 </div>
 
                 {/* Card History */}
-                <div className="p-4 rounded-2xl border bg-white border-gray-200 flex items-center justify-between">
+                <div className="p-4 rounded-2xl border bg-white dark:bg-[#1A2E1D] border-gray-200 dark:border-[#2D4A32] flex items-center justify-between transition-colors duration-300">
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[#E9F0E1]">
-                      <span className="material-symbols-outlined text-[#58761B]">history</span>
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[#E9F0E1] dark:bg-[#243B28]">
+                      <span className="material-symbols-outlined text-[#58761B] dark:text-[#81C784]">history</span>
                     </div>
                     <div>
-                      <h3 className="font-semibold text-[#1A3F22] m-0">Transaction History</h3>
-                      <p className="text-sm text-gray-500 m-0">View card transactions</p>
+                      <h3 className="font-semibold text-[#1A3F22] dark:text-[#E8F5E8] m-0">Transaction History</h3>
+                      <p className="text-sm text-gray-500 dark:text-[#A8C4A8] m-0">View card transactions</p>
                     </div>
                   </div>
                   <button
@@ -292,25 +292,25 @@ const Cards = () => {
       {/* Add Card Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden animate-fade-in-up shadow-2xl">
-            <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-              <h2 className="text-xl font-bold text-[#1A3F22] m-0">Add New Card</h2>
+          <div className="bg-[#E5EBE3] dark:bg-[#0D1B0F] rounded-3xl w-full max-w-md overflow-hidden animate-fade-in-up shadow-2xl transition-colors duration-300">
+            <div className="p-6 border-b border-gray-100 dark:border-[#2D4A32] flex justify-between items-center bg-gray-50 dark:bg-[#1A2E1D]">
+              <h2 className="text-xl font-bold text-[#1A3F22] dark:text-[#E8F5E8] m-0">Add New Card</h2>
               <button
                 onClick={() => setShowAddModal(false)}
-                className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition-colors border-none cursor-pointer"
+                className="w-8 h-8 rounded-full bg-gray-200 dark:bg-[#243B28] flex items-center justify-center hover:bg-gray-300 dark:hover:bg-[#2F4D33] transition-colors border-none cursor-pointer"
               >
-                <span className="material-symbols-outlined text-gray-600 text-sm">close</span>
+                <span className="material-symbols-outlined text-gray-600 dark:text-[#A8C4A8] text-sm">close</span>
               </button>
             </div>
 
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Card Type</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-[#A8C4A8] mb-1">Card Type</label>
                 <select
                   name="type"
                   value={newCard.type}
                   onChange={handleInputChange}
-                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6f9c16] transition-all"
+                  className="w-full p-3 bg-gray-50 dark:bg-[#1A2E1D] border border-gray-200 dark:border-[#2D4A32] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6f9c16] transition-all text-gray-900 dark:text-[#E8F5E8]"
                 >
                   <option value="Visa">Visa</option>
                   <option value="Mastercard">Mastercard</option>
@@ -318,53 +318,53 @@ const Cards = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-[#A8C4A8] mb-1">Card Number</label>
                 <input
                   type="text"
                   name="number"
                   value={newCard.number}
                   onChange={handleInputChange}
                   placeholder="**** **** **** ****"
-                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6f9c16] transition-all"
+                  className="w-full p-3 bg-gray-50 dark:bg-[#1A2E1D] border border-gray-200 dark:border-[#2D4A32] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6f9c16] transition-all text-gray-900 dark:text-[#E8F5E8]"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Cardholder Name</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-[#A8C4A8] mb-1">Cardholder Name</label>
                 <input
                   type="text"
                   name="name"
                   value={newCard.name}
                   onChange={handleInputChange}
                   placeholder="John Doe"
-                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6f9c16] transition-all"
+                  className="w-full p-3 bg-gray-50 dark:bg-[#1A2E1D] border border-gray-200 dark:border-[#2D4A32] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6f9c16] transition-all text-gray-900 dark:text-[#E8F5E8]"
                   required
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-[#A8C4A8] mb-1">Expiry Date</label>
                   <input
                     type="text"
                     name="expiry"
                     value={newCard.expiry}
                     onChange={handleInputChange}
                     placeholder="MM/YY"
-                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6f9c16] transition-all"
+                    className="w-full p-3 bg-gray-50 dark:bg-[#1A2E1D] border border-gray-200 dark:border-[#2D4A32] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6f9c16] transition-all text-gray-900 dark:text-[#E8F5E8]"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">CVV</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-[#A8C4A8] mb-1">CVV</label>
                   <input
                     type="text"
                     name="cvv"
                     value={newCard.cvv}
                     onChange={handleInputChange}
                     placeholder="123"
-                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6f9c16] transition-all"
+                    className="w-full p-3 bg-gray-50 dark:bg-[#1A2E1D] border border-gray-200 dark:border-[#2D4A32] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6f9c16] transition-all text-gray-900 dark:text-[#E8F5E8]"
                     required
                   />
                 </div>
@@ -384,37 +384,37 @@ const Cards = () => {
       {/* Set Limits Modal */}
       {showLimitsModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden animate-fade-in-up shadow-2xl">
-            <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-              <h2 className="text-xl font-bold text-[#1A3F22] m-0">Set Card Limits</h2>
+          <div className="bg-[#E5EBE3] dark:bg-[#0D1B0F] rounded-3xl w-full max-w-md overflow-hidden animate-fade-in-up shadow-2xl transition-colors duration-300">
+            <div className="p-6 border-b border-gray-100 dark:border-[#2D4A32] flex justify-between items-center bg-gray-50 dark:bg-[#1A2E1D]">
+              <h2 className="text-xl font-bold text-[#1A3F22] dark:text-[#E8F5E8] m-0">Set Card Limits</h2>
               <button
                 onClick={() => setShowLimitsModal(false)}
-                className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition-colors border-none cursor-pointer"
+                className="w-8 h-8 rounded-full bg-gray-200 dark:bg-[#243B28] flex items-center justify-center hover:bg-gray-300 dark:hover:bg-[#2F4D33] transition-colors border-none cursor-pointer"
               >
-                <span className="material-symbols-outlined text-gray-600 text-sm">close</span>
+                <span className="material-symbols-outlined text-gray-600 dark:text-[#A8C4A8] text-sm">close</span>
               </button>
             </div>
 
             <form onSubmit={handleLimitsSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Daily Limit</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-[#A8C4A8] mb-1">Daily Limit</label>
                 <input
                   type="number"
                   value={limitInput.daily}
                   onChange={(e) => setLimitInput({ ...limitInput, daily: e.target.value })}
                   placeholder="1000"
-                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6f9c16] transition-all"
+                  className="w-full p-3 bg-gray-50 dark:bg-[#1A2E1D] border border-gray-200 dark:border-[#2D4A32] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6f9c16] transition-all text-gray-900 dark:text-[#E8F5E8]"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Monthly Limit</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-[#A8C4A8] mb-1">Monthly Limit</label>
                 <input
                   type="number"
                   value={limitInput.monthly}
                   onChange={(e) => setLimitInput({ ...limitInput, monthly: e.target.value })}
                   placeholder="5000"
-                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6f9c16] transition-all"
+                  className="w-full p-3 bg-gray-50 dark:bg-[#1A2E1D] border border-gray-200 dark:border-[#2D4A32] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6f9c16] transition-all text-gray-900 dark:text-[#E8F5E8]"
                 />
               </div>
 
@@ -432,14 +432,14 @@ const Cards = () => {
       {/* Transaction History Modal */}
       {showHistoryModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden animate-fade-in-up shadow-2xl">
-            <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-              <h2 className="text-xl font-bold text-[#1A3F22] m-0">Transaction History</h2>
+          <div className="bg-[#E5EBE3] dark:bg-[#0D1B0F] rounded-3xl w-full max-w-md overflow-hidden animate-fade-in-up shadow-2xl transition-colors duration-300">
+            <div className="p-6 border-b border-gray-100 dark:border-[#2D4A32] flex justify-between items-center bg-gray-50 dark:bg-[#1A2E1D]">
+              <h2 className="text-xl font-bold text-[#1A3F22] dark:text-[#E8F5E8] m-0">Transaction History</h2>
               <button
                 onClick={() => setShowHistoryModal(false)}
-                className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition-colors border-none cursor-pointer"
+                className="w-8 h-8 rounded-full bg-gray-200 dark:bg-[#243B28] flex items-center justify-center hover:bg-gray-300 dark:hover:bg-[#2F4D33] transition-colors border-none cursor-pointer"
               >
-                <span className="material-symbols-outlined text-gray-600 text-sm">close</span>
+                <span className="material-symbols-outlined text-gray-600 dark:text-[#A8C4A8] text-sm">close</span>
               </button>
             </div>
 
@@ -447,20 +447,20 @@ const Cards = () => {
               {/* Mock Transactions */}
               <div className="space-y-4">
                 {[1, 2, 3].map((i) => (
-                  <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                  <div key={i} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-[#1A2E1D] rounded-xl border border-transparent dark:border-[#2D4A32]">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center border border-gray-100">
-                        <span className="material-symbols-outlined text-gray-600">shopping_bag</span>
+                      <div className="w-10 h-10 rounded-full bg-white dark:bg-[#243B28] flex items-center justify-center border border-gray-100 dark:border-none">
+                        <span className="material-symbols-outlined text-gray-600 dark:text-[#A8C4A8]">shopping_bag</span>
                       </div>
                       <div>
-                        <p className="font-medium text-gray-800 m-0">Grocery Store</p>
-                        <p className="text-xs text-gray-500 m-0">Today, 10:30 AM</p>
+                        <p className="font-medium text-gray-800 dark:text-[#E8F5E8] m-0">Grocery Store</p>
+                        <p className="text-xs text-gray-500 dark:text-[#A8C4A8] m-0">Today, 10:30 AM</p>
                       </div>
                     </div>
                     <span className="font-semibold text-red-500">-$45.00</span>
                   </div>
                 ))}
-                <div className="text-center text-gray-500 text-sm mt-4">
+                <div className="text-center text-gray-500 dark:text-[#A8C4A8] text-sm mt-4">
                   No more transactions
                 </div>
               </div>
@@ -478,3 +478,5 @@ const Cards = () => {
 };
 
 export default Cards;
+
+

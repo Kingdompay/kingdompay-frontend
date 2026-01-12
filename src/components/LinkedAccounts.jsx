@@ -60,7 +60,7 @@ const LinkedAccounts = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white font-sans flex justify-center">
+    <div className="min-h-screen bg-[#E5EBE3] dark:bg-[#0D1B0F] font-sans flex justify-center transition-colors duration-300">
       <style>
         {`
           @keyframes fadeInUp {
@@ -79,37 +79,37 @@ const LinkedAccounts = () => {
         `}
       </style>
 
-      <div className="w-full max-w-md md:max-w-6xl bg-white md:my-8 md:rounded-3xl md:shadow-2xl min-h-screen md:min-h-[800px] flex flex-col md:flex-row overflow-hidden relative">
+      <div className="w-full max-w-md md:max-w-6xl bg-[#E5EBE3] dark:bg-[#0D1B0F] md:my-8 md:rounded-3xl md:shadow-2xl min-h-screen md:min-h-[800px] flex flex-col md:flex-row overflow-hidden relative transition-colors duration-300">
 
         {/* Sidebar / Mobile Header */}
-        <div className="md:w-1/3 lg:w-1/4 bg-white md:border-r md:border-gray-100 flex flex-col">
-          <header className="sticky top-0 z-10 p-4 bg-white md:bg-transparent">
+        <div className="md:w-1/3 lg:w-1/4 bg-[#E5EBE3] dark:bg-[#0D1B0F] md:border-r md:border-gray-100 dark:md:border-[#2D4A32] flex flex-col transition-colors duration-300">
+          <header className="sticky top-0 z-10 p-4 bg-[#E5EBE3] dark:bg-[#0D1B0F] md:bg-transparent transition-colors duration-300">
             <div className="flex justify-between items-center">
               <button
                 onClick={() => navigate('/profile')}
-                className="bg-gray-100 border-none cursor-pointer flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-200 transition-colors"
+                className="bg-gray-100 dark:bg-[#1A2E1D] border-none cursor-pointer flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-200 dark:hover:bg-[#243B28] transition-colors"
               >
-                <span className="material-symbols-outlined text-[#1A3F22] text-xl">arrow_back</span>
+                <span className="material-symbols-outlined text-[#1A3F22] dark:text-[#E8F5E8] text-xl">arrow_back</span>
               </button>
-              <h1 className="text-lg font-bold text-[#1A3F22] m-0">Linked Accounts</h1>
+              <h1 className="text-lg font-bold text-[#1A3F22] dark:text-[#E8F5E8] m-0">Linked Accounts</h1>
               <button
                 onClick={() => console.log('Add new account')}
-                className="bg-gray-100 border-none cursor-pointer flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-200 transition-colors"
+                className="bg-gray-100 dark:bg-[#1A2E1D] border-none cursor-pointer flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-200 dark:hover:bg-[#243B28] transition-colors"
               >
-                <span className="material-symbols-outlined text-[#1A3F22] text-xl">add</span>
+                <span className="material-symbols-outlined text-[#1A3F22] dark:text-[#E8F5E8] text-xl">add</span>
               </button>
             </div>
           </header>
 
           <div className="hidden md:block p-4 mt-auto">
             <nav className="space-y-2">
-              <Link to="/home" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+              <Link to="/home" className="flex items-center text-[#1A3F22] dark:text-[#E8F5E8] hover:bg-gray-50 dark:hover:bg-[#1A2E1D] p-3 rounded-xl transition-colors no-underline">
                 <span className="material-symbols-outlined mr-3">home</span> Home
               </Link>
-              <Link to="/profile" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+              <Link to="/profile" className="flex items-center text-[#1A3F22] dark:text-[#E8F5E8] hover:bg-gray-50 dark:hover:bg-[#1A2E1D] p-3 rounded-xl transition-colors no-underline">
                 <span className="material-symbols-outlined mr-3">person</span> Profile
               </Link>
-              <Link to="/cards" className="flex items-center text-[#1A3F22] hover:bg-gray-50 p-3 rounded-xl transition-colors no-underline">
+              <Link to="/cards" className="flex items-center text-[#1A3F22] dark:text-[#E8F5E8] hover:bg-gray-50 dark:hover:bg-[#1A2E1D] p-3 rounded-xl transition-colors no-underline">
                 <span className="material-symbols-outlined mr-3">credit_card</span> Cards
               </Link>
             </nav>
@@ -117,7 +117,7 @@ const LinkedAccounts = () => {
         </div>
 
         {/* Main Content Area */}
-        <main className="flex-grow p-4 pb-28 md:pb-8 overflow-y-auto bg-gray-50 md:bg-white">
+        <main className="flex-grow p-4 pb-28 md:pb-8 overflow-y-auto bg-[#E5EBE3] dark:bg-[#0a150c] md:bg-[#E5EBE3] dark:md:bg-[#0D1B0F] transition-colors duration-300">
           <div className="max-w-3xl mx-auto animate-fade-in-up space-y-8">
 
             {/* Add New Account Button */}
@@ -131,21 +131,21 @@ const LinkedAccounts = () => {
 
             {/* Bank Accounts */}
             <section>
-              <h2 className="text-base font-semibold text-[#1A3F22] mb-4 m-0">Bank Accounts</h2>
+              <h2 className="text-base font-semibold text-[#1A3F22] dark:text-[#E8F5E8] mb-4 m-0">Bank Accounts</h2>
               <div className="space-y-3">
                 {accounts.map((account) => (
                   <div
                     key={account.id}
-                    className="bg-white border border-gray-200 rounded-2xl p-5 cursor-pointer transition-all hover:-translate-y-1 hover:shadow-lg"
+                    className="bg-white dark:bg-[#1A2E1D] border border-gray-200 dark:border-[#2D4A32] rounded-2xl p-5 cursor-pointer transition-all hover:-translate-y-1 hover:shadow-lg"
                   >
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-[#E9F0E1] flex items-center justify-center">
-                          <span className="material-symbols-outlined text-[#58761B] text-xl">account_balance</span>
+                        <div className="w-10 h-10 rounded-full bg-[#E9F0E1] dark:bg-[#243B28] flex items-center justify-center">
+                          <span className="material-symbols-outlined text-[#58761B] dark:text-[#A8C4A8] text-xl">account_balance</span>
                         </div>
                         <div>
-                          <h3 className="text-base font-semibold text-[#1A3F22] m-0">{account.name}</h3>
-                          <p className="text-sm text-gray-500 m-0">{account.accountNumber}</p>
+                          <h3 className="text-base font-semibold text-[#1A3F22] dark:text-[#E8F5E8] m-0">{account.name}</h3>
+                          <p className="text-sm text-gray-500 dark:text-[#A8C4A8] m-0">{account.accountNumber}</p>
                         </div>
                       </div>
                       <span
@@ -159,8 +159,8 @@ const LinkedAccounts = () => {
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <p className="text-sm text-gray-500 m-0">{account.type}</p>
-                      <p className="text-base font-semibold text-[#1A3F22] m-0">{account.balance}</p>
+                      <p className="text-sm text-gray-500 dark:text-[#A8C4A8] m-0">{account.type}</p>
+                      <p className="text-base font-semibold text-[#1A3F22] dark:text-[#E8F5E8] m-0">{account.balance}</p>
                     </div>
                   </div>
                 ))}
@@ -169,7 +169,7 @@ const LinkedAccounts = () => {
 
             {/* Cards */}
             <section>
-              <h2 className="text-base font-semibold text-[#1A3F22] mb-4 m-0">Cards</h2>
+              <h2 className="text-base font-semibold text-[#1A3F22] dark:text-[#E8F5E8] mb-4 m-0">Cards</h2>
               <div className="space-y-3">
                 {cards.map((card) => (
                   <div
@@ -205,32 +205,32 @@ const LinkedAccounts = () => {
 
             {/* Quick Actions */}
             <section>
-              <h2 className="text-base font-semibold text-[#1A3F22] mb-4 m-0">Quick Actions</h2>
+              <h2 className="text-base font-semibold text-[#1A3F22] dark:text-[#E8F5E8] mb-4 m-0">Quick Actions</h2>
               <div className="space-y-3">
-                <div className="bg-gray-50 rounded-2xl p-5 border border-gray-200 flex items-center justify-between cursor-pointer transition-all hover:bg-gray-100 hover:-translate-y-1">
+                <div className="bg-gray-50 dark:bg-[#1A2E1D] rounded-2xl p-5 border border-gray-200 dark:border-[#2D4A32] flex items-center justify-between cursor-pointer transition-all hover:bg-gray-100 dark:hover:bg-[#243B28] hover:-translate-y-1">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-[#E9F0E1] flex items-center justify-center">
-                      <span className="material-symbols-outlined text-[#58761B] text-xl">account_balance</span>
+                    <div className="w-10 h-10 rounded-full bg-[#E9F0E1] dark:bg-[#243B28] flex items-center justify-center">
+                      <span className="material-symbols-outlined text-[#58761B] dark:text-[#A8C4A8] text-xl">account_balance</span>
                     </div>
                     <div>
-                      <h3 className="text-base font-semibold text-[#1A3F22] m-0">Link Bank Account</h3>
-                      <p className="text-sm text-gray-500 m-0">Connect your bank account</p>
+                      <h3 className="text-base font-semibold text-[#1A3F22] dark:text-[#E8F5E8] m-0">Link Bank Account</h3>
+                      <p className="text-sm text-gray-500 dark:text-[#A8C4A8] m-0">Connect your bank account</p>
                     </div>
                   </div>
-                  <span className="material-symbols-outlined text-gray-400 text-xl">chevron_right</span>
+                  <span className="material-symbols-outlined text-gray-400 dark:text-[#58761B] text-xl">chevron_right</span>
                 </div>
 
-                <div className="bg-gray-50 rounded-2xl p-5 border border-gray-200 flex items-center justify-between cursor-pointer transition-all hover:bg-gray-100 hover:-translate-y-1">
+                <div className="bg-gray-50 dark:bg-[#1A2E1D] rounded-2xl p-5 border border-gray-200 dark:border-[#2D4A32] flex items-center justify-between cursor-pointer transition-all hover:bg-gray-100 dark:hover:bg-[#243B28] hover:-translate-y-1">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-[#E9F0E1] flex items-center justify-center">
-                      <span className="material-symbols-outlined text-[#58761B] text-xl">credit_card</span>
+                    <div className="w-10 h-10 rounded-full bg-[#E9F0E1] dark:bg-[#243B28] flex items-center justify-center">
+                      <span className="material-symbols-outlined text-[#58761B] dark:text-[#A8C4A8] text-xl">credit_card</span>
                     </div>
                     <div>
-                      <h3 className="text-base font-semibold text-[#1A3F22] m-0">Add Credit Card</h3>
-                      <p className="text-sm text-gray-500 m-0">Add a new credit card</p>
+                      <h3 className="text-base font-semibold text-[#1A3F22] dark:text-[#E8F5E8] m-0">Add Credit Card</h3>
+                      <p className="text-sm text-gray-500 dark:text-[#A8C4A8] m-0">Add a new credit card</p>
                     </div>
                   </div>
-                  <span className="material-symbols-outlined text-gray-400 text-xl">chevron_right</span>
+                  <span className="material-symbols-outlined text-gray-400 dark:text-[#58761B] text-xl">chevron_right</span>
                 </div>
               </div>
             </section>
@@ -247,3 +247,5 @@ const LinkedAccounts = () => {
 };
 
 export default LinkedAccounts;
+
+

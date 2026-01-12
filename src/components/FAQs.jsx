@@ -97,7 +97,7 @@ const FAQs = () => {
     }
   ];
 
-  const filteredFAQs = faqs.filter(faq => 
+  const filteredFAQs = faqs.filter(faq =>
     faq.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
     faq.answer.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -106,304 +106,154 @@ const FAQs = () => {
     setActiveFAQ(activeFAQ === id ? null : id);
   };
 
-  const getCategoryFAQs = (categoryId) => {
-    return filteredFAQs.filter(faq => faq.category === categoryId);
-  };
-
   return (
-    <div style={{ color: '#1A3F22' }}>
-      <div style={{
-        maxWidth: '384px',
-        margin: '0 auto',
-        backgroundColor: 'white',
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
-        {/* Header */}
-        <header style={{
-          backgroundColor: 'white',
-          position: 'sticky',
-          top: 0,
-          zIndex: 100,
-          padding: '16px 24px',
-          borderBottom: '1px solid #e5e7eb'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-            <button
-              onClick={() => navigate('/profile')}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '40px',
-                height: '40px',
-                borderRadius: '50%',
-                backgroundColor: '#f3f4f6'
-              }}
-            >
-              <span className="material-symbols-outlined" style={{ color: '#1A3F22', fontSize: '20px' }}>
-                arrow_back
-              </span>
-            </button>
-            <h1 style={{
-              fontSize: '18px',
-              fontWeight: 'bold',
-              color: '#1A3F22',
-              margin: 0
-            }}>
-              Frequently Asked Questions
-            </h1>
-            <div style={{ width: '40px' }}></div>
+    <div className="min-h-screen bg-[#E5EBE3] dark:bg-[#0D1B0F] font-sans flex justify-center transition-colors duration-300">
+      <style>{`@keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}} .animate-fade-in-up{animation:fadeInUp .6s ease-out forwards}`}</style>
+      <div className="w-full max-w-md md:max-w-6xl bg-[#E5EBE3] dark:bg-[#0D1B0F] md:my-8 md:rounded-3xl md:shadow-2xl min-h-screen md:min-h-[800px] flex flex-col md:flex-row overflow-hidden relative transition-colors duration-300">
+
+        {/* Sidebar */}
+        <div className="md:w-1/3 lg:w-1/4 bg-[#E5EBE3] dark:bg-[#0D1B0F] md:border-r md:border-gray-100 dark:md:border-[#2D4A32] flex flex-col transition-colors duration-300">
+          <header className="sticky top-0 z-10 p-4 bg-[#E5EBE3] dark:bg-[#0D1B0F] md:bg-transparent transition-colors duration-300 border-b md:border-none border-gray-100 dark:border-[#2D4A32]">
+            <div className="flex justify-between items-center mb-4">
+              <button onClick={() => navigate('/profile')} className="bg-gray-100 dark:bg-[#1A2E1D] rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-[#243B28] transition-colors border-none cursor-pointer">
+                <span className="material-symbols-outlined text-[#1A3F22] dark:text-[#E8F5E8] text-xl">arrow_back</span>
+              </button>
+              <h1 className="text-lg font-bold text-[#1A3F22] dark:text-[#E8F5E8] m-0">Frequently Asked Questions</h1>
+              <div className="w-10 h-10" />
+            </div>
+
+            {/* Search Bar */}
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search FAQs..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full py-3 pl-12 pr-4 text-sm bg-[#f9fafb] dark:bg-[#1A2E1D] border-2 border-[#e5e7eb] dark:border-[#2D4A32] rounded-xl focus:outline-none focus:border-[#6f9c16] transition-colors duration-300 text-gray-900 dark:text-[#E8F5E8] placeholder-gray-500 dark:placeholder-[#A8C4A8]"
+              />
+              <span className="material-symbols-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-[#6b7280] dark:text-[#A8C4A8] text-xl">search</span>
+            </div>
+          </header>
+
+          <div className="hidden md:block p-4 mt-auto">
+            <nav className="space-y-2">
+              <Link to="/home" className="flex items-center text-[#1A3F22] dark:text-[#E8F5E8] hover:bg-gray-50 dark:hover:bg-[#1A2E1D] p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">home</span> Home
+              </Link>
+              <Link to="/profile" className="flex items-center text-[#1A3F22] dark:text-[#E8F5E8] hover:bg-gray-50 dark:hover:bg-[#1A2E1D] p-3 rounded-xl transition-colors no-underline">
+                <span className="material-symbols-outlined mr-3">person</span> Profile
+              </Link>
+            </nav>
           </div>
-          
-          {/* Search Bar */}
-          <div style={{ position: 'relative' }}>
-            <input
-              type="text"
-              placeholder="Search FAQs..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '12px 16px 12px 48px',
-                border: '2px solid #e5e7eb',
-                borderRadius: '12px',
-                fontSize: '16px',
-                backgroundColor: '#f9fafb',
-                outline: 'none',
-                transition: 'border-color 0.3s ease'
-              }}
-              onFocus={(e) => e.target.style.borderColor = '#6f9c16'}
-              onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
-            />
-            <span 
-              className="material-symbols-outlined" 
-              style={{ 
-                position: 'absolute', 
-                left: '16px', 
-                top: '50%', 
-                transform: 'translateY(-50%)',
-                color: '#6b7280', 
-                fontSize: '20px' 
-              }}
-            >
-              search
-            </span>
-          </div>
-        </header>
+        </div>
 
         {/* Main Content */}
-        <main style={{
-          flex: 1,
-          padding: '24px',
-          overflowY: 'auto',
-          paddingBottom: '100px'
-        }}>
-          
-          {/* Categories */}
-          {!searchTerm && (
-            <div style={{ marginBottom: '24px' }}>
-              <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: '0 0 16px 0' }}>
-                Browse by Category
+        <main className="flex-grow p-6 pb-28 md:pb-8 overflow-y-auto bg-[#E5EBE3] dark:bg-[#0a150c] md:bg-[#E5EBE3] dark:md:bg-[#0D1B0F] transition-colors duration-300">
+          <div className="max-w-3xl mx-auto animate-fade-in-up">
+
+            {/* Categories */}
+            {!searchTerm && (
+              <div className="mb-6">
+                <h2 className="text-base font-semibold text-[#1A3F22] dark:text-[#E8F5E8] mb-4">Browse by Category</h2>
+                <div className="grid grid-cols-2 gap-3">
+                  {faqCategories.map((category) => (
+                    <div
+                      key={category.id}
+                      className="bg-[#f9fafb] dark:bg-[#1A2E1D] rounded-2xl p-5 border border-[#e5e7eb] dark:border-[#2D4A32] text-center cursor-pointer hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 group"
+                    >
+                      <div
+                        className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3"
+                        style={{ backgroundColor: `${category.color}20` }}
+                      >
+                        <span className="material-symbols-outlined text-2xl" style={{ color: category.color }}>
+                          {category.icon}
+                        </span>
+                      </div>
+                      <h3 className="text-sm font-semibold text-[#1A3F22] dark:text-[#E8F5E8] m-0">{category.name}</h3>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* FAQs List */}
+            <div>
+              <h2 className="text-base font-semibold text-[#1A3F22] dark:text-[#E8F5E8] mb-4">
+                {searchTerm ? `Search Results (${filteredFAQs.length})` : 'All Questions'}
               </h2>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                {faqCategories.map((category) => (
-                  <div
-                    key={category.id}
-                    style={{
-                      backgroundColor: '#f9fafb',
-                      borderRadius: '16px',
-                      padding: '20px',
-                      border: '1px solid #e5e7eb',
-                      textAlign: 'center',
-                      cursor: 'pointer',
-                      transition: 'all 0.3s ease'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.target.style.transform = 'translateY(-2px)';
-                      e.target.style.boxShadow = '0 8px 25px -5px rgba(0, 0, 0, 0.1)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.transform = 'translateY(0)';
-                      e.target.style.boxShadow = 'none';
-                    }}
-                  >
-                    <div style={{
-                      width: '48px',
-                      height: '48px',
-                      borderRadius: '50%',
-                      backgroundColor: `${category.color}20`,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      margin: '0 auto 12px auto'
-                    }}>
-                      <span className="material-symbols-outlined" style={{ 
-                        color: category.color, 
-                        fontSize: '24px' 
-                      }}>
-                        {category.icon}
+              <div className="flex flex-col gap-3">
+                {filteredFAQs.length > 0 ? (
+                  filteredFAQs.map((faq) => (
+                    <div
+                      key={faq.id}
+                      className="bg-[#f9fafb] dark:bg-[#1A2E1D] rounded-2xl border border-[#e5e7eb] dark:border-[#2D4A32] overflow-hidden transition-colors duration-300"
+                    >
+                      <button
+                        onClick={() => toggleFAQ(faq.id)}
+                        className="w-full p-5 bg-transparent border-none cursor-pointer flex items-center justify-between text-left"
+                      >
+                        <h3 className="text-base font-semibold text-[#1A3F22] dark:text-[#E8F5E8] m-0 flex-1 pr-4">
+                          {faq.question}
+                        </h3>
+                        <span
+                          className={`material-symbols-outlined text-[#6b7280] dark:text-[#A8C4A8] text-xl transition-transform duration-300 ${activeFAQ === faq.id ? 'rotate-180' : ''}`}
+                        >
+                          expand_more
+                        </span>
+                      </button>
+                      {activeFAQ === faq.id && (
+                        <div className="px-5 pb-5 pt-0 border-t border-[#e5e7eb] dark:border-[#2D4A32] bg-[#E5EBE3] dark:bg-[#0D1B0F] transition-colors duration-300">
+                          <p className="text-sm text-[#6b7280] dark:text-[#A8C4A8] m-0 leading-relaxed pt-4">
+                            {faq.answer}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-10 bg-[#f9fafb] dark:bg-[#1A2E1D] rounded-2xl border border-[#e5e7eb] dark:border-[#2D4A32] transition-colors duration-300">
+                    <div className="w-16 h-16 rounded-full bg-[#E9F0E1] dark:bg-[#243B28] flex items-center justify-center mx-auto mb-4">
+                      <span className="material-symbols-outlined text-[#58761B] dark:text-[#A8C4A8] text-2xl">
+                        search_off
                       </span>
                     </div>
-                    <h3 style={{ fontSize: '14px', fontWeight: '600', color: '#1A3F22', margin: 0 }}>
-                      {category.name}
-                    </h3>
+                    <h3 className="text-base font-semibold text-[#1A3F22] dark:text-[#E8F5E8] mb-2">No results found</h3>
+                    <p className="text-sm text-[#6b7280] dark:text-[#A8C4A8] m-0">Try searching with different keywords</p>
                   </div>
-                ))}
+                )}
               </div>
             </div>
-          )}
 
-          {/* FAQs */}
-          <div>
-            <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: '0 0 16px 0' }}>
-              {searchTerm ? `Search Results (${filteredFAQs.length})` : 'All Questions'}
-            </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {filteredFAQs.length > 0 ? (
-                filteredFAQs.map((faq) => (
-                  <div
-                    key={faq.id}
-                    style={{
-                      backgroundColor: '#f9fafb',
-                      borderRadius: '16px',
-                      border: '1px solid #e5e7eb',
-                      overflow: 'hidden'
-                    }}
-                  >
-                    <button
-                      onClick={() => toggleFAQ(faq.id)}
-                      style={{
-                        width: '100%',
-                        padding: '20px',
-                        backgroundColor: 'transparent',
-                        border: 'none',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        textAlign: 'left'
-                      }}
-                    >
-                      <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: 0, flex: 1 }}>
-                        {faq.question}
-                      </h3>
-                      <span 
-                        className="material-symbols-outlined" 
-                        style={{ 
-                          color: '#6b7280', 
-                          fontSize: '20px',
-                          transform: activeFAQ === faq.id ? 'rotate(180deg)' : 'rotate(0deg)',
-                          transition: 'transform 0.3s ease'
-                        }}
-                      >
-                        expand_more
-                      </span>
-                    </button>
-                    {activeFAQ === faq.id && (
-                      <div style={{
-                        padding: '0 20px 20px 20px',
-                        borderTop: '1px solid #e5e7eb',
-                        backgroundColor: 'white'
-                      }}>
-                        <p style={{ fontSize: '14px', color: '#6b7280', margin: 0, lineHeight: '1.5' }}>
-                          {faq.answer}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                ))
-              ) : (
-                <div style={{
-                  textAlign: 'center',
-                  padding: '40px 20px',
-                  backgroundColor: '#f9fafb',
-                  borderRadius: '16px',
-                  border: '1px solid #e5e7eb'
-                }}>
-                  <div style={{
-                    width: '60px',
-                    height: '60px',
-                    borderRadius: '50%',
-                    backgroundColor: '#E9F0E1',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    margin: '0 auto 16px auto'
-                  }}>
-                    <span className="material-symbols-outlined" style={{ color: '#58761B', fontSize: '24px' }}>
-                      search_off
-                    </span>
-                  </div>
-                  <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: '0 0 8px 0' }}>
-                    No results found
-                  </h3>
-                  <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
-                    Try searching with different keywords
-                  </p>
+            {/* Contact Support */}
+            <div className="mt-8 mb-20 md:mb-8">
+              <div className="bg-[#f0f9ff] dark:bg-sky-900/20 rounded-2xl p-5 border border-[#bae6fd] dark:border-sky-900/50 text-center transition-colors duration-300">
+                <div className="w-12 h-12 rounded-full bg-[#E9F0E1] dark:bg-[#243B28] flex items-center justify-center mx-auto mb-3">
+                  <span className="material-symbols-outlined text-[#58761B] dark:text-[#A8C4A8] text-2xl">
+                    help
+                  </span>
                 </div>
-              )}
-            </div>
-          </div>
-
-          {/* Contact Support */}
-          <div style={{ marginTop: '32px' }}>
-            <div style={{
-              backgroundColor: '#f0f9ff',
-              borderRadius: '16px',
-              padding: '20px',
-              border: '1px solid #bae6fd',
-              textAlign: 'center'
-            }}>
-              <div style={{
-                width: '48px',
-                height: '48px',
-                borderRadius: '50%',
-                backgroundColor: '#E9F0E1',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                margin: '0 auto 12px auto'
-              }}>
-                <span className="material-symbols-outlined" style={{ color: '#58761B', fontSize: '24px' }}>
-                  help
-                </span>
+                <h3 className="text-base font-semibold text-[#1A3F22] dark:text-[#E8F5E8] mb-2">Still need help?</h3>
+                <p className="text-sm text-[#6b7280] dark:text-[#A8C4A8] mb-4">
+                  Can't find what you're looking for? Contact our support team.
+                </p>
+                <button
+                  onClick={() => navigate('/chat-support')}
+                  className="bg-[#0369a1] text-white border-none rounded-lg px-5 py-2.5 text-sm font-medium cursor-pointer hover:bg-[#0284c7] transition-colors"
+                >
+                  Contact Support
+                </button>
               </div>
-              <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1A3F22', margin: '0 0 8px 0' }}>
-                Still need help?
-              </h3>
-              <p style={{ fontSize: '14px', color: '#6b7280', margin: '0 0 16px 0' }}>
-                Can't find what you're looking for? Contact our support team.
-              </p>
-              <button 
-                onClick={() => navigate('/chat-support')}
-                style={{
-                  backgroundColor: '#0369a1',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  padding: '10px 20px',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  cursor: 'pointer'
-                }}
-              >
-                Contact Support
-              </button>
             </div>
           </div>
         </main>
 
         {/* Bottom Navigation */}
-        <BottomNav />
+        <div className="md:hidden"><BottomNav /></div>
       </div>
     </div>
   );
 };
 
 export default FAQs;
+
+

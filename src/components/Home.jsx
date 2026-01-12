@@ -23,14 +23,11 @@ const Home = () => {
   const transactions = user?.transactions || [];
   const unreadNotifications = (user?.notifications || []).filter(n => !n.read).length;
 
-  console.log('Home: Rendered with balance:', userBalance);
-
   const handleWalletClick = () => {
     setShowWalletModal(true);
   };
 
   const handleButtonClick = (action) => {
-    console.log(`${action} button clicked!`);
     setButtonStates(prev => ({ ...prev, [action]: true }));
     setTimeout(() => {
       setButtonStates(prev => ({ ...prev, [action]: false }));
@@ -82,7 +79,7 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white font-sans flex justify-center">
+    <div className="min-h-screen bg-[#E5EBE3] dark:bg-dark-bg font-sans flex justify-center transition-colors duration-300">
       <style>
         {`
           @keyframes ripple {
@@ -106,15 +103,15 @@ const Home = () => {
         `}
       </style>
 
-      <div className="w-full max-w-md md:max-w-6xl bg-white md:bg-white md:my-8 md:rounded-3xl md:shadow-2xl min-h-screen md:min-h-[800px] flex flex-col md:flex-row overflow-hidden relative">
+      <div className="w-full max-w-md md:max-w-6xl bg-[#E5EBE3] dark:bg-dark-bg md:bg-[#E5EBE3] md:dark:bg-dark-bg md:my-8 md:rounded-3xl md:shadow-2xl min-h-screen md:min-h-[800px] flex flex-col md:flex-row overflow-hidden relative transition-colors duration-300">
 
         {/* Left Column (Desktop) / Top Section (Mobile) */}
         <div className="md:w-1/3 lg:w-1/4 relative flex flex-col">
           {/* Header Section with Gradient */}
           <div className="relative animate-fade-in-up flex-shrink-0">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#1A3F22] via-[#58761B] to-[#D99201] rounded-b-3xl md:rounded-none md:h-full"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-[#1A3F22] via-[#58761B] to-[#D99201] rounded-b-3xl md:rounded-tr-none md:rounded-bl-3xl md:rounded-br-3xl md:h-full"></div>
 
-            <div className="relative z-10 bg-gradient-to-br from-[#1A3F22] via-[#58761B] to-[#D99201] pb-16 md:pb-8 rounded-b-3xl md:rounded-none md:h-full shadow-xl md:shadow-none">
+            <div className="relative z-10 bg-gradient-to-br from-[#1A3F22] via-[#58761B] to-[#D99201] pb-16 md:pb-8 rounded-b-3xl md:rounded-tr-none md:rounded-bl-3xl md:rounded-br-3xl md:h-full shadow-xl md:shadow-none">
               {/* Top Bar */}
               <div className="p-6 animate-slide-in-left">
                 <div className="flex justify-between items-center">
@@ -150,15 +147,20 @@ const Home = () => {
 
               {/* Balance Section */}
               <div className="px-6 pb-4 animate-slide-in-right">
-                <p className="text-sm font-light text-white/80 m-0">
-                  Total Balance
-                </p>
-                <p className="text-2xl md:text-3xl font-bold text-white mt-1 m-0 tracking-tight whitespace-nowrap overflow-hidden text-ellipsis">
-                  {showBalance
-                    ? formatCurrency(userBalance)
-                    : '••••••••'
-                  }
-                </p>
+                <div className="bg-white/10 backdrop-blur-md border border-white/20 p-5 rounded-2xl shadow-lg relative overflow-hidden group">
+                  <div className="absolute -right-6 -top-6 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:bg-white/20 transition-colors duration-500"></div>
+
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="material-symbols-outlined text-white/70 text-lg">account_balance_wallet</span>
+                    <p className="text-sm font-medium text-white/80 m-0 uppercase tracking-wider">
+                      Total Balance
+                    </p>
+                  </div>
+
+                  <p className={`text-3xl md:text-4xl font-bold text-white mt-1 m-0 tracking-tight whitespace-nowrap overflow-hidden text-ellipsis drop-shadow-sm font-['Outfit'] transition-all duration-300 ${showBalance ? '' : 'blur-md select-none'}`}>
+                    {formatCurrency(totalBalance)}
+                  </p>
+                </div>
               </div>
 
               {/* Desktop Navigation (Hidden on Mobile) */}
@@ -201,7 +203,7 @@ const Home = () => {
                         {action === 'Add' ? 'arrow_downward' : action === 'Send' ? 'arrow_upward' : 'more_horiz'}
                       </span>
                     </button>
-                    <p className="text-xs mt-2 text-[#1A3F22] font-bold m-0">
+                    <p className="text-xs mt-2 text-[#1A3F22] dark:text-[#E8F5E8] font-bold m-0 transition-colors">
                       {action}
                     </p>
                   </div>
@@ -212,11 +214,11 @@ const Home = () => {
         </div>
 
         {/* Right Column (Desktop) / Main Content (Mobile) */}
-        <div className="flex-grow bg-white md:bg-transparent rounded-t-3xl md:rounded-none pt-6 md:pt-8 overflow-y-auto mt-6 md:mt-0 md:p-8">
+        <div className="flex-grow bg-white dark:bg-dark-bg md:bg-transparent rounded-t-3xl md:rounded-none pt-6 md:pt-8 overflow-y-auto mt-6 md:mt-0 md:p-8 transition-colors duration-300">
 
           {/* Desktop Header */}
           <div className="hidden md:flex justify-between items-center mb-8">
-            <h1 className="text-2xl font-bold text-[#1A3F22]">Dashboard</h1>
+            <h1 className="text-2xl font-bold text-[#1A3F22] dark:text-[#E8F5E8]">Dashboard</h1>
             <div className="flex gap-4">
               <button onClick={() => handleButtonClick('Add')} className="bg-[#1A3F22] text-white px-6 py-2 rounded-full font-medium hover:bg-[#14301a] transition-colors shadow-md flex items-center gap-2">
                 <span className="material-symbols-outlined text-sm">arrow_downward</span> Add Money
@@ -251,41 +253,42 @@ const Home = () => {
 
           {/* Transactions Section */}
           <div className="px-6 md:px-0 pb-24 md:pb-0">
-            <h2 className="text-xl font-bold text-gray-800 mb-4 m-0">
+            <h2 className="text-xl font-bold text-gray-800 dark:text-[#E8F5E8] mb-4 m-0 transition-colors">
               Transactions
             </h2>
             <div className="flex flex-col gap-4">
               {transactions.length > 0 ? (
                 transactions.map((tx, i) => (
-                  <div key={i} className="bg-white/60 backdrop-blur-md p-4 rounded-xl shadow-sm border border-white/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-md flex items-center justify-between">
+                  <div key={i} className="bg-white/60 dark:bg-[#1A2E1D]/80 backdrop-blur-md p-4 rounded-xl shadow-sm border border-white/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-md flex items-center justify-between">
                     <div className="flex items-center">
-                      <div className="w-10 h-10 rounded-full bg-white/50 flex items-center justify-center">
-                        <span className="material-symbols-outlined text-[#1A3F22] text-xl">
+                      <div className="w-10 h-10 rounded-full bg-white/50 dark:bg-white/10 flex items-center justify-center">
+                        <span className="material-symbols-outlined text-[#1A3F22] dark:text-[#E8F5E8] text-xl">
                           {tx.type === 'credit' ? 'arrow_downward' : 'arrow_upward'}
                         </span>
                       </div>
                       <div className="ml-4">
-                        <p className="font-medium text-[#1A3F22] m-0">{tx.description}</p>
-                        <p className="text-xs text-gray-500 m-0">{new Date(tx.date).toLocaleDateString()}</p>
+                        <p className="font-medium text-[#1A3F22] dark:text-[#E8F5E8] m-0">{tx.description}</p>
+                        <p className="text-xs text-gray-500 dark:text-[#A8C4A8] m-0">{new Date(tx.date).toLocaleDateString()}</p>
                       </div>
                     </div>
-                    <p className={`font-bold m-0 ${tx.type === 'credit' ? 'text-green-600' : 'text-red-600'}`}>
+                    <p className={`font-bold m-0 ${tx.type === 'credit' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                       {tx.type === 'credit' ? '+' : '-'}{formatCurrency(tx.amount)}
                     </p>
                   </div>
                 ))
               ) : (
-                <p className="text-gray-500 text-center">No transactions yet</p>
+                <p className="text-gray-500 dark:text-[#A8C4A8] text-center">No transactions yet</p>
               )}
             </div>
           </div>
         </div>
       </div>
 
+      {/* Modals omitted for brevity - assuming default/transparent overlays work or need minimal tweaks */}
       {/* Wallet Details Modal */}
       {showWalletModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-fade-in-up">
-          <div className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl relative overflow-hidden">
+          <div className="bg-white dark:bg-[#1A2E1D] rounded-3xl p-6 max-w-sm w-full shadow-2xl relative overflow-hidden transition-colors">
             {/* Background Decoration */}
             <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-br from-[#1A3F22] to-[#58761B]"></div>
 
@@ -300,43 +303,43 @@ const Home = () => {
                 </button>
               </div>
 
-              <div className="bg-white rounded-2xl p-4 shadow-lg mb-6 text-center">
-                <p className="text-gray-500 text-xs uppercase tracking-wider mb-1">Total Net Worth</p>
-                <h3 className="text-3xl font-bold text-[#1A3F22] m-0">{formatCurrency(totalBalance)}</h3>
+              <div className="bg-[#E5EBE3] dark:bg-[#0D1B0F] rounded-2xl p-4 shadow-lg mb-6 text-center transition-colors">
+                <p className="text-gray-500 dark:text-[#A8C4A8] text-xs uppercase tracking-wider mb-1">Total Net Worth</p>
+                <h3 className="text-3xl font-bold text-[#1A3F22] dark:text-[#E8F5E8] m-0">{formatCurrency(totalBalance)}</h3>
               </div>
 
               <div className="space-y-4">
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
+                <div className="flex justify-between items-center p-3 bg-[#E5EBE3] dark:bg-[#0a150c] rounded-xl transition-colors">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-[#E9F0E1] flex items-center justify-center text-[#1A3F22]">
+                    <div className="w-10 h-10 rounded-full bg-[#E9F0E1] dark:bg-[#1A3F22] flex items-center justify-center text-[#1A3F22] dark:text-[#E8F5E8]">
                       <span className="material-symbols-outlined">account_balance_wallet</span>
                     </div>
                     <div>
-                      <p className="font-bold text-[#1A3F22] text-sm m-0">Main Wallet</p>
-                      <p className="text-xs text-gray-500 m-0">Available</p>
+                      <p className="font-bold text-[#1A3F22] dark:text-[#E8F5E8] text-sm m-0">Main Wallet</p>
+                      <p className="text-xs text-gray-500 dark:text-[#A8C4A8] m-0">Available</p>
                     </div>
                   </div>
-                  <span className="font-bold text-[#1A3F22]">{formatCurrency(userBalance)}</span>
+                  <span className="font-bold text-[#1A3F22] dark:text-[#E8F5E8]">{formatCurrency(userBalance)}</span>
                 </div>
 
-                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
+                <div className="flex justify-between items-center p-3 bg-[#E5EBE3] dark:bg-[#0a150c] rounded-xl transition-colors">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-[#E9F0E1] flex items-center justify-center text-[#1A3F22]">
+                    <div className="w-10 h-10 rounded-full bg-[#E9F0E1] dark:bg-[#1A3F22] flex items-center justify-center text-[#1A3F22] dark:text-[#E8F5E8]">
                       <span className="material-symbols-outlined">savings</span>
                     </div>
                     <div>
-                      <p className="font-bold text-[#1A3F22] text-sm m-0">Savings Wallet</p>
-                      <p className="text-xs text-gray-500 m-0">Reserved</p>
+                      <p className="font-bold text-[#1A3F22] dark:text-[#E8F5E8] text-sm m-0">Savings Wallet</p>
+                      <p className="text-xs text-gray-500 dark:text-[#A8C4A8] m-0">Reserved</p>
                     </div>
                   </div>
-                  <span className="font-bold text-[#1A3F22]">{formatCurrency(savingsBalance)}</span>
+                  <span className="font-bold text-[#1A3F22] dark:text-[#E8F5E8]">{formatCurrency(savingsBalance)}</span>
                 </div>
 
-                <div className="border-t border-gray-100 pt-4 mt-4">
-                  <p className="text-xs text-gray-500 mb-2 text-center">Your Account Number</p>
-                  <div className="flex items-center justify-center gap-2 bg-gray-100 p-2 rounded-lg cursor-pointer hover:bg-gray-200 transition-colors" onClick={() => navigator.clipboard.writeText('1234 5678 9012')}>
-                    <span className="font-mono text-[#1A3F22] font-medium">1234 5678 9012</span>
-                    <span className="material-symbols-outlined text-gray-400 text-sm">content_copy</span>
+                <div className="border-t border-gray-100 dark:border-[#2D4A32] pt-4 mt-4 transition-colors">
+                  <p className="text-xs text-gray-500 dark:text-[#A8C4A8] mb-2 text-center">Your Account Number</p>
+                  <div className="flex items-center justify-center gap-2 bg-gray-100 dark:bg-[#1A2E1D] p-2 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-[#243B28] transition-colors" onClick={() => navigator.clipboard.writeText('1234 5678 9012')}>
+                    <span className="font-mono text-[#1A3F22] dark:text-[#E8F5E8] font-medium">1234 5678 9012</span>
+                    <span className="material-symbols-outlined text-gray-400 dark:text-[#A8C4A8] text-sm">content_copy</span>
                   </div>
                 </div>
               </div>
@@ -348,7 +351,7 @@ const Home = () => {
       {/* More Options Modal */}
       {showMoreModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-fade-in-up">
-          <div className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl relative overflow-hidden">
+          <div className="bg-white dark:bg-[#1A2E1D] rounded-3xl p-6 max-w-sm w-full shadow-2xl relative overflow-hidden transition-colors">
             {/* Background Decoration */}
             <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-br from-[#1A3F22] to-[#58761B]"></div>
 
@@ -363,22 +366,22 @@ const Home = () => {
                 </button>
               </div>
 
-              <div className="bg-white rounded-2xl p-4 shadow-lg grid grid-cols-4 gap-4">
+              <div className="bg-[#E5EBE3] dark:bg-[#0D1B0F] rounded-2xl p-4 shadow-lg grid grid-cols-4 gap-4 transition-colors">
                 {[
-                  { name: 'Airtime', icon: 'phone_iphone', color: 'bg-blue-100 text-blue-600' },
-                  { name: 'Data', icon: 'wifi', color: 'bg-green-100 text-green-600' },
-                  { name: 'Bills', icon: 'receipt_long', color: 'bg-orange-100 text-orange-600' },
-                  { name: 'Power', icon: 'bolt', color: 'bg-yellow-100 text-yellow-600' },
-                  { name: 'Internet', icon: 'router', color: 'bg-purple-100 text-purple-600' },
-                  { name: 'Betting', icon: 'sports_soccer', color: 'bg-red-100 text-red-600' },
-                  { name: 'School', icon: 'school', color: 'bg-indigo-100 text-indigo-600' },
-                  { name: 'TV', icon: 'tv', color: 'bg-pink-100 text-pink-600' },
+                  { name: 'Airtime', icon: 'phone_iphone', color: 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300' },
+                  { name: 'Data', icon: 'wifi', color: 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300' },
+                  { name: 'Bills', icon: 'receipt_long', color: 'bg-orange-100 dark:bg-orange-900 text-orange-600 dark:text-orange-300' },
+                  { name: 'Power', icon: 'bolt', color: 'bg-yellow-100 dark:bg-yellow-900 text-yellow-600 dark:text-yellow-300' },
+                  { name: 'Internet', icon: 'router', color: 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300' },
+                  { name: 'Betting', icon: 'sports_soccer', color: 'bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300' },
+                  { name: 'School', icon: 'school', color: 'bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-300' },
+                  { name: 'TV', icon: 'tv', color: 'bg-pink-100 dark:bg-pink-900 text-pink-600 dark:text-pink-300' },
                 ].map((service) => (
                   <div key={service.name} className="flex flex-col items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
                     <div className={`w-12 h-12 rounded-full flex items-center justify-center ${service.color}`}>
                       <span className="material-symbols-outlined">{service.icon}</span>
                     </div>
-                    <span className="text-xs font-medium text-gray-700">{service.name}</span>
+                    <span className="text-xs font-medium text-gray-700 dark:text-[#A8C4A8]">{service.name}</span>
                   </div>
                 ))}
               </div>

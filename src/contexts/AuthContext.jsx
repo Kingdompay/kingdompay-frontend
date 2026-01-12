@@ -344,6 +344,14 @@ const authReducer = (state, action) => {
       return { ...state, verifications: updatedVerifications };
     }
 
+    case 'SET_NOTIFICATIONS':
+      if (!state.user) return state;
+      return { ...state, user: { ...state.user, notifications: action.payload } };
+
+    case 'SET_CARDS':
+      if (!state.user) return state;
+      return { ...state, user: { ...state.user, cards: action.payload } };
+
     default:
       return state;
   }
@@ -443,6 +451,19 @@ export const AuthProvider = ({ children }) => {
           dispatch({ type: 'SET_APPS', payload: allApps });
         } catch (e) {
           console.error("Error loading apps", e);
+        }
+
+        // Fetch Notifications & Cards (Real Data)
+        if (token && savedUser) {
+          try {
+            const notifsRes = await api.get('/notifications');
+            dispatch({ type: 'SET_NOTIFICATIONS', payload: notifsRes.data });
+
+            const cardsRes = await api.get('/cards');
+            dispatch({ type: 'SET_CARDS', payload: cardsRes.data });
+          } catch (e) {
+            console.warn("Failed to fetch real user data", e);
+          }
         }
 
       } catch (error) {
@@ -668,6 +689,14 @@ export const AuthProvider = ({ children }) => {
         return { success: true };
       }
 
+      // Refresh global data
+      try {
+        const notifsRes = await api.get('/notifications');
+        dispatch({ type: 'SET_NOTIFICATIONS', payload: notifsRes.data });
+        const cardsRes = await api.get('/cards');
+        dispatch({ type: 'SET_CARDS', payload: cardsRes.data });
+      } catch (e) { console.warn("Fetch failed"); }
+
       // 3. Legacy Demo Fallback (Optional: Remove if we want strict login)
       // Keeping it for 'demo@kingdompay.com' only if needed, but user asked to remove buttons.
       // Let's remove the generic "startsWith" logic and only allow registered users + admin.
@@ -847,8 +876,20 @@ export const AuthProvider = ({ children }) => {
     dispatch({ type: 'ADD_TRANSACTION', payload: transaction });
   };
 
-  const addNotification = (notification) => {
-    dispatch({ type: 'ADD_NOTIFICATION', payload: notification });
+  const addNotification = async (notification) => {
+    try {
+      if (state.user) {
+        // Use API
+        const res = await api.post('/notifications', notification);
+        const newNotif = res.data;
+        const currentNotifs = state.user.notifications || [];
+        dispatch({ type: 'SET_NOTIFICATIONS', payload: [newNotif, ...currentNotifs] });
+      }
+    } catch (e) {
+      console.error("Failed to add notification", e);
+      // Fallback
+      dispatch({ type: 'ADD_NOTIFICATION', payload: notification });
+    }
   };
 
   const markAsRead = (id) => {
@@ -899,16 +940,40 @@ export const AuthProvider = ({ children }) => {
     dispatch({ type: 'REJECT_WITHDRAWAL', payload: requestId });
   };
 
-  const addCard = (card) => {
-    dispatch({ type: 'ADD_CARD', payload: card });
+  const addCard = async (card) => {
+    try {
+      const res = await api.post('/cards', card);
+      const newCard = res.data;
+      const currentCards = state.user.cards || [];
+      dispatch({ type: 'SET_CARDS', payload: [...currentCards, newCard] });
+    } catch (e) {
+      console.error("Failed to add card", e);
+      dispatch({ type: 'ADD_CARD', payload: card });
+    }
   };
 
-  const toggleCardFreeze = (cardId) => {
-    dispatch({ type: 'TOGGLE_CARD_FREEZE', payload: cardId });
+  const toggleCardFreeze = async (cardId) => {
+    try {
+      const res = await api.put(`/cards/${cardId}/freeze`);
+      const updatedCard = res.data;
+      const currentCards = state.user.cards || [];
+      const newCards = currentCards.map(c => c.id === cardId ? updatedCard : c);
+      dispatch({ type: 'SET_CARDS', payload: newCards });
+    } catch (e) {
+      dispatch({ type: 'TOGGLE_CARD_FREEZE', payload: cardId });
+    }
   };
 
-  const updateCardLimits = (cardId, limits) => {
-    dispatch({ type: 'UPDATE_CARD_LIMITS', payload: { cardId, limits } });
+  const updateCardLimits = async (cardId, limits) => {
+    try {
+      const res = await api.put(`/cards/${cardId}/limits`, limits);
+      const updatedCard = res.data;
+      const currentCards = state.user.cards || [];
+      const newCards = currentCards.map(c => c.id === cardId ? updatedCard : c);
+      dispatch({ type: 'SET_CARDS', payload: newCards });
+    } catch (e) {
+      dispatch({ type: 'UPDATE_CARD_LIMITS', payload: { cardId, limits } });
+    }
   };
 
   const addApp = (app) => {
