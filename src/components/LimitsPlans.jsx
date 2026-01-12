@@ -7,55 +7,6 @@ const LimitsPlans = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  // Use limits from user object or fallback to defaults
-  const limits = user?.limits || {
-    dailySpending: 1000,
-    monthlySpending: 5000,
-    transferLimit: 2500,
-    atmWithdrawal: 500
-  };
-
-  const plans = [
-    {
-      id: 1,
-      name: 'Basic',
-      price: 'Free',
-      features: [
-        'Up to $1,000 daily spending',
-        'Up to $5,000 monthly spending',
-        'Basic customer support',
-        'Standard transaction fees'
-      ],
-      current: true
-    },
-    {
-      id: 2,
-      name: 'Premium',
-      price: '$9.99/month',
-      features: [
-        'Up to $5,000 daily spending',
-        'Up to $25,000 monthly spending',
-        'Priority customer support',
-        'Reduced transaction fees',
-        'Advanced analytics'
-      ],
-      current: false
-    },
-    {
-      id: 3,
-      name: 'Pro',
-      price: '$19.99/month',
-      features: [
-        'Unlimited daily spending',
-        'Unlimited monthly spending',
-        '24/7 premium support',
-        'No transaction fees',
-        'Advanced analytics & insights',
-        'Priority features'
-      ],
-      current: false
-    }
-  ];
 
   const getStatusBadge = () => {
     const status = user?.verificationStatus || 'unverified';
@@ -80,7 +31,7 @@ const LimitsPlans = () => {
               <button onClick={() => navigate('/profile')} className="bg-gray-100 dark:bg-[#1A2E1D] border-none rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-[#243B28] transition-colors cursor-pointer">
                 <span className="material-symbols-outlined text-[#1A3F22] dark:text-[#E8F5E8] text-xl">arrow_back</span>
               </button>
-              <h1 className="text-lg font-bold text-[#1A3F22] dark:text-[#E8F5E8] m-0">Limits & Plans</h1>
+              <h1 className="text-lg font-bold text-[#1A3F22] dark:text-[#E8F5E8] m-0">Account Limits</h1>
               <div className="w-10 h-10" />
             </div>
           </header>
@@ -122,45 +73,66 @@ const LimitsPlans = () => {
 
             {/* Current Limits */}
             <section>
-              <h2 className="text-base font-semibold text-[#1A3F22] dark:text-[#E8F5E8] mb-4">Current Limits</h2>
+              <h2 className="text-base font-semibold text-[#1A3F22] dark:text-[#E8F5E8] mb-4">Transaction Limits</h2>
               <div className="space-y-4">
-                <div className="bg-white dark:bg-[#1A2E1D] border border-gray-200 dark:border-[#2D4A32] rounded-2xl p-4 flex justify-between items-center transition-colors duration-300">
-                  <span className="font-medium text-gray-900 dark:text-[#E8F5E8]">Daily Spending</span>
-                  <span className="text-[#6f9c16] font-bold">${(limits.daily || limits.dailySpending).toLocaleString()}</span>
+                <div className="bg-white dark:bg-[#1A2E1D] border border-gray-200 dark:border-[#2D4A32] rounded-2xl p-5 transition-colors duration-300">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[#E9F0E1] dark:bg-[#243B28]">
+                        <span className="material-symbols-outlined text-[#58761B] dark:text-[#81C784] text-2xl">today</span>
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-[#1A3F22] dark:text-[#E8F5E8] m-0">Daily Limit</h3>
+                        <p className="text-xs text-gray-500 dark:text-[#A8C4A8] m-0">Maximum per day</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-2xl font-bold text-[#1A3F22] dark:text-[#E8F5E8] m-0">
+                        KES {user?.verificationStatus === 'verified' ? '250,000' : '50,000'}
+                      </p>
+                      <p className={`text-xs font-medium m-0 ${user?.verificationStatus === 'verified' ? 'text-green-600 dark:text-green-400' : 'text-orange-600 dark:text-orange-400'}`}>
+                        {user?.verificationStatus === 'verified' ? 'Verified' : 'Unverified'}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <div className="bg-white dark:bg-[#1A2E1D] border border-gray-200 dark:border-[#2D4A32] rounded-2xl p-4 flex justify-between items-center transition-colors duration-300">
-                  <span className="font-medium text-gray-900 dark:text-[#E8F5E8]">Monthly Spending</span>
-                  <span className="text-[#6f9c16] font-bold">${(limits.monthly || limits.monthlySpending).toLocaleString()}</span>
+
+                <div className="bg-white dark:bg-[#1A2E1D] border border-gray-200 dark:border-[#2D4A32] rounded-2xl p-5 transition-colors duration-300">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[#E9F0E1] dark:bg-[#243B28]">
+                        <span className="material-symbols-outlined text-[#58761B] dark:text-[#81C784] text-2xl">calendar_month</span>
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-[#1A3F22] dark:text-[#E8F5E8] m-0">Monthly Limit</h3>
+                        <p className="text-xs text-gray-500 dark:text-[#A8C4A8] m-0">Maximum per month</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-2xl font-bold text-[#1A3F22] dark:text-[#E8F5E8] m-0">
+                        {user?.verificationStatus === 'verified' ? 'Unlimited' : 'KES 1,500,000'}
+                      </p>
+                      <p className={`text-xs font-medium m-0 ${user?.verificationStatus === 'verified' ? 'text-green-600 dark:text-green-400' : 'text-orange-600 dark:text-orange-400'}`}>
+                        {user?.verificationStatus === 'verified' ? 'Verified' : 'Unverified'}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </section>
-            {/* Plans */}
-            <section>
-              <h2 className="text-base font-semibold text-[#1A3F22] dark:text-[#E8F5E8] mb-4">Available Plans</h2>
-              <div className="space-y-4">
-                {plans.map(plan => (
-                  <div key={plan.id} className={`border ${plan.current ? 'border-[#6f9c16] bg-[#f0f9ff] dark:bg-[#1e3a29]' : 'border-gray-200 dark:border-[#2D4A32] bg-white dark:bg-[#1A2E1D]'} rounded-2xl p-4 relative transition-colors duration-300`}>
-                    {plan.current && (
-                      <div className="absolute top-[-8px] left-5 bg-[#6f9c16] text-white px-3 py-1 rounded-full text-xs font-semibold">Current Plan</div>
-                    )}
-                    <div className="flex justify-between items-center mb-2">
-                      <h3 className="text-lg font-bold text-[#1A3F22] dark:text-[#E8F5E8]">{plan.name}</h3>
-                      <span className="text-[#6f9c16] font-semibold">{plan.price}</span>
-                    </div>
-                    <ul className="list-disc list-inside space-y-1 text-[#1A3F22] dark:text-[#E8F5E8] mb-4">
-                      {plan.features.map((f, i) => (
-                        <li key={i} className="flex items-center">
-                          <span className="material-symbols-outlined text-[#6f9c16] mr-1" style={{ fontSize: '16px' }}>check_circle</span>{f}
-                        </li>
-                      ))}
-                    </ul>
-                    {!plan.current && (
-                      <button className="w-full bg-[#6f9c16] text-white rounded-md py-2 font-medium hover:bg-[#5a7a12] transition-colors border-none cursor-pointer">
-                        Upgrade to {plan.name}
-                      </button>
-                    )}
+
+              {/* Info Box */}
+              <div className="mt-6 p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800">
+                <div className="flex items-start gap-3">
+                  <span className="material-symbols-outlined text-blue-600 dark:text-blue-400 text-xl">info</span>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-blue-900 dark:text-blue-200 text-sm mb-1">About Limits</h3>
+                    <p className="text-xs text-blue-700 dark:text-blue-300">
+                      {user?.verificationStatus === 'verified'
+                        ? 'As a verified user, you enjoy higher daily limits with no monthly cap. You can transact up to KES 250,000 per day.'
+                        : 'Verify your identity to unlock higher limits. Verified users get KES 250,000 daily with unlimited monthly transactions.'}
+                    </p>
                   </div>
-                ))}
+                </div>
               </div>
             </section>
           </div>

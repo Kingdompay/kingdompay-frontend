@@ -3,11 +3,13 @@ import { useNavigate, Link } from 'react-router-dom';
 import BottomNav from './BottomNav';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { useDarkMode } from '../contexts/DarkModeContext';
+import { useAuth } from '../contexts/AuthContext';
 
 const Settings = () => {
   const navigate = useNavigate();
   const { currency, setCurrency, exchangeRate } = useCurrency();
   const { isDarkMode, toggleDarkMode } = useDarkMode();
+  const { user } = useAuth();
   const [settings, setSettings] = useState({
     notifications: true,
     biometric: true,
@@ -16,6 +18,13 @@ const Settings = () => {
   });
 
   const [showCurrencyModal, setShowCurrencyModal] = useState(false);
+
+  // Calculate limits based on verification status
+  const isVerified = user?.verificationStatus === 'verified';
+  const dailyLimit = isVerified ? 250000 : 50000;
+  const monthlyLimit = isVerified ? null : 1500000; // null = unlimited for verified
+  const verificationLabel = isVerified ? 'Verified' : 'Unverified';
+
 
   const toggleSetting = (setting) => {
     setSettings(prev => ({
@@ -110,6 +119,76 @@ const Settings = () => {
                     <div className={`absolute w-5 h-5 bg-white rounded-full top-0.5 transition-all shadow-md ${isDarkMode ? 'right-0.5' : 'left-0.5'
                       }`}></div>
                   </button>
+                </div>
+              </div>
+            </section>
+
+            {/* Account Limits */}
+            <section>
+              <h2 className="text-lg font-semibold text-[#1A3F22] dark:text-[#E8F5E8] mb-4">Account Limits</h2>
+              <div className="p-5 rounded-2xl border bg-white dark:bg-[#1A2E1D] border-gray-200 dark:border-[#2D4A32] transition-colors duration-300">
+                {/* Verification Status Banner */}
+                <div className="mb-5 p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800">
+                  <div className="flex items-start gap-3">
+                    <span className="material-symbols-outlined text-blue-600 dark:text-blue-400 text-2xl">info</span>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-blue-900 dark:text-blue-200 text-sm mb-1">Verification Status</h3>
+                      <p className="text-xs text-blue-700 dark:text-blue-300">
+                        Your account limits are based on your verification status. Upload documents to increase your limits.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Limits Display */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-[#2D4A32]">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[#E9F0E1] dark:bg-[#243B28]">
+                        <span className="material-symbols-outlined text-[#58761B] dark:text-[#81C784]">today</span>
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-[#1A3F22] dark:text-[#E8F5E8] text-sm m-0">Daily Limit</h3>
+                        <p className="text-xs text-gray-500 dark:text-[#A8C4A8] m-0">Maximum per day</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-[#1A3F22] dark:text-[#E8F5E8] m-0">{currency} {dailyLimit.toLocaleString()}</p>
+                      <p className={`text-xs m-0 ${isVerified ? 'text-green-600 dark:text-green-400' : 'text-orange-600 dark:text-orange-400'}`}>{verificationLabel}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[#E9F0E1] dark:bg-[#243B28]">
+                        <span className="material-symbols-outlined text-[#58761B] dark:text-[#81C784]">calendar_month</span>
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-[#1A3F22] dark:text-[#E8F5E8] text-sm m-0">Monthly Limit</h3>
+                        <p className="text-xs text-gray-500 dark:text-[#A8C4A8] m-0">Maximum per month</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-[#1A3F22] dark:text-[#E8F5E8] m-0">
+                        {monthlyLimit ? `${currency} ${monthlyLimit.toLocaleString()}` : 'Unlimited'}
+                      </p>
+                      <p className={`text-xs m-0 ${isVerified ? 'text-green-600 dark:text-green-400' : 'text-orange-600 dark:text-orange-400'}`}>{verificationLabel}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Upgrade CTA */}
+                <div className="mt-5 pt-4 border-t border-gray-100 dark:border-[#2D4A32]">
+                  <Link
+                    to="/verification-upload"
+                    className="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-[#1A3F22] to-[#58761B] hover:from-[#14301a] hover:to-[#4a6316] transition-all no-underline"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="material-symbols-outlined text-white">verified_user</span>
+                      <span className="font-medium text-white text-sm">Verify Your Identity</span>
+                    </div>
+                    <span className="material-symbols-outlined text-white">arrow_forward</span>
+                  </Link>
                 </div>
               </div>
             </section>
