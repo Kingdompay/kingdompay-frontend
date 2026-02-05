@@ -1,17 +1,65 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useDarkMode } from '../contexts/DarkModeContext';
 import BottomNav from './BottomNav';
+import { motion } from 'framer-motion';
 
 const Profile = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, wallet, kycStatus, kycDocuments, communities, isVerified, getVerificationStatus } = useAuth();
+  const { isDarkMode } = useDarkMode();
   const navigate = useNavigate();
   const [hoveredButton, setHoveredButton] = useState('');
+
+  // Parse full_name into first and last name
+  const nameParts = (user?.full_name || '').split(' ');
+  const firstName = nameParts[0] || '';
+  const lastName = nameParts.slice(1).join(' ') || '';
+  const initials = (firstName.charAt(0) + (lastName.charAt(0) || '')).toUpperCase() || 'U';
 
   const handleLogout = () => {
     if (confirm('Are you sure you want to log out?')) {
       logout();
-      navigate('/login');
+      navigate('/');
+    }
+  };
+
+  // getVerificationStatus is now provided by useAuth() hook
+
+  // Verification status display
+  const getVerificationBadge = () => {
+    const status = getVerificationStatus();
+    
+    if (status === 'approved') {
+      return (
+        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-xs font-medium">
+          <span className="material-symbols-outlined text-sm">verified</span>
+          Verified
+        </span>
+      );
+    } else if (status === 'pending') {
+      return (
+        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 text-xs font-medium">
+          <span className="material-symbols-outlined text-sm">pending</span>
+          Pending Review
+        </span>
+      );
+    } else if (status === 'rejected') {
+      return (
+        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-medium cursor-pointer hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+              onClick={() => navigate('/verify-identity')}>
+          <span className="material-symbols-outlined text-sm">error</span>
+          Rejected - Resubmit
+        </span>
+      );
+    } else {
+      return (
+        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-xs font-medium cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              onClick={() => navigate('/verify-identity')}>
+          <span className="material-symbols-outlined text-sm">shield</span>
+          Not Verified
+        </span>
+      );
     }
   };
 
@@ -40,28 +88,69 @@ const Profile = () => {
         {/* Sidebar / Mobile Header */}
         <div className="md:w-1/3 lg:w-1/4 bg-white dark:bg-dark-bg md:border-r md:border-gray-100 dark:md:border-[#2D4A32] flex flex-col transition-colors duration-300">
           {/* Header */}
-          <div className="p-4 text-center md:text-left md:flex md:flex-col md:items-center md:justify-center md:flex-grow">
-            <div className="relative inline-block">
-              {user?.profilePicture ? (
-                <img
-                  alt="User profile picture"
-                  className="w-24 h-24 rounded-full border-4 border-[#58761B] object-cover shadow-lg"
-                  src={user.profilePicture}
-                />
-              ) : (
-                <div className="w-24 h-24 rounded-full border-4 border-[#58761B] bg-gradient-to-br from-[#1A3F22] to-[#58761B] flex items-center justify-center shadow-lg">
-                  <span className="text-white text-3xl font-bold">
-                    {(user?.firstName?.charAt(0) || '') + (user?.lastName?.charAt(0) || '')}
-                  </span>
+          <div className="p-6 text-center md:text-left md:flex md:flex-col md:items-center md:justify-center md:flex-grow">
+            {/* Profile Avatar */}
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="relative inline-block"
+            >
+              <div className="w-28 h-28 rounded-full border-4 border-[#58761B] bg-gradient-to-br from-[#1A3F22] to-[#58761B] flex items-center justify-center shadow-xl">
+                <span className="text-white text-3xl font-bold">
+                  {initials}
+                </span>
+              </div>
+              {/* Role Badge */}
+              {user?.role?.toUpperCase() === 'ADMIN' && (
+                <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-[#D99201] rounded-full flex items-center justify-center shadow-lg">
+                  <span className="material-symbols-outlined text-white text-sm">admin_panel_settings</span>
                 </div>
               )}
-            </div>
-            <h2 className="mt-4 text-2xl font-bold text-[#1A3F22] dark:text-[#E8F5E8] m-0 transition-colors">
-              {user?.firstName} {user?.lastName}
-            </h2>
-            <p className="text-[#58761B] dark:text-[#81C784] text-sm mt-1 m-0 transition-colors">
-              @{user?.email?.split('@')[0]} / {user?.phone || '+1 234 567 890'}
-            </p>
+            </motion.div>
+
+            {/* User Info */}
+            <motion.div
+              initial={{ y: 10, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.1 }}
+              className="mt-4"
+            >
+              <h2 className="text-2xl font-bold text-[#1A3F22] dark:text-[#E8F5E8] m-0 transition-colors">
+                {user?.full_name || 'User'}
+              </h2>
+              <p className="text-[#58761B] dark:text-[#81C784] text-sm mt-1 m-0 transition-colors">
+                {user?.phone_number || user?.phone || '---'}
+              </p>
+              {user?.email && (
+                <p className="text-gray-500 dark:text-gray-400 text-xs mt-1 m-0 transition-colors">
+                  {user.email}
+                </p>
+              )}
+              <div className="mt-3">
+                {getVerificationBadge()}
+              </div>
+            </motion.div>
+
+            {/* Quick Stats */}
+            <motion.div
+              initial={{ y: 10, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="mt-6 grid grid-cols-2 gap-4 w-full max-w-xs"
+            >
+              <div className="bg-[#E9F0E1] dark:bg-[#1A2E1D] rounded-xl p-3 text-center">
+                <p className="text-xs text-gray-500 dark:text-gray-400 m-0">Wallet</p>
+                <p className="text-lg font-bold text-[#1A3F22] dark:text-[#E8F5E8] m-0">
+                  {wallet?.wallet_number || user?.wallet_number || '---'}
+                </p>
+              </div>
+              <div className="bg-[#E9F0E1] dark:bg-[#1A2E1D] rounded-xl p-3 text-center">
+                <p className="text-xs text-gray-500 dark:text-gray-400 m-0">Member Since</p>
+                <p className="text-lg font-bold text-[#1A3F22] dark:text-[#E8F5E8] m-0">
+                  {user?.created_at ? new Date(user.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '---'}
+                </p>
+              </div>
+            </motion.div>
           </div>
 
           {/* Desktop Nav Links */}
@@ -82,6 +171,11 @@ const Profile = () => {
               <Link to="/profile" className="flex items-center text-[#1A3F22] dark:text-[#E8F5E8] bg-gray-50 dark:bg-[#1A2E1D] font-medium p-3 rounded-xl transition-colors no-underline">
                 <span className="material-symbols-outlined mr-3">person</span> Profile
               </Link>
+              {user?.role?.toUpperCase() === 'ADMIN' && (
+                <Link to="/admin" className="flex items-center text-[#D99201] hover:bg-[#D99201]/10 p-3 rounded-xl transition-colors no-underline">
+                  <span className="material-symbols-outlined mr-3">admin_panel_settings</span> Admin Panel
+                </Link>
+              )}
             </nav>
           </div>
         </div>
@@ -89,7 +183,61 @@ const Profile = () => {
         {/* Main Content Area */}
         <main className="flex-grow p-4 pb-28 md:pb-8 overflow-y-auto bg-[#E5EBE3] dark:bg-[#0a150c] md:bg-[#E5EBE3] md:dark:bg-dark-bg transition-colors duration-300">
 
-          {/* Action Buttons Grid - Removed Referrals */}
+          {/* Account Details Card */}
+          <motion.section
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            className="bg-white dark:bg-[#1A2E1D] rounded-2xl shadow-sm p-6 border border-gray-100 dark:border-[#2D4A32] mb-6"
+          >
+            <h3 className="font-bold text-lg mb-4 text-[#1A3F22] dark:text-[#E8F5E8] m-0 flex items-center gap-2">
+              <span className="material-symbols-outlined">account_circle</span>
+              Account Details
+            </h3>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-[#2D4A32]">
+                <span className="text-gray-500 dark:text-gray-400 text-sm">Full Name</span>
+                <span className="text-[#1A3F22] dark:text-[#E8F5E8] font-medium">{user?.full_name || '---'}</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-[#2D4A32]">
+                <span className="text-gray-500 dark:text-gray-400 text-sm">Phone Number</span>
+                <span className="text-[#1A3F22] dark:text-[#E8F5E8] font-medium">{user?.phone_number || '---'}</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-[#2D4A32]">
+                <span className="text-gray-500 dark:text-gray-400 text-sm">Email</span>
+                <span className="text-[#1A3F22] dark:text-[#E8F5E8] font-medium">{user?.email || 'Not set'}</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-[#2D4A32]">
+                <span className="text-gray-500 dark:text-gray-400 text-sm">Account Type</span>
+                <span className={`font-medium ${user?.role?.toUpperCase() === 'ADMIN' ? 'text-[#D99201]' : 'text-[#58761B] dark:text-[#81C784]'}`}>
+                  {user?.role || 'USER'}
+                </span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-[#2D4A32]">
+                <span className="text-gray-500 dark:text-gray-400 text-sm">Phone Verified</span>
+                <span className={`font-medium ${user?.is_phone_verified ? 'text-green-600 dark:text-green-400' : 'text-yellow-600 dark:text-yellow-400'}`}>
+                  {user?.is_phone_verified ? 'Yes' : 'No'}
+                </span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-[#2D4A32]">
+                <span className="text-gray-500 dark:text-gray-400 text-sm">Account Status</span>
+                <span className={`font-medium ${user?.is_active !== false ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                  {user?.is_active !== false ? 'Active' : 'Inactive'}
+                </span>
+              </div>
+              <div className="flex justify-between items-center py-2">
+                <span className="text-gray-500 dark:text-gray-400 text-sm">Created</span>
+                <span className="text-[#1A3F22] dark:text-[#E8F5E8] font-medium">
+                  {user?.created_at ? new Date(user.created_at).toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  }) : '---'}
+                </span>
+              </div>
+            </div>
+          </motion.section>
+
+          {/* Action Buttons Grid */}
           <section className="mt-4 md:mt-0">
             <div className="grid grid-cols-3 gap-4 md:gap-8 max-w-2xl mx-auto">
               <div className="text-center flex flex-col items-center">
@@ -122,13 +270,15 @@ const Profile = () => {
 
               <div className="text-center flex flex-col items-center">
                 <button
-                  onClick={() => navigate('/cards')}
-                  className="w-16 h-16 rounded-2xl bg-[#E9F0E1] dark:bg-[#1A2E1D] flex items-center justify-center shadow-sm border-none cursor-pointer hover:bg-[#dce8d0] dark:hover:bg-[#243B28] transition-colors"
+                  onClick={() => navigate('/verify-identity')}
+                  className={`w-16 h-16 rounded-2xl flex items-center justify-center border-none cursor-pointer transition-all duration-300 ${hoveredButton === 'verify' ? 'bg-[#C68801] shadow-lg scale-105 -translate-y-1' : 'bg-[#D99201] shadow-sm'}`}
+                  onMouseEnter={() => setHoveredButton('verify')}
+                  onMouseLeave={() => setHoveredButton('')}
                 >
-                  <span className="material-symbols-outlined text-[#58761B] dark:text-[#81C784] text-xl">credit_card</span>
+                  <span className="material-symbols-outlined text-white text-xl">verified_user</span>
                 </button>
                 <p className="text-xs mt-2 text-[#1A3F22] dark:text-[#E8F5E8] font-medium m-0 transition-colors">
-                  Cards
+                  Verify ID
                 </p>
               </div>
             </div>
@@ -156,7 +306,43 @@ const Profile = () => {
                     <div className="w-8 h-8 rounded-full bg-[#E9F0E1] dark:bg-[#243B28] flex items-center justify-center">
                       <span className="material-symbols-outlined text-[#58761B] dark:text-[#81C784] text-base">account_balance</span>
                     </div>
-                    <span className="text-[#1A3F22] dark:text-[#E8F5E8] font-medium">Linked Bank Accounts & Cards</span>
+                    <span className="text-[#1A3F22] dark:text-[#E8F5E8] font-medium">Linked Bank Accounts</span>
+                  </div>
+                  <span className="material-symbols-outlined text-gray-400 dark:text-[#A8C4A8] text-base">chevron_right</span>
+                </button>
+
+                <button onClick={() => navigate('/cards')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 dark:hover:bg-[#243B28] rounded-lg transition-colors">
+                  <div className="flex items-center gap-4">
+                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] dark:bg-[#243B28] flex items-center justify-center">
+                      <span className="material-symbols-outlined text-[#58761B] dark:text-[#81C784] text-base">credit_card</span>
+                    </div>
+                    <span className="text-[#1A3F22] dark:text-[#E8F5E8] font-medium">Cards</span>
+                  </div>
+                  <span className="material-symbols-outlined text-gray-400 dark:text-[#A8C4A8] text-base">chevron_right</span>
+                </button>
+              </div>
+            </section>
+
+            {/* Preferences Section */}
+            <section className="bg-white dark:bg-[#1A2E1D] rounded-xl shadow-sm p-2 border border-gray-100 dark:border-[#2D4A32] transition-colors duration-300">
+              <h3 className="font-bold text-lg mb-2 px-3 pt-2 text-[#1A3F22] dark:text-[#E8F5E8] m-0">Preferences</h3>
+              <div className="border-t border-gray-100 dark:border-[#2D4A32]">
+                <button onClick={() => navigate('/notifications')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 dark:hover:bg-[#243B28] rounded-lg transition-colors">
+                  <div className="flex items-center gap-4">
+                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] dark:bg-[#243B28] flex items-center justify-center">
+                      <span className="material-symbols-outlined text-[#58761B] dark:text-[#81C784] text-base">notifications</span>
+                    </div>
+                    <span className="text-[#1A3F22] dark:text-[#E8F5E8] font-medium">Notifications</span>
+                  </div>
+                  <span className="material-symbols-outlined text-gray-400 dark:text-[#A8C4A8] text-base">chevron_right</span>
+                </button>
+
+                <button onClick={() => navigate('/settings')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 dark:hover:bg-[#243B28] rounded-lg transition-colors">
+                  <div className="flex items-center gap-4">
+                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] dark:bg-[#243B28] flex items-center justify-center">
+                      <span className="material-symbols-outlined text-[#58761B] dark:text-[#81C784] text-base">settings</span>
+                    </div>
+                    <span className="text-[#1A3F22] dark:text-[#E8F5E8] font-medium">Settings</span>
                   </div>
                   <span className="material-symbols-outlined text-gray-400 dark:text-[#A8C4A8] text-base">chevron_right</span>
                 </button>
@@ -173,32 +359,6 @@ const Profile = () => {
               </div>
             </section>
 
-            {/* Preferences Section */}
-            <section className="bg-white dark:bg-[#1A2E1D] rounded-xl shadow-sm p-2 border border-gray-100 dark:border-[#2D4A32] transition-colors duration-300">
-              <h3 className="font-bold text-lg mb-2 px-3 pt-2 text-[#1A3F22] dark:text-[#E8F5E8] m-0">Preferences</h3>
-              <div className="border-t border-gray-100 dark:border-[#2D4A32]">
-                <button onClick={() => navigate('/notifications')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 dark:hover:bg-[#243B28] rounded-lg transition-colors">
-                  <div className="flex items-center gap-4">
-                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] dark:bg-[#243B28] flex items-center justify-center">
-                      <span className="material-symbols-outlined text-[#58761B] dark:text-[#81C784] text-base">notifications</span>
-                    </div>
-                    <span className="text-[#1A3F22] dark:text-[#E8F5E8] font-medium">Notifications & Alerts</span>
-                  </div>
-                  <span className="material-symbols-outlined text-gray-400 dark:text-[#A8C4A8] text-base">chevron_right</span>
-                </button>
-
-                <button onClick={() => navigate('/settings')} className="flex items-center justify-between p-3 w-full bg-transparent border-none cursor-pointer hover:bg-gray-50 dark:hover:bg-[#243B28] rounded-lg transition-colors">
-                  <div className="flex items-center gap-4">
-                    <div className="w-8 h-8 rounded-full bg-[#E9F0E1] dark:bg-[#243B28] flex items-center justify-center">
-                      <span className="material-symbols-outlined text-[#58761B] dark:text-[#81C784] text-base">settings</span>
-                    </div>
-                    <span className="text-[#1A3F22] dark:text-[#E8F5E8] font-medium">Settings</span>
-                  </div>
-                  <span className="material-symbols-outlined text-gray-400 dark:text-[#A8C4A8] text-base">chevron_right</span>
-                </button>
-              </div>
-            </section>
-
             {/* Security Section */}
             <section className="bg-white dark:bg-[#1A2E1D] rounded-xl shadow-sm p-2 border border-gray-100 dark:border-[#2D4A32] transition-colors duration-300">
               <h3 className="font-bold text-lg mb-2 px-3 pt-2 text-[#1A3F22] dark:text-[#E8F5E8] m-0">Security</h3>
@@ -208,7 +368,7 @@ const Profile = () => {
                     <div className="w-8 h-8 rounded-full bg-[#E9F0E1] dark:bg-[#243B28] flex items-center justify-center">
                       <span className="material-symbols-outlined text-[#58761B] dark:text-[#81C784] text-base">pin</span>
                     </div>
-                    <span className="text-[#1A3F22] dark:text-[#E8F5E8] font-medium">Change PIN / Password</span>
+                    <span className="text-[#1A3F22] dark:text-[#E8F5E8] font-medium">Change PIN</span>
                   </div>
                   <span className="material-symbols-outlined text-gray-400 dark:text-[#A8C4A8] text-base">chevron_right</span>
                 </button>
@@ -218,7 +378,7 @@ const Profile = () => {
                     <div className="w-8 h-8 rounded-full bg-[#E9F0E1] dark:bg-[#243B28] flex items-center justify-center">
                       <span className="material-symbols-outlined text-[#58761B] dark:text-[#81C784] text-base">password</span>
                     </div>
-                    <span className="text-[#1A3F22] dark:text-[#E8F5E8] font-medium">2FA</span>
+                    <span className="text-[#1A3F22] dark:text-[#E8F5E8] font-medium">Two-Factor Auth</span>
                   </div>
                   <span className="material-symbols-outlined text-gray-400 dark:text-[#A8C4A8] text-base">chevron_right</span>
                 </button>
@@ -254,7 +414,7 @@ const Profile = () => {
                     <div className="w-8 h-8 rounded-full bg-[#E9F0E1] dark:bg-[#243B28] flex items-center justify-center">
                       <span className="material-symbols-outlined text-[#58761B] dark:text-[#81C784] text-base">chat</span>
                     </div>
-                    <span className="text-[#1A3F22] dark:text-[#E8F5E8] font-medium">Chat with Support</span>
+                    <span className="text-[#1A3F22] dark:text-[#E8F5E8] font-medium">Chat Support</span>
                   </div>
                   <span className="material-symbols-outlined text-gray-400 dark:text-[#A8C4A8] text-base">chevron_right</span>
                 </button>
@@ -272,8 +432,12 @@ const Profile = () => {
             </section>
 
             {/* Logout Button */}
-            <div className="mt-8 mb-8 text-center">
-              <button onClick={handleLogout} className="text-red-600 dark:text-red-400 font-medium hover:bg-red-50 dark:hover:bg-red-900/20 px-6 py-3 rounded-xl transition-colors border-none cursor-pointer bg-transparent">
+            <div className="col-span-1 md:col-span-2 mt-4 mb-8 text-center">
+              <button 
+                onClick={handleLogout} 
+                className="text-red-600 dark:text-red-400 font-semibold hover:bg-red-50 dark:hover:bg-red-900/20 px-8 py-3 rounded-xl transition-colors border-2 border-red-200 dark:border-red-800 cursor-pointer bg-transparent flex items-center justify-center gap-2 mx-auto"
+              >
+                <span className="material-symbols-outlined">logout</span>
                 Log Out
               </button>
             </div>
@@ -290,4 +454,3 @@ const Profile = () => {
 };
 
 export default Profile;
-

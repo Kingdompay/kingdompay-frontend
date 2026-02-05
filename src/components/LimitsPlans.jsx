@@ -9,7 +9,7 @@ const LimitsPlans = () => {
 
 
   const getStatusBadge = () => {
-    const status = user?.verificationStatus || 'unverified';
+    const status = user?.kyc_status || user?.verificationStatus || 'unverified';
     switch (status) {
       case 'verified':
         return <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-3 py-1 rounded-full text-sm font-bold flex items-center"><span className="material-symbols-outlined text-sm mr-1">verified</span> Verified</span>;

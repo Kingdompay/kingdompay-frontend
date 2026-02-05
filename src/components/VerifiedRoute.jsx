@@ -3,7 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 const VerifiedRoute = ({ children }) => {
-    const { user, loading } = useAuth();
+    const { user, loading, kycStatus } = useAuth();
 
     if (loading) {
         return (
@@ -16,9 +16,18 @@ const VerifiedRoute = ({ children }) => {
         );
     }
 
+    // Admins are exempt from verification check
+    if (user?.role?.toUpperCase() === 'ADMIN') {
+        return children;
+    }
+
+    // Check if user's KYC is approved
+    // First check the kycStatus from AuthContext (fetched from /kyc/status API)
+    // Then fall back to the user's kyc_status field (set during login)
+    const isVerified = kycStatus?.status === 'approved' || user?.kyc_status === 'approved';
+
     // If user is not verified, redirect to verification page
-    // Admins are exempt from this check
-    if (user && user.role !== 'admin' && user.verificationStatus !== 'verified') {
+    if (user && !isVerified) {
         return <Navigate to="/verify-identity" replace />;
     }
 

@@ -3,19 +3,39 @@ import { useNavigate } from 'react-router-dom';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import QRCode from 'react-qr-code';
 import { useAuth } from '../contexts/AuthContext';
+import { generateWalletQR, transferFunds } from '../services/api';
 import BottomNav from './BottomNav';
 
 const ScanQR = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, wallet } = useAuth();
   const [scanResult, setScanResult] = useState(null);
   const [isScanning, setIsScanning] = useState(true);
   const [activeTab, setActiveTab] = useState('scan'); // 'scan', 'my-code'
+  const [myQRCode, setMyQRCode] = useState(null);
+  const [isLoadingQR, setIsLoadingQR] = useState(false);
+  const [processingPayment, setProcessingPayment] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect if device is mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+      const mobileRegex = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i;
+      const isMobileDevice = mobileRegex.test(userAgent.toLowerCase()) || window.innerWidth < 768;
+      setIsMobile(isMobileDevice);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     let scanner = null;
 
-    if (isScanning && !scanResult && activeTab === 'scan') {
+    // Only initialize scanner on mobile devices
+    if (isMobile && isScanning && !scanResult && activeTab === 'scan') {
       // Initialize scanner
       scanner = new Html5QrcodeScanner(
         "reader",
@@ -56,7 +76,7 @@ const ScanQR = () => {
         });
       }
     };
-  }, [isScanning, scanResult, activeTab]);
+  }, [isScanning, scanResult, activeTab, isMobile]);
 
   const handleReset = () => {
     setScanResult(null);
@@ -155,25 +175,45 @@ const ScanQR = () => {
               !scanResult ? (
                 <div className="bg-white dark:bg-[#1A2E1D] rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-[#2D4A32] transition-colors duration-300">
                   <div className="text-center mb-6">
-                    <h2 className="text-xl font-bold text-[#1A3F22] dark:text-[#E8F5E8] mb-2">Scan a QR Code</h2>
-                    <p className="text-gray-500 dark:text-[#A8C4A8] text-sm">Position the QR code within the frame to scan</p>
+                    <h2 className="text-xl font-bold text-[#1A3F22] dark:text-[#E8F5E8] mb-2">
+                      {isMobile ? 'Scan a QR Code' : 'QR Code Scanner'}
+                    </h2>
+                    <p className="text-gray-500 dark:text-[#A8C4A8] text-sm">
+                      {isMobile 
+                        ? 'Position the QR code within the frame to scan'
+                        : 'QR code scanning is only available on mobile devices. Please use a mobile device to scan QR codes.'}
+                    </p>
                   </div>
 
-                  <div className="overflow-hidden rounded-xl bg-gray-50 border-2 border-dashed border-gray-200 dark:border-[#2D4A32]">
-                    <div id="reader"></div>
-                  </div>
+                  {isMobile ? (
+                    <>
+                      <div className="overflow-hidden rounded-xl bg-gray-50 border-2 border-dashed border-gray-200 dark:border-[#2D4A32]">
+                        <div id="reader"></div>
+                      </div>
 
-                  <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl flex items-start">
-                    <span className="material-symbols-outlined text-blue-600 dark:text-blue-400 mr-3 mt-0.5">info</span>
-                    <div className="text-sm text-blue-800 dark:text-blue-200">
-                      <p className="font-semibold mb-1">Scanning Tips</p>
-                      <ul className="list-disc pl-4 space-y-1">
-                        <li>Ensure good lighting</li>
-                        <li>Hold device steady</li>
-                        <li>Clean your camera lens</li>
-                      </ul>
+                      <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl flex items-start">
+                        <span className="material-symbols-outlined text-blue-600 dark:text-blue-400 mr-3 mt-0.5">info</span>
+                        <div className="text-sm text-blue-800 dark:text-blue-200">
+                          <p className="font-semibold mb-1">Scanning Tips</p>
+                          <ul className="list-disc pl-4 space-y-1">
+                            <li>Ensure good lighting</li>
+                            <li>Hold device steady</li>
+                            <li>Clean your camera lens</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-center py-12">
+                      <span className="material-symbols-outlined text-6xl text-gray-400 dark:text-[#A8C4A8] mb-4">qr_code_scanner</span>
+                      <p className="text-gray-600 dark:text-[#A8C4A8] mb-4">
+                        QR code scanning requires camera access and is only available on mobile devices.
+                      </p>
+                      <p className="text-sm text-gray-500 dark:text-[#A8C4A8]">
+                        Switch to the "My Code" tab to view your QR code for others to scan.
+                      </p>
                     </div>
-                  </div>
+                  )}
                 </div>
               ) : (
                 <div className="bg-white dark:bg-[#1A2E1D] rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-[#2D4A32] text-center transition-colors duration-300">
@@ -195,7 +235,7 @@ const ScanQR = () => {
                       Scan Again
                     </button>
                     <button
-                      onClick={() => {
+                      onClick={async () => {
                         try {
                           let data;
                           try {
@@ -205,7 +245,35 @@ const ScanQR = () => {
                             data = { type: 'send', recipient: scanResult };
                           }
 
-                          if (data.type === 'send' || data.recipient) {
+                          if (data.type === 'wallet_payment') {
+                            // Handle wallet payment QR code
+                            setProcessingPayment(true);
+                            try {
+                              // If amount is specified, navigate to send money page for confirmation
+                              if (data.amount) {
+                                navigate('/send-money', {
+                                  state: {
+                                    recipient: data.user_phone || data.wallet_number,
+                                    amount: data.amount,
+                                    message: data.message || `Payment to ${data.user_name || 'user'}`
+                                  }
+                                });
+                              } else {
+                                // No amount specified, navigate to send money page
+                                navigate('/send-money', {
+                                  state: {
+                                    recipient: data.user_phone || data.wallet_number,
+                                    message: data.message || `Payment to ${data.user_name || 'user'}`
+                                  }
+                                });
+                              }
+                            } catch (error) {
+                              console.error('Payment error:', error);
+                              alert('Error processing payment. Please try again.');
+                            } finally {
+                              setProcessingPayment(false);
+                            }
+                          } else if (data.type === 'send' || data.recipient) {
                             // Handle simple email/phone or JSON
                             const recipient = data.recipient || data.email;
                             navigate('/send-money', {
@@ -224,9 +292,10 @@ const ScanQR = () => {
                           alert('Error processing QR code');
                         }
                       }}
-                      className="flex-1 py-3 px-6 rounded-xl bg-[#6f9c16] text-white font-semibold hover:bg-[#5a8012] transition-colors shadow-lg border-none cursor-pointer"
+                      disabled={processingPayment}
+                      className="flex-1 py-3 px-6 rounded-xl bg-[#6f9c16] text-white font-semibold hover:bg-[#5a8012] transition-colors shadow-lg border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Process
+                      {processingPayment ? 'Processing...' : 'Process'}
                     </button>
                   </div>
                 </div>
@@ -241,23 +310,51 @@ const ScanQR = () => {
                   <p className="text-gray-500 dark:text-[#A8C4A8]">{user?.email}</p>
                 </div>
 
-                <div className="bg-white p-4 rounded-2xl inline-block border-2 border-gray-100 dark:border-[#2D4A32]">
-                  <QRCode
-                    value={JSON.stringify({
-                      type: 'send',
-                      recipient: user?.email,
-                      name: `${user?.firstName} ${user?.lastName}`,
-                      amount: null,
-                      message: ''
-                    })}
-                    size={200}
-                    level={'H'}
-                  />
-                </div>
+                {isLoadingQR ? (
+                  <div className="py-12">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#6f9c16] mx-auto"></div>
+                    <p className="mt-4 text-gray-500 dark:text-[#A8C4A8]">Generating QR code...</p>
+                  </div>
+                ) : myQRCode ? (
+                  <div className="bg-white p-4 rounded-2xl inline-block border-2 border-gray-100 dark:border-[#2D4A32]">
+                    <img src={myQRCode} alt="My QR Code" className="w-64 h-64" />
+                  </div>
+                ) : (
+                  <div className="bg-white p-4 rounded-2xl inline-block border-2 border-gray-100 dark:border-[#2D4A32]">
+                    <QRCode
+                      value={JSON.stringify({
+                        type: 'wallet_payment',
+                        wallet_number: user?.wallet_number || user?.phone_number,
+                        user_phone: user?.phone_number,
+                        user_name: `${user?.firstName} ${user?.lastName}`
+                      })}
+                      size={200}
+                      level={'H'}
+                    />
+                  </div>
+                )}
 
                 <p className="mt-8 text-sm text-gray-500 dark:text-[#A8C4A8]">
                   Share this code to receive money instantly
                 </p>
+                <button
+                  onClick={async () => {
+                    setIsLoadingQR(true);
+                    try {
+                      const result = await generateWalletQR();
+                      if (result.success && result.qr_code) {
+                        setMyQRCode(result.qr_code);
+                      }
+                    } catch (error) {
+                      console.error('Error generating QR code:', error);
+                    } finally {
+                      setIsLoadingQR(false);
+                    }
+                  }}
+                  className="mt-4 px-4 py-2 bg-[#6f9c16] text-white rounded-lg hover:bg-[#5a8012] transition-colors"
+                >
+                  Generate New QR Code
+                </button>
               </div>
             )}
 

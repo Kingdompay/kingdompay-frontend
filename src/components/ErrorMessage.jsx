@@ -1,6 +1,41 @@
 import React from 'react';
+import { getErrorType } from '../utils/errorHandler';
 
-const ErrorMessage = ({ message, onRetry, showRetry = true }) => {
+const ErrorMessage = ({ message, onRetry, showRetry = true, type, error }) => {
+  // Determine error type from error object if provided
+  const errorType = type || (error ? getErrorType(error) : 'unknown');
+  
+  const getIcon = () => {
+    switch (errorType) {
+      case 'network':
+        return 'wifi_off';
+      case 'auth':
+        return 'lock';
+      case 'validation':
+        return 'error_outline';
+      case 'server':
+        return 'dns';
+      default:
+        return 'error';
+    }
+  };
+  
+  const getColor = () => {
+    switch (errorType) {
+      case 'network':
+        return { bg: '#fef3c7', icon: '#f59e0b' };
+      case 'auth':
+        return { bg: '#fee2e2', icon: '#ef4444' };
+      case 'validation':
+        return { bg: '#fef2f2', icon: '#ef4444' };
+      case 'server':
+        return { bg: '#fee2e2', icon: '#dc2626' };
+      default:
+        return { bg: '#fef2f2', icon: '#ef4444' };
+    }
+  };
+  
+  const colors = getColor();
   return (
     <div style={{
       display: 'flex',
@@ -15,14 +50,14 @@ const ErrorMessage = ({ message, onRetry, showRetry = true }) => {
         width: '48px',
         height: '48px',
         borderRadius: '50%',
-        backgroundColor: '#fef2f2',
+        backgroundColor: colors.bg,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: '8px'
       }}>
-        <span className="material-symbols-outlined" style={{ color: '#ef4444', fontSize: '24px' }}>
-          error
+        <span className="material-symbols-outlined" style={{ color: colors.icon, fontSize: '24px' }}>
+          {getIcon()}
         </span>
       </div>
       

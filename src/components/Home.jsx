@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useCurrency } from '../contexts/CurrencyContext';
@@ -6,7 +6,7 @@ import { useDarkMode } from '../contexts/DarkModeContext';
 import BottomNav from './BottomNav';
 
 const Home = () => {
-  const { user } = useAuth();
+  const { user, wallet, transactions, notifications, refreshWallet, refreshTransactions, loading, kycStatus } = useAuth();
   const { formatCurrency } = useCurrency();
   const { theme } = useDarkMode();
   const navigate = useNavigate();
@@ -15,13 +15,56 @@ const Home = () => {
   const [showBalance, setShowBalance] = useState(true);
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [showMoreModal, setShowMoreModal] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [showVerificationBanner, setShowVerificationBanner] = useState(true);
+  
+  // Determine verification status - use standardized helper from AuthContext
+  const { isVerified: isUserVerified, getVerificationStatus } = useAuth();
+  const verificationStatus = getVerificationStatus();
+  const isVerified = isUserVerified;
+  const isPending = verificationStatus === 'pending';
+  const isRejected = verificationStatus === 'rejected';
 
-  // Use balance and transactions directly from user context
-  const userBalance = user?.balance || 0;
+  // Get balance and wallet details from wallet or user object
+  const userBalance = wallet?.balance ?? user?.balance ?? 0;
   const savingsBalance = user?.savingsBalance || 0;
-  const totalBalance = userBalance + savingsBalance;
-  const transactions = user?.transactions || [];
-  const unreadNotifications = (user?.notifications || []).filter(n => !n.read).length;
+  const totalBalance = Number(userBalance) + Number(savingsBalance || 0);
+  const rawWalletNumber = wallet?.wallet_number || wallet?.display_number || user?.wallet_number || '**********';
+  const visibleWalletNumber = showBalance ? rawWalletNumber : '************';
+  
+  // Get unread notifications count
+  const unreadNotifications = notifications?.filter(n => !n.read).length || 0;
+
+  // Refresh data on mount
+  useEffect(() => {
+    const loadData = async () => {
+      if (user && !loading) {
+        try {
+          await Promise.all([
+            refreshWallet(),
+            refreshTransactions()
+          ]);
+        } catch (err) {
+          console.warn('Failed to refresh data:', err);
+        }
+      }
+    };
+    loadData();
+  }, [user]);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await Promise.all([
+        refreshWallet(),
+        refreshTransactions()
+      ]);
+    } catch (err) {
+      console.warn('Failed to refresh:', err);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const handleWalletClick = () => {
     setShowWalletModal(true);
@@ -40,8 +83,8 @@ const Home = () => {
       case 'Send':
         navigate('/send-money');
         break;
-      case 'Swap':
-        navigate('/request-money');
+      case 'Withdraw':
+        navigate('/withdraw-money');
         break;
       case 'More':
         setShowMoreModal(!showMoreModal);
@@ -77,6 +120,31 @@ const Home = () => {
       ripple.remove();
     }, 600);
   };
+
+  // Format transaction for display
+  const formatTransaction = (tx) => {
+    return {
+      ...tx,
+      type: tx.transaction_type === 'CREDIT' || tx.type === 'credit' ? 'credit' : 'debit',
+      description: tx.description || `${tx.transaction_type} Transaction`,
+      amount: tx.amount || 0,
+      date: tx.created_at || tx.date || new Date().toISOString(),
+    };
+  };
+
+  // Get formatted transactions
+  const displayTransactions = transactions.slice(0, 10).map(formatTransaction);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#E5EBE3] dark:bg-dark-bg flex items-center justify-center">
+        <div className="text-center">
+          <span className="material-symbols-outlined text-4xl text-[#1A3F22] dark:text-[#81C784] animate-spin">progress_activity</span>
+          <p className="mt-4 text-[#1A3F22] dark:text-[#E8F5E8]">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#E5EBE3] dark:bg-dark-bg font-sans flex justify-center transition-colors duration-300">
@@ -115,12 +183,18 @@ const Home = () => {
               {/* Top Bar */}
               <div className="p-6 animate-slide-in-left">
                 <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-3">
                   <img
                     onClick={() => navigate('/profile')}
                     alt="User avatar"
                     className="w-10 h-10 rounded-full border-2 border-white/50 shadow-md transition-transform duration-300 cursor-pointer hover:scale-105"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfS87tQQpysb3SZb5EX2azLsLtUChd2UpaGt5D22Tn_Ny7cDwSz2xCl12t4l8mACrP3I0k8dj0_ixIR9rUGVZJjHWYgOy4CP8uMZ0DBkR0fP3CkUAduPLe38Gb86XfLPstMMA9FYtv6ZtKU7jk23KY30EJ6UgPTSaZOfHK7Fxx6rJhLg1e1TNMhHhFKTR7YTL6Z03U-yiGLwhQ9wo9DElyPEPz4JRpH527L3jtyEp_T5-777K8mU6RUowlNtEnkg6d1WptBPUpPPIm"
+                      src={user?.profilePicture || "https://ui-avatars.com/api/?name=" + encodeURIComponent(user?.full_name || 'User') + "&background=1A3F22&color=fff"}
                   />
+                    <div>
+                      <p className="text-white/80 text-xs">Welcome back</p>
+                      <p className="text-white font-bold text-sm">{user?.full_name || 'User'}</p>
+                    </div>
+                  </div>
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => setShowBalance(!showBalance)}
@@ -130,23 +204,16 @@ const Home = () => {
                         {showBalance ? 'visibility' : 'visibility_off'}
                       </span>
                     </button>
-                    {/* Profile Picture */}
-                    <Link to="/profile" className="no-underline">
-                      {user?.profilePicture ? (
-                        <img
-                          src={user.profilePicture}
-                          alt="Profile"
-                          className="w-10 h-10 rounded-full border-2 border-white/30 object-cover hover:border-white/60 transition-all cursor-pointer"
-                        />
-                      ) : (
-                        <div className="w-10 h-10 rounded-full border-2 border-white/30 bg-white/20 flex items-center justify-center hover:border-white/60 transition-all cursor-pointer">
-                          <span className="text-white text-sm font-bold">
-                            {(user?.firstName?.charAt(0) || '') + (user?.lastName?.charAt(0) || '')}
+                    {/* Refresh Button */}
+                    <button
+                      onClick={handleRefresh}
+                      disabled={refreshing}
+                      className="bg-white/20 p-2 rounded-full border-none cursor-pointer hover:bg-white/30 transition-colors flex items-center justify-center"
+                    >
+                      <span className={`material-symbols-outlined text-white text-xl ${refreshing ? 'animate-spin' : ''}`}>
+                        refresh
                           </span>
-                        </div>
-                      )}
-                    </Link>
-
+                    </button>
                     {/* Notification Bell */}
                     <button
                       onClick={() => navigate('/notifications')}
@@ -156,7 +223,9 @@ const Home = () => {
                         notifications
                       </span>
                       {unreadNotifications > 0 && (
-                        <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#1A3F22]"></span>
+                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-white text-xs flex items-center justify-center font-bold">
+                          {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                        </span>
                       )}
                     </button>
                   </div>
@@ -176,7 +245,7 @@ const Home = () => {
                   </div>
 
                   <p className={`text-3xl md:text-4xl font-bold text-white mt-1 m-0 tracking-tight whitespace-nowrap overflow-hidden text-ellipsis drop-shadow-sm font-['Outfit'] transition-all duration-300 ${showBalance ? '' : 'blur-md select-none'}`}>
-                    {formatCurrency(totalBalance)}
+                    KSh {totalBalance.toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -204,21 +273,21 @@ const Home = () => {
             </div>
           </div>
 
-          {/* Action Buttons (Mobile: Overlap Header, Desktop: Below Header or Hidden if in Sidebar) */}
+          {/* Action Buttons (Mobile) */}
           <div className="px-6 -mt-16 relative z-20 md:hidden">
             <div className="bg-white/15 backdrop-blur-xl rounded-2xl p-4 shadow-2xl border border-white/25">
               <div className="flex justify-around items-center text-center">
-                {['Add', 'Send', 'More'].map((action) => (
+                {['Add', 'Send', 'Withdraw', 'More'].map((action) => (
                   <div key={action} className="flex flex-col items-center">
                     <button
                       onClick={(e) => {
                         handleButtonClick(action);
                         createRippleEffect(e);
                       }}
-                      className={`w-14 h-14 bg-[#1A3F22] rounded-full flex items-center justify-center shadow-lg transition-all duration-300 border-none cursor-pointer relative overflow-hidden hover:scale-110 hover:shadow-xl ${buttonStates[action] ? 'scale-95' : 'scale-100'}`}
+                      className={`w-12 h-12 ${action === 'Withdraw' ? 'bg-[#D99201]' : 'bg-[#1A3F22]'} rounded-full flex items-center justify-center shadow-lg transition-all duration-300 border-none cursor-pointer relative overflow-hidden hover:scale-110 hover:shadow-xl ${buttonStates[action] ? 'scale-95' : 'scale-100'}`}
                     >
-                      <span className="material-symbols-outlined text-white text-2xl">
-                        {action === 'Add' ? 'arrow_downward' : action === 'Send' ? 'arrow_upward' : 'more_horiz'}
+                      <span className="material-symbols-outlined text-white text-xl">
+                        {action === 'Add' ? 'add' : action === 'Send' ? 'arrow_upward' : action === 'Withdraw' ? 'arrow_downward' : 'more_horiz'}
                       </span>
                     </button>
                     <p className="text-xs mt-2 text-[#1A3F22] dark:text-[#E8F5E8] font-bold m-0 transition-colors">
@@ -229,6 +298,73 @@ const Home = () => {
               </div>
             </div>
           </div>
+          
+          {/* Verification Status Banner (Mobile) */}
+          {showVerificationBanner && !isVerified && (
+            <div className="px-6 mt-4 md:hidden">
+              {isPending ? (
+                <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-2xl p-4 flex items-start gap-3 relative">
+                  <button
+                    onClick={() => setShowVerificationBanner(false)}
+                    className="absolute top-2 right-2 bg-transparent border-none cursor-pointer text-yellow-600 dark:text-yellow-400"
+                  >
+                    <span className="material-symbols-outlined text-sm">close</span>
+                  </button>
+                  <div className="w-10 h-10 rounded-full bg-yellow-100 dark:bg-yellow-800 flex items-center justify-center flex-shrink-0">
+                    <span className="material-symbols-outlined text-yellow-600 dark:text-yellow-400">hourglass_top</span>
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-yellow-800 dark:text-yellow-200 m-0 text-sm">Verification Pending</h4>
+                    <p className="text-yellow-700 dark:text-yellow-300 text-xs mt-1 m-0">Your documents are being reviewed. This usually takes 1-2 business days.</p>
+                  </div>
+                </div>
+              ) : isRejected ? (
+                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-4 flex items-start gap-3 relative">
+                  <button
+                    onClick={() => setShowVerificationBanner(false)}
+                    className="absolute top-2 right-2 bg-transparent border-none cursor-pointer text-red-600 dark:text-red-400"
+                  >
+                    <span className="material-symbols-outlined text-sm">close</span>
+                  </button>
+                  <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-800 flex items-center justify-center flex-shrink-0">
+                    <span className="material-symbols-outlined text-red-600 dark:text-red-400">error</span>
+                  </div>
+                  <div className="flex-grow">
+                    <h4 className="font-bold text-red-800 dark:text-red-200 m-0 text-sm">Verification Rejected</h4>
+                    <p className="text-red-700 dark:text-red-300 text-xs mt-1 m-0">Please re-upload your documents to continue.</p>
+                    <button
+                      onClick={() => navigate('/verify-identity')}
+                      className="mt-2 px-3 py-1.5 bg-red-600 text-white text-xs font-medium rounded-lg border-none cursor-pointer hover:bg-red-700 transition-colors"
+                    >
+                      Re-upload Documents
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-2xl p-4 flex items-start gap-3 relative">
+                  <button
+                    onClick={() => setShowVerificationBanner(false)}
+                    className="absolute top-2 right-2 bg-transparent border-none cursor-pointer text-blue-600 dark:text-blue-400"
+                  >
+                    <span className="material-symbols-outlined text-sm">close</span>
+                  </button>
+                  <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-800 flex items-center justify-center flex-shrink-0">
+                    <span className="material-symbols-outlined text-blue-600 dark:text-blue-400">verified_user</span>
+                  </div>
+                  <div className="flex-grow">
+                    <h4 className="font-bold text-blue-800 dark:text-blue-200 m-0 text-sm">Verify Your Identity</h4>
+                    <p className="text-blue-700 dark:text-blue-300 text-xs mt-1 m-0">Complete verification to unlock all features like withdrawals and community creation.</p>
+                    <button
+                      onClick={() => navigate('/verify-identity')}
+                      className="mt-2 px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-lg border-none cursor-pointer hover:bg-blue-700 transition-colors"
+                    >
+                      Verify Now
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Right Column (Desktop) / Main Content (Mobile) */}
@@ -239,13 +375,83 @@ const Home = () => {
             <h1 className="text-2xl font-bold text-[#1A3F22] dark:text-[#E8F5E8]">Dashboard</h1>
             <div className="flex gap-4">
               <button onClick={() => handleButtonClick('Add')} className="bg-[#1A3F22] text-white px-6 py-2 rounded-full font-medium hover:bg-[#14301a] transition-colors shadow-md flex items-center gap-2">
-                <span className="material-symbols-outlined text-sm">arrow_downward</span> Add Money
+                <span className="material-symbols-outlined text-sm">add</span> Add Money
               </button>
-              <button onClick={() => handleButtonClick('Send')} className="bg-[#D99201] text-white px-6 py-2 rounded-full font-medium hover:bg-[#b37801] transition-colors shadow-md flex items-center gap-2">
+              <button onClick={() => handleButtonClick('Send')} className="bg-[#58761B] text-white px-6 py-2 rounded-full font-medium hover:bg-[#4a6316] transition-colors shadow-md flex items-center gap-2">
                 <span className="material-symbols-outlined text-sm">arrow_upward</span> Send
+              </button>
+              <button onClick={() => handleButtonClick('Withdraw')} className="bg-[#D99201] text-white px-6 py-2 rounded-full font-medium hover:bg-[#b37801] transition-colors shadow-md flex items-center gap-2">
+                <span className="material-symbols-outlined text-sm">arrow_downward</span> Withdraw
               </button>
             </div>
           </div>
+          
+          {/* Verification Status Banner (Desktop) */}
+          {showVerificationBanner && !isVerified && (
+            <div className="hidden md:block mb-6">
+              {isPending ? (
+                <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-2xl p-5 flex items-center gap-4 relative">
+                  <button
+                    onClick={() => setShowVerificationBanner(false)}
+                    className="absolute top-3 right-3 bg-transparent border-none cursor-pointer text-yellow-600 dark:text-yellow-400"
+                  >
+                    <span className="material-symbols-outlined">close</span>
+                  </button>
+                  <div className="w-12 h-12 rounded-full bg-yellow-100 dark:bg-yellow-800 flex items-center justify-center flex-shrink-0">
+                    <span className="material-symbols-outlined text-2xl text-yellow-600 dark:text-yellow-400">hourglass_top</span>
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-yellow-800 dark:text-yellow-200 m-0">Verification In Progress</h4>
+                    <p className="text-yellow-700 dark:text-yellow-300 text-sm mt-1 m-0">Your documents are being reviewed. You'll receive a notification once approved. This usually takes 1-2 business days.</p>
+                  </div>
+                </div>
+              ) : isRejected ? (
+                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-5 flex items-center gap-4 relative">
+                  <button
+                    onClick={() => setShowVerificationBanner(false)}
+                    className="absolute top-3 right-3 bg-transparent border-none cursor-pointer text-red-600 dark:text-red-400"
+                  >
+                    <span className="material-symbols-outlined">close</span>
+                  </button>
+                  <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-800 flex items-center justify-center flex-shrink-0">
+                    <span className="material-symbols-outlined text-2xl text-red-600 dark:text-red-400">error</span>
+                  </div>
+                  <div className="flex-grow">
+                    <h4 className="font-bold text-red-800 dark:text-red-200 m-0">Verification Rejected</h4>
+                    <p className="text-red-700 dark:text-red-300 text-sm mt-1 m-0">Your documents were not accepted. Please re-upload to continue using all features.</p>
+                  </div>
+                  <button
+                    onClick={() => navigate('/verify-identity')}
+                    className="px-5 py-2.5 bg-red-600 text-white font-medium rounded-xl border-none cursor-pointer hover:bg-red-700 transition-colors flex-shrink-0"
+                  >
+                    Re-upload Documents
+                  </button>
+                </div>
+              ) : (
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-2xl p-5 flex items-center gap-4 relative">
+                  <button
+                    onClick={() => setShowVerificationBanner(false)}
+                    className="absolute top-3 right-3 bg-transparent border-none cursor-pointer text-blue-600 dark:text-blue-400"
+                  >
+                    <span className="material-symbols-outlined">close</span>
+                  </button>
+                  <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-800 flex items-center justify-center flex-shrink-0">
+                    <span className="material-symbols-outlined text-2xl text-blue-600 dark:text-blue-400">verified_user</span>
+                  </div>
+                  <div className="flex-grow">
+                    <h4 className="font-bold text-blue-800 dark:text-blue-200 m-0">Complete Your Verification</h4>
+                    <p className="text-blue-700 dark:text-blue-300 text-sm mt-1 m-0">Verify your identity to unlock all features including withdrawals, community creation, and higher transaction limits.</p>
+                  </div>
+                  <button
+                    onClick={() => navigate('/verify-identity')}
+                    className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-xl border-none cursor-pointer hover:from-blue-700 hover:to-indigo-700 transition-colors flex-shrink-0 shadow-md"
+                  >
+                    Verify Now
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Wallet Overview Card */}
           <div className="px-6 md:px-0 pb-6">
@@ -260,6 +466,24 @@ const Home = () => {
                 <p className="text-white text-2xl font-bold mt-1 m-0">
                   My Wallet
                 </p>
+                <div className="mt-2 flex items-center gap-2">
+                  <span className="text-white/60 text-xs">
+                    Wallet Number:
+                  </span>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (showBalance) {
+                        navigator.clipboard.writeText(rawWalletNumber);
+                      }
+                    }}
+                    className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/15 hover:bg-white/25 border border-white/20 text-[11px] text-white font-mono tracking-wider cursor-pointer"
+                  >
+                    <span>{visibleWalletNumber}</span>
+                    <span className="material-symbols-outlined text-xs">content_copy</span>
+                  </button>
+                </div>
               </div>
               <div className="bg-black/10 backdrop-blur-md rounded-full p-3 border border-white/10">
                 <span className="material-symbols-outlined text-white text-2xl">
@@ -269,18 +493,97 @@ const Home = () => {
             </div>
           </div>
 
+          {/* Quick Actions Section */}
+          <div className="px-6 md:px-0 pb-6">
+            <h3 className="text-lg font-bold text-gray-800 dark:text-[#E8F5E8] mb-4 m-0 transition-colors">Quick Actions</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {/* Community - Available to all */}
+              <Link
+                to="/community"
+                className="bg-white/80 dark:bg-[#1A2E1D]/80 backdrop-blur-md p-4 rounded-2xl shadow-sm border border-white/20 dark:border-[#2D4A32] transition-all duration-300 hover:-translate-y-1 hover:shadow-md flex flex-col items-center justify-center gap-2 no-underline group"
+              >
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#1A3F22] to-[#58761B] flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <span className="material-symbols-outlined text-white text-xl">groups</span>
+                </div>
+                <span className="text-sm font-medium text-[#1A3F22] dark:text-[#E8F5E8]">Community</span>
+              </Link>
+              
+              {/* Savings - Available to all */}
+              <Link
+                to="/savings"
+                className="bg-white/80 dark:bg-[#1A2E1D]/80 backdrop-blur-md p-4 rounded-2xl shadow-sm border border-white/20 dark:border-[#2D4A32] transition-all duration-300 hover:-translate-y-1 hover:shadow-md flex flex-col items-center justify-center gap-2 no-underline group"
+              >
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#D99201] to-[#905A01] flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <span className="material-symbols-outlined text-white text-xl">savings</span>
+                </div>
+                <span className="text-sm font-medium text-[#1A3F22] dark:text-[#E8F5E8]">Savings</span>
+              </Link>
+              
+              {/* Campaigns - Requires verification indicator */}
+              <Link
+                to={isVerified ? "/campaigns" : "/verify-identity"}
+                className={`bg-white/80 dark:bg-[#1A2E1D]/80 backdrop-blur-md p-4 rounded-2xl shadow-sm border border-white/20 dark:border-[#2D4A32] transition-all duration-300 hover:-translate-y-1 hover:shadow-md flex flex-col items-center justify-center gap-2 no-underline group relative ${!isVerified ? 'opacity-75' : ''}`}
+              >
+                {!isVerified && (
+                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
+                    <span className="material-symbols-outlined text-white text-xs">lock</span>
+                  </div>
+                )}
+                <div className={`w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center group-hover:scale-110 transition-transform ${!isVerified ? 'grayscale' : ''}`}>
+                  <span className="material-symbols-outlined text-white text-xl">campaign</span>
+                </div>
+                <span className="text-sm font-medium text-[#1A3F22] dark:text-[#E8F5E8]">Campaigns</span>
+                {!isVerified && (
+                  <span className="text-xs text-blue-600 dark:text-blue-400">Verify to unlock</span>
+                )}
+              </Link>
+              
+              {/* Payments - Available to all */}
+              <Link
+                to="/payments"
+                className="bg-white/80 dark:bg-[#1A2E1D]/80 backdrop-blur-md p-4 rounded-2xl shadow-sm border border-white/20 dark:border-[#2D4A32] transition-all duration-300 hover:-translate-y-1 hover:shadow-md flex flex-col items-center justify-center gap-2 no-underline group"
+              >
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-600 to-teal-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <span className="material-symbols-outlined text-white text-xl">qr_code_scanner</span>
+                </div>
+                <span className="text-sm font-medium text-[#1A3F22] dark:text-[#E8F5E8]">Payments</span>
+              </Link>
+            </div>
+            
+            {/* Verified User Feature Section */}
+            {isVerified && (
+              <div className="mt-4 p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl border border-green-200 dark:border-green-800">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="material-symbols-outlined text-green-600 dark:text-green-400">verified</span>
+                  <h4 className="font-bold text-green-800 dark:text-green-200 m-0 text-sm">Verified User Benefits</h4>
+                </div>
+                <p className="text-green-700 dark:text-green-300 text-xs m-0">You have full access to all features including unlimited transactions, community creation, and campaign management.</p>
+              </div>
+            )}
+          </div>
+
           {/* Transactions Section */}
           <div className="px-6 md:px-0 pb-24 md:pb-0">
-            <h2 className="text-xl font-bold text-gray-800 dark:text-[#E8F5E8] mb-4 m-0 transition-colors">
-              Transactions
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-gray-800 dark:text-[#E8F5E8] m-0 transition-colors">
+                Recent Transactions
             </h2>
+              {displayTransactions.length > 0 && (
+                <button 
+                  onClick={() => navigate('/transactions')}
+                  className="text-sm text-[#58761B] dark:text-[#81C784] font-medium hover:underline bg-transparent border-none cursor-pointer"
+                >
+                  View All
+                </button>
+              )}
+            </div>
             <div className="flex flex-col gap-4">
-              {transactions.length > 0 ? (
-                transactions.map((tx, i) => (
-                  <div key={i} className="bg-white/60 dark:bg-[#1A2E1D]/80 backdrop-blur-md p-4 rounded-xl shadow-sm border border-white/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-md flex items-center justify-between">
+              {displayTransactions.length > 0 ? (
+                displayTransactions.map((tx, i) => (
+                  <div key={tx.id || i} className="bg-white/60 dark:bg-[#1A2E1D]/80 backdrop-blur-md p-4 rounded-xl shadow-sm border border-white/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-md flex items-center justify-between">
                     <div className="flex items-center">
-                      <div className="w-10 h-10 rounded-full bg-white/50 dark:bg-white/10 flex items-center justify-center">
-                        <span className="material-symbols-outlined text-[#1A3F22] dark:text-[#E8F5E8] text-xl">
+                      <div className={`w-10 h-10 rounded-full ${tx.type === 'credit' ? 'bg-green-100 dark:bg-green-900/30' : 'bg-red-100 dark:bg-red-900/30'} flex items-center justify-center`}>
+                        <span className={`material-symbols-outlined ${tx.type === 'credit' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'} text-xl`}>
                           {tx.type === 'credit' ? 'arrow_downward' : 'arrow_upward'}
                         </span>
                       </div>
@@ -290,7 +593,7 @@ const Home = () => {
                       </div>
                     </div>
                     <p className={`font-bold m-0 ${tx.type === 'credit' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                      {tx.type === 'credit' ? '+' : '-'}{formatCurrency(tx.amount)}
+                      {tx.type === 'credit' ? '+' : '-'}KSh {tx.amount.toLocaleString()}
                     </p>
                   </div>
                 ))
@@ -300,19 +603,13 @@ const Home = () => {
                     <span className="material-symbols-outlined text-gray-400 dark:text-gray-500 text-4xl">receipt_long</span>
                   </div>
                   <h3 className="text-lg font-bold text-[#1A3F22] dark:text-[#E8F5E8] mb-2">No Transactions Yet</h3>
-                  <p className="text-sm text-gray-500 dark:text-[#A8C4A8] mb-6">Start by adding money to your wallet or sending to friends</p>
+                  <p className="text-sm text-gray-500 dark:text-[#A8C4A8] mb-6">Start by adding money to your wallet</p>
                   <div className="flex gap-3 justify-center">
                     <button
                       onClick={() => navigate('/add-money')}
-                      className="px-4 py-2 bg-[#6f9c16] text-white rounded-lg text-sm font-medium hover:bg-[#5a8012] transition-colors border-none cursor-pointer"
+                      className="px-6 py-2 bg-[#6f9c16] text-white rounded-lg text-sm font-medium hover:bg-[#5a8012] transition-colors border-none cursor-pointer"
                     >
                       Add Money
-                    </button>
-                    <button
-                      onClick={() => navigate('/send-money')}
-                      className="px-4 py-2 bg-gray-200 dark:bg-[#243B28] text-[#1A3F22] dark:text-[#E8F5E8] rounded-lg text-sm font-medium hover:bg-gray-300 dark:hover:bg-[#2D4A32] transition-colors border-none cursor-pointer"
-                    >
-                      Send Money
                     </button>
                   </div>
                 </div>
@@ -322,7 +619,6 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Modals omitted for brevity - assuming default/transparent overlays work or need minimal tweaks */}
       {/* Wallet Details Modal */}
       {showWalletModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-fade-in-up">
@@ -341,9 +637,9 @@ const Home = () => {
                 </button>
               </div>
 
-              <div className="bg-[#E5EBE3] dark:bg-[#0D1B0F] rounded-2xl p-4 shadow-lg mb-6 text-center transition-colors">
-                <p className="text-gray-500 dark:text-[#A8C4A8] text-xs uppercase tracking-wider mb-1">Total Net Worth</p>
-                <h3 className="text-3xl font-bold text-[#1A3F22] dark:text-[#E8F5E8] m-0">{formatCurrency(totalBalance)}</h3>
+              <div className="bg-[#E5EBE3] dark:bg-[#0D1B0F] rounded-2xl p-4 shadow-lg mb  -6 text-center transition-colors">
+                <p className="text-gray-500 dark:text-[#A8C4A8] text-xs uppercase tracking-wider mb-1">Total Balance</p>
+                <h3 className="text-3xl font-bold text-[#1A3F22] dark:text-[#E8F5E8] m-0">KSh {totalBalance.toLocaleString()}</h3>
               </div>
 
               <div className="space-y-4">
@@ -357,7 +653,7 @@ const Home = () => {
                       <p className="text-xs text-gray-500 dark:text-[#A8C4A8] m-0">Available</p>
                     </div>
                   </div>
-                  <span className="font-bold text-[#1A3F22] dark:text-[#E8F5E8]">{formatCurrency(userBalance)}</span>
+                  <span className="font-bold text-[#1A3F22] dark:text-[#E8F5E8]">KSh {userBalance.toLocaleString()}</span>
                 </div>
 
                 <div className="flex justify-between items-center p-3 bg-[#E5EBE3] dark:bg-[#0a150c] rounded-xl transition-colors">
@@ -366,17 +662,26 @@ const Home = () => {
                       <span className="material-symbols-outlined">savings</span>
                     </div>
                     <div>
-                      <p className="font-bold text-[#1A3F22] dark:text-[#E8F5E8] text-sm m-0">Savings Wallet</p>
+                      <p className="font-bold text-[#1A3F22] dark:text-[#E8F5E8] text-sm m-0">Savings</p>
                       <p className="text-xs text-gray-500 dark:text-[#A8C4A8] m-0">Reserved</p>
                     </div>
                   </div>
-                  <span className="font-bold text-[#1A3F22] dark:text-[#E8F5E8]">{formatCurrency(savingsBalance)}</span>
+                  <span className="font-bold text-[#1A3F22] dark:text-[#E8F5E8]">KSh {savingsBalance.toLocaleString()}</span>
                 </div>
 
                 <div className="border-t border-gray-100 dark:border-[#2D4A32] pt-4 mt-4 transition-colors">
-                  <p className="text-xs text-gray-500 dark:text-[#A8C4A8] mb-2 text-center">Your Account Number</p>
-                  <div className="flex items-center justify-center gap-2 bg-gray-100 dark:bg-[#1A2E1D] p-2 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-[#243B28] transition-colors" onClick={() => navigator.clipboard.writeText('1234 5678 9012')}>
-                    <span className="font-mono text-[#1A3F22] dark:text-[#E8F5E8] font-medium">1234 5678 9012</span>
+                  <p className="text-xs text-gray-500 dark:text-[#A8C4A8] mb-2 text-center">Your Wallet Number</p>
+                  <div 
+                    className="flex items-center justify-center gap-2 bg-gray-100 dark:bg-[#1A2E1D] p-3 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-[#243B28] transition-colors" 
+                    onClick={() => {
+                      if (showBalance) {
+                        navigator.clipboard.writeText(rawWalletNumber);
+                      }
+                    }}
+                  >
+                    <span className="font-mono text-[#1A3F22] dark:text-[#E8F5E8] font-medium tracking-wider">
+                      {visibleWalletNumber}
+                    </span>
                     <span className="material-symbols-outlined text-gray-400 dark:text-[#A8C4A8] text-sm">content_copy</span>
                   </div>
                 </div>
@@ -390,7 +695,6 @@ const Home = () => {
       {showMoreModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-fade-in-up">
           <div className="bg-white dark:bg-[#1A2E1D] rounded-3xl p-6 max-w-sm w-full shadow-2xl relative overflow-hidden transition-colors">
-            {/* Background Decoration */}
             <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-br from-[#1A3F22] to-[#58761B]"></div>
 
             <div className="relative z-10">
@@ -411,9 +715,9 @@ const Home = () => {
                   { name: 'Bills', icon: 'receipt_long', color: 'bg-orange-100 dark:bg-orange-900 text-orange-600 dark:text-orange-300' },
                   { name: 'Power', icon: 'bolt', color: 'bg-yellow-100 dark:bg-yellow-900 text-yellow-600 dark:text-yellow-300' },
                   { name: 'Internet', icon: 'router', color: 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300' },
-                  { name: 'Betting', icon: 'sports_soccer', color: 'bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300' },
-                  { name: 'School', icon: 'school', color: 'bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-300' },
                   { name: 'TV', icon: 'tv', color: 'bg-pink-100 dark:bg-pink-900 text-pink-600 dark:text-pink-300' },
+                  { name: 'School', icon: 'school', color: 'bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-300' },
+                  { name: 'More', icon: 'apps', color: 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300' },
                 ].map((service) => (
                   <div key={service.name} className="flex flex-col items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
                     <div className={`w-12 h-12 rounded-full flex items-center justify-center ${service.color}`}>

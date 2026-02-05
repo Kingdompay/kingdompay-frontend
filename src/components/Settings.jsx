@@ -19,8 +19,8 @@ const Settings = () => {
 
   const [showCurrencyModal, setShowCurrencyModal] = useState(false);
 
-  // Calculate limits based on verification status
-  const isVerified = user?.verificationStatus === 'verified';
+  // Calculate limits based on verification status - check both kyc_status and verificationStatus
+  const isVerified = user?.kyc_status === 'approved' || user?.verificationStatus === 'verified' || user?.verificationStatus === 'approved';
   const dailyLimit = isVerified ? 250000 : 50000;
   const monthlyLimit = isVerified ? null : 1500000; // null = unlimited for verified
   const verificationLabel = isVerified ? 'Verified' : 'Unverified';
